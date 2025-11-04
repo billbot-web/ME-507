@@ -1,97 +1,78 @@
+// ===== DRV8871 Motor (IN1/IN2 + LEDC) + Encoder (PCNT) Live Telemetry =====
+// Counts-per-rev math for your setup:
+//  - Encoder: 16 pulses/rev on one channel (x1). Using x2 (A rising+falling) → 32 counts/rev at motor shaft.
+//  - Gear ratio: 70:1 ⇒ output shaft CPR = 32 * 70 = 2240.
+// If you switch to full x4 (count both A & B edges), use 64 * 70 = 4480.
+
 #include <Arduino.h>
-#include "esp_camera.h"
+#include "Motor.cpp"
+#include "Encoder.cpp"
 
-// TODO: change these to YOUR wiring
-#define CAM_PIN_PWDN   -1      // or GPIO for PWDN if wired
-#define CAM_PIN_RESET  -1      // or GPIO for RESET if wired
-#define CAM_PIN_XCLK   4     // use if you feed external XCLK; else -1
-#define CAM_PIN_SDA   21  // I2C data
-#define CAM_PIN_SCL   22
+// ---------------- User pins ----------------
+#define IN1 13
+#define IN2 5
+#define ENCODER_A GPIO_NUM_16
+#define ENCODER_B GPIO_NUM_17
 
-#define CAM_PIN_D9     27 // MSB (sensor D9) 
-#define CAM_PIN_D8     26 
-#define CAM_PIN_D7     25 
-#define CAM_PIN_D6     14 
-#define CAM_PIN_D5     35 //input only
-#define CAM_PIN_D4     34 //input only
-#define CAM_PIN_D3     39 //input only
-#define CAM_PIN_D2     36 //LSB (sensor D2) input only
-#define CAM_PIN_VSYNC  23
-#define CAM_PIN_HREF   18
-#define CAM_PIN_PCLK   19 
+Motor motor(IN1, IN2, /*LEDC chs*/ 0, 1);
+Encoder encoder(ENCODER_A, ENCODER_B, -30000, 30000, /*x2 on A*/ 2);
+
+// ----- Counts-per-rev for your setup -----
+static constexpr float COUNTS_PER_REV = 2240.0f;  // x2 on A, 70:1 gear ratio
+// If later switched to x4 (A&B both edges), use: 4480.0f
+
+// Telemetry cadence
+static const uint32_t SAMPLE_MS = 100;
+uint32_t tLast = 0;
+
+void printSample(int32_t dCounts, float dt_s) {
+  float cps = dCounts / dt_s;                      // counts per second
+  float rpm = (cps / COUNTS_PER_REV) * 60.0f;      // output shaft RPM
+  const char* dir = (dCounts > 0) ? "FWD" : (dCounts < 0) ? "REV" : "STOP";
+  Serial.printf("ENC dC=%ld  cps=%.1f  rpm=%.2f  dir=%s  total=%ld\n",
+                (long)dCounts, cps, rpm, dir, (long)encoder.total());
+}
+
+void streamFor(uint32_t ms) {
+  uint32_t t0 = millis();
+  tLast = millis();
+  while (millis() - t0 < ms) {
+    if (millis() - tLast >= SAMPLE_MS) {
+        float dt = (millis() - tLast) / 1000.0f;
+        tLast = millis();
+        int32_t dC = encoder.readAndReset();
+        printSample(dC, dt);
+    }
+    delayMicroseconds(10000);
+}
+}
 
 void setup() {
-  Serial.begin(921600);  // try 2000000 later
-  delay(1500);
+  Serial.begin(115200);
+  delay(300);
+  Serial.println("\nMotor + Encoder test (IN1/IN2, PCNT x2, CPR=2240)");
 
-  camera_config_t config = {};
-  config.pin_pwdn     = CAM_PIN_PWDN;
-  config.pin_reset    = CAM_PIN_RESET;
-  config.pin_xclk     = CAM_PIN_XCLK;      // If your camera board has its own crystal and jumper set to INT, you can set this to -1 and omit XCLK
-  config.pin_sccb_sda = CAM_PIN_SDA;
-  config.pin_sccb_scl = CAM_PIN_SCL;
-
-  config.pin_d0 = CAM_PIN_D2; // LSB (sensor D0)
-  config.pin_d1 = CAM_PIN_D3;
-  config.pin_d2 = CAM_PIN_D4;
-  config.pin_d3 = CAM_PIN_D5;
-  config.pin_d4 = CAM_PIN_D6;
-  config.pin_d5 = CAM_PIN_D7;
-  config.pin_d6 = CAM_PIN_D8;
-  config.pin_d7 = CAM_PIN_D9; // MSB (sensor D7)
-
-  config.sccb_i2c_port = 0;
-
-  config.pin_vsync = CAM_PIN_VSYNC;
-  config.pin_href  = CAM_PIN_HREF;
-  config.pin_pclk  = CAM_PIN_PCLK;
-
-  config.xclk_freq_hz = 12000000;   // safer bring-up
-  config.ledc_timer   = LEDC_TIMER_0;
-  config.ledc_channel = LEDC_CHANNEL_0;
-
-  config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size   = FRAMESIZE_QVGA; //320x240
-  config.jpeg_quality = 12; //0-63 lower means higher quality
-  config.fb_count     = 1;
-  config.fb_location  = CAMERA_FB_IN_DRAM;
-  config.grab_mode    = CAMERA_GRAB_LATEST;
-  //config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
-
-  esp_err_t err = esp_camera_init(&config);
-  if (err != ESP_OK) {
-    Serial.printf("Camera init failed: 0x%x\n", err);
-    while (true) delay(1000);
+  if (!encoder.begin(PCNT_UNIT_0)) {
+    Serial.println("Encoder init FAILED");
+    while (1) delay(500);
   }
-
-  Serial.println("Camera OK. Capturing a frame...");
-
-  camera_fb_t* fb = esp_camera_fb_get();
-  if (!fb) {
-    Serial.println("Capture failed");
-    return;
-  }
-  Serial.printf("Captured %dx%d JPEG, %u bytes\n", fb->width, fb->height, fb->len);
-  esp_camera_fb_return(fb);
+  Serial.println("Encoder init OK");
 }
 
 void loop() {
-  delay(50);
-  camera_fb_t* fb = esp_camera_fb_get();
-  if (!fb) { Serial.println("Capture failed"); return; }
-  // Header "IMG" + 4-byte length (big-endian)
-  uint8_t hdr[7] = {'I','M','G',
-                    (uint8_t)((fb->len >> 24) & 0xFF),
-                    (uint8_t)((fb->len >> 16) & 0xFF),
-                    (uint8_t)((fb->len >>  8) & 0xFF),
-                    (uint8_t)((fb->len >>  0) & 0xFF)};
-  Serial.write(hdr, 7);
+  Serial.println("Forward 60%");
+  motor.setEff(60);
+  streamFor(2000);
 
-  // JPEG payload
-  Serial.write(fb->buf, fb->len);
-  Serial.flush();
+  Serial.println("Brake");
+  motor.stop();
+  streamFor(1000);
 
-  esp_camera_fb_return(fb);
+  Serial.println("Reverse 60%");
+  motor.setEff(-60);
+  streamFor(2000);
 
-  // no-op
+  Serial.println("Brake");
+  motor.stop();
+  streamFor(1000);
 }
