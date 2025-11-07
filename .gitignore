@@ -1,0 +1,24 @@
+# PlatformIO build artifacts
+.pio/
+.pioenvs/
+.pio/build/
+libdeps/
+
+# Visual Studio Code
+.vscode/
+.vscode/*
+
+# Python env
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Do not commit binary firmware
+*.bin
+*.elf
+*.pio
