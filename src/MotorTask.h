@@ -3,6 +3,7 @@
 #include "DRV883.h"
 #include "taskqueue.h"
 #include "taskshare.h"  // For Share<T>
+#include "PID.h"        // For PID controllers
 
 /**
  * @file MotorTask.h
@@ -58,6 +59,10 @@ private:
   // Initialized to 0 meaning "not scheduled".
   uint32_t wait_until_ms_ = 0;
   uint32_t run_until_ms_  = 0;
+
+  // PID Controllers
+  PID velocity_pid_;     // PID controller for velocity control
+  PID position_pid_;     // PID controller for position control
 
   // FSM + states
   State state_wait_{WAIT, "WAIT", &MotorTask::exec_wait};

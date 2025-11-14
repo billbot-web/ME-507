@@ -43,28 +43,11 @@ Share<int8_t> g_encCmd{"enc_cmd"};
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
 MotorTask motorTask(&motor, &g_encCmd, &g_encVelocity, &g_vref, &g_encPosition, &g_posref); 
 EncoderTask encoderTask(&encoder, &g_encPosition, &g_encVelocity, &g_encCmd);
-UITask uiTask(&g_encPosition, &g_encVelocity, &g_vref, &g_encCmd);
+UITask uiTask(&g_encPosition, &g_encVelocity, &g_vref, &g_posref, &g_encCmd);
 
 void setup() {
   Serial.begin(115200);
   delay(300);
-  // // in setup(), after Serial.begin(...)
-  // Serial.println("Manual motor test: fwd 50% for 2s, stop, rev 50% for 2s");
-  // motor.setEff(50);    // forward 50%
-  // delay(2000);
-  // motor.setEff(0);     // stop
-  // delay(500);
-  // motor.setEff(-50);   // reverse 50%
-  // delay(2000);
-  // motor.stop();
-  // Serial.println("Manual motor test done");
-  //   Serial.println("\nMotor + Encoder + UI Tasks");
-  // //   // Start Motor task (100 ms tick in its own entry function)
-  // pinMode(IN1, OUTPUT);
-  // pinMode(IN2, OUTPUT);
-  // Serial.println("Testing motor pins...");
-  // digitalWrite(IN1, HIGH);
-  // digitalWrite(IN2, LOW);
 
   // Start Motor task (100 ms tick in its own entry function)
   xTaskCreate(

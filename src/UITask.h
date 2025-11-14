@@ -22,13 +22,15 @@ public:
   /// Commands that can be casted to queue
     enum class Command {     
         STOP = 0,       ///< Stop encoder readings
-        RUN = 1,         ///< Start encoder readings
-        ZERO = 2        ///< Reset position to zero
+        VELOCITY_RUN = 1,         ///< Start encoder readings
+        POSITION_RUN = 2,///< Start position run
+        ZERO = 3       ///< Reset position to zero
     };
 
   enum StateId : uint8_t {
     WAIT_FOR_INPUT = 0,
     VELOCITY_RUN   = 1,
+    POSITION_RUN   = 2,
   };
 
   /**
@@ -41,6 +43,7 @@ public:
   UITask(Share<float>* positionShare,
     Share<float>*   velocityShare,
     Share<int8_t>*  vref,
+    Share<int16_t>*  posref,
     Share<int8_t>*  cmdShare,
     uint32_t        updateMs = 200) noexcept;
 
@@ -59,6 +62,7 @@ private:
   Share<float>*   velocityShare_ = nullptr;
   Share<int8_t>*  vref_ = nullptr;
   Share<int8_t>*  cmdShare_ = nullptr;
+  Share<int16_t>*  posref_ = nullptr;
 
   // Timing
   uint32_t updateMs_ = 200;
@@ -69,17 +73,21 @@ private:
   // Input buffer for numeric entry from Serial
   char inputBuf_[32];
   size_t inputPos_ = 0;
+  // Input mode: 0=selecting mode, 'v'=velocity input, 'p'=position input
+  char inputMode_ = 0;
 
   // FSM
     // FSM + states
   State state_wait_{0, "WAIT_FOR_INPUT", &UITask::exec_waitForInput};
   State state_velocity_run_{1, "VELOCITY_RUN", &UITask::exec_velocityRun};
-  State* states_[2] = { &state_wait_, &state_velocity_run_ };
+  State state_position_run_{2, "POSITION_RUN", &UITask::exec_positionRun};
+  State* states_[3] = { &state_wait_, &state_velocity_run_, &state_position_run_ };
   FSM fsm_;
 
   // State functions
   static uint8_t exec_waitForInput();
   static uint8_t exec_velocityRun();
+  static uint8_t exec_positionRun();
 
   // Helpers
   static void printHelpOnce();

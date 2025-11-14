@@ -13,7 +13,7 @@ Encoder::Encoder(gpio_num_t pinA, gpio_num_t pinB, pcnt_unit_t unit)
   prev_time_  = micros();
   // Read an initial counter value after begin(); for now leave 0.
   prev_count_ = 0;
-  GR_ = 70*32; // Gear ratio default 70:1 with 32 CPR encoder 2240 counts/rev
+  GR_ = 70*64; // Gear ratio default 70:1 with 16 CPR encoder 4480 counts/rev
 }
 
 /**

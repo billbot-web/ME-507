@@ -17,9 +17,16 @@ MotorTask::MotorTask(DRV883* motor,
     vref_(vref),
     posShare_(posShare),
     posref_(posref),
+    // PID Controllers: Kp, Ki, Kd 
+    velocity_pid_(),
+    position_pid_(),
     fsm_(states_, 3)
 {
   instance_ = this;
+  // Initialize PID controllers with gains
+  // Kp, Ki, Kd
+  velocity_pid_.Init(100.0, 0.0, 0.0);
+  position_pid_.Init(-100.0, 0.0, 0.0);
 }
 
 /**
@@ -50,10 +57,10 @@ uint8_t MotorTask::exec_wait() noexcept {
   // Read latest command from the shared command variable (if present).
   if (instance_->cmdShare_) {
     int8_t cmd = instance_->cmdShare_->get();
-    if (cmd == static_cast<int8_t>(1)) { // RUN
+    if (cmd == static_cast<int8_t>(1)) { // VELOCITY_RUN
       return static_cast<int>(VRUN);  
     }  
-    else if (cmd == static_cast<int8_t>(2)) { // PRUN
+    else if (cmd == static_cast<int8_t>(2)) { // POSITION_RUN
       return static_cast<int>(PRUN);
     }
     // STOP/other -> stay in WAIT
@@ -83,9 +90,7 @@ uint8_t MotorTask::exec_velorun() noexcept {
     if (instance_->vref_) {
       vref = static_cast<int>(instance_->vref_->get());
     }
-    // Clamp to allowed DRV883 range
-    if (vref > 100) vref = 100;
-    if (vref < -100) vref = -100;
+    //set motor effort
     if (instance_->motor_) {
       instance_->motor_->setEff(vref);
     }
@@ -105,23 +110,47 @@ uint8_t MotorTask::exec_posrun() noexcept {
   if (instance_->cmdShare_) {
     int8_t new_state = instance_->cmdShare_->get();
     if (new_state == static_cast<int8_t>(0)) { // STOP
+      Serial.println("[MotorTask] Position run received STOP, returning to WAIT");
       return static_cast<int>(WAIT);
+    } else if (new_state == static_cast<int8_t>(1)) { // VELOCITY_RUN
+      Serial.println("[MotorTask] Position run switching to velocity run");
+      return static_cast<int>(VRUN);
     }
-    // otherwise continue running
+    // otherwise continue running in position mode
   }
 
-
-      // Read signed vref (-100 .. +100) and apply to motor (supports forward/reverse)
-  int vref = instance_->last_effort_; // Preserve last effort initially
-  if (instance_->vref_) {
-    vref = static_cast<int>(instance_->vref_->get());
+  // Position PID Control
+  float desired_position = 0.0f;  // Default setpoint
+  float current_position = 0.0f;  // Current position
+  
+  // Get desired position from posref share
+  if (instance_->posref_) {
+    desired_position = static_cast<float>(instance_->posref_->get());
   }
-  // Clamp to allowed DRV883 range
-  if (vref > 100) vref = 100;
-  if (vref < -100) vref = -100;
+  // Get current position from position share
+  if (instance_->posShare_) {
+    current_position = instance_->posShare_->get();
+  }
+  
+  // Calculate position error (setpoint - current)
+  float position_error = desired_position - current_position;
+ 
+  
+  // Update PID with position error
+  instance_->position_pid_.UpdateError(position_error);
+  
+  // Get PID output (motor effort)
+  double pid_output = instance_->position_pid_.TotalError();
+  
+  // Convert to motor effort range (-100 to 100)
+  int motor_effort = static_cast<int>(pid_output);
+  
+  // Apply motor effort
   if (instance_->motor_) {
-    instance_->motor_->setEff(vref);
- }
+    instance_->motor_->setEff(motor_effort);
+  }
+  // Store last effort for debugging/continuity
+  instance_->last_effort_ = motor_effort;
 
   return static_cast<int>(PRUN);
 }

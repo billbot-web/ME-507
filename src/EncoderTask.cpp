@@ -65,14 +65,16 @@ uint8_t EncoderTask::exec_wait() noexcept
   if (instance_->cmdShare_) {
     int8_t raw_cmd = instance_->cmdShare_->get();
     switch (raw_cmd) {
-      case 2: // ZERO
+      case 3: // ZERO
         if (instance_->encoder_) instance_->encoder_->zero();
         if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
         if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
         // clear the ZERO command to avoid repeated zeros
         instance_->cmdShare_->put(static_cast<int8_t>(1));
         break;
-      case 1: // RUN
+      case 1: // VeloRUN
+        return static_cast<int>(RUN);
+      case 2: // PosRUN 
         return static_cast<int>(RUN);
       case 0: // STOP
       default:
@@ -100,16 +102,17 @@ uint8_t EncoderTask::exec_run() noexcept
   if (instance_->cmdShare_) {
     raw = instance_->cmdShare_->get();
     switch (raw) {
-      case 2: // ZERO
+      case 3: // ZERO (changed from 2 to avoid conflict with POSITION_RUN)
         if (instance_->encoder_) instance_->encoder_->zero();
         if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
         if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
         // clear the ZERO command to avoid repeated zeros
-        instance_->cmdShare_->put(static_cast<int8_t>(0));
+        instance_->cmdShare_->put(static_cast<int8_t>(1));
         break;
       case 0: // STOP
         return static_cast<int>(WAIT);
-      case 1: // START
+      case 1: // VELOCITY_RUN
+      case 2: // POSITION_RUN (let it continue running, don't interfere)
       default:
         break; // already running
     }
