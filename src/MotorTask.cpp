@@ -26,7 +26,7 @@ MotorTask::MotorTask(DRV883* motor,
   // Initialize PID controllers with gains
   // Kp, Ki, Kd
   velocity_pid_.Init(100.0, 0.0, 0.0);
-  position_pid_.Init(-100.0, 0.0, 0.0);
+  position_pid_.Init(100.0, 1.0, 0.0);
 }
 
 /**
@@ -61,6 +61,7 @@ uint8_t MotorTask::exec_wait() noexcept {
       return static_cast<int>(VRUN);  
     }  
     else if (cmd == static_cast<int8_t>(2)) { // POSITION_RUN
+      Serial.println("[MotorTask] Received POSITION_RUN command, transitioning to PRUN state");
       return static_cast<int>(PRUN);
     }
     // STOP/other -> stay in WAIT
@@ -147,6 +148,8 @@ uint8_t MotorTask::exec_posrun() noexcept {
   
   // Apply motor effort
   if (instance_->motor_) {
+    Serial.print("[MotorTask] setting effort: ");
+    Serial.println(motor_effort);
     instance_->motor_->setEff(motor_effort);
   }
   // Store last effort for debugging/continuity

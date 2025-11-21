@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include <SPIFFS.h>
 #include "UITask.h"
 #include "EncoderTask.h"  // for EncoderTask::Command enum
 
@@ -10,12 +12,18 @@ UITask* UITask::instance_ = nullptr;
                Share<int8_t>* vref,
                Share<int16_t>* posref,
                Share<int8_t>*   cmdShare,
+               Share<EulerAngles>* eulerAngles,
+               Share<GyroData>* gyroData,
+               Share<AccelData>* accelData,
                uint32_t        updateMs) noexcept
   : positionShare_(positionShare),
     velocityShare_(velocityShare),
     vref_(vref),
     posref_(posref),
     cmdShare_(cmdShare),
+    eulerAngles_(eulerAngles),
+    gyroData_(gyroData),
+    accelData_(accelData),
     updateMs_(updateMs),
     fsm_(states_, 3)
 {
@@ -33,6 +41,15 @@ extern "C" void ui_task_func(void* pvParameters) {
     if (UI_Task) UI_Task->update();
     vTaskDelay(tick);
   }
+}
+
+// Main update method called by the FreeRTOS task
+void UITask::update() noexcept
+{
+  // Run the finite state machine
+  fsm_.run_curstate();
+  // Update web server (if initialized)
+  updateWebServer();
 }
 
 // ---------------- Helpers ----------------
@@ -316,4 +333,273 @@ u_int8_t UITask::exec_positionRun()
   return static_cast<int>(POSITION_RUN);
 }
 
+// ---------------- Web Server Methods ----------------
 
+bool UITask::initWebServer(const String& ssid, const String& password)
+{
+  ssid_ = ssid;
+  password_ = password;
+  
+  // Connect to WiFi first
+  connectToWiFi();
+  
+  // Initialize SPIFFS
+  if (!initSPIFFS()) {
+    return false;
+  }
+  
+  // Create AsyncWebServer instance
+  server_ = new AsyncWebServer(80);
+  ws_ = new AsyncWebSocket("/ws");
+  
+  // Set up WebSocket event handler
+  ws_->onEvent(onWebSocketEvent);
+  
+  // Set up routes
+  setupWebRoutes();
+  
+  // Start server
+  server_->begin();
+  Serial.println("Web server started on port 80");
+  
+  if (WiFi.getMode() == WIFI_AP) {
+    Serial.print("Access the web interface at: http://");
+    Serial.println(WiFi.softAPIP());
+  } else if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("Access the web interface at: http://");
+    Serial.println(WiFi.localIP());
+  }
+  
+  return true;
+}
+
+void UITask::updateWebServer()
+{
+  // This will be called every update cycle, but only do something if web server is initialized
+  if (server_ && (WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP)) {
+    // Web server handles requests automatically
+    // Broadcast telemetry periodically
+    const unsigned long now = millis();
+    if (now - lastTelemetryBroadcast_ >= telemetryInterval_) {
+      lastTelemetryBroadcast_ = now;
+      broadcastTelemetry();
+    }
+  }
+}
+
+bool UITask::initSPIFFS()
+{
+  if (!SPIFFS.begin(true)) {
+    Serial.println("SPIFFS Mount Failed");
+    return false;
+  }
+  Serial.println("SPIFFS mounted successfully");
+  return true;
+}
+
+void UITask::connectToWiFi()
+{
+  if (ssid_.length() == 0) {
+    Serial.println("No WiFi credentials provided - running in serial mode only");
+    return;
+  }
+  
+  // Set up ESP32 as an Access Point instead of connecting to existing network
+  Serial.print("Creating WiFi Access Point: ");
+  Serial.println(ssid_);
+  
+  // Configure Access Point
+  WiFi.mode(WIFI_AP);
+  bool apStarted = WiFi.softAP(ssid_.c_str(), password_.c_str());
+  
+  if (apStarted) {
+    Serial.println("Access Point started successfully!");
+    Serial.print("Network name (SSID): ");
+    Serial.println(ssid_);
+    Serial.print("Password: ");
+    Serial.println(password_);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.softAPIP());
+    Serial.println("Connect your phone/laptop to this network, then go to: http://192.168.4.1");
+  } else {
+    Serial.println("Failed to start Access Point. Running in serial mode only.");
+  }
+}
+
+void UITask::setupWebRoutes()
+{
+  if (!server_) return;
+  
+  // Serve static files from SPIFFS (now that we have proper file structure)
+  server_->serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
+
+  
+
+  
+  // API endpoints
+  setupAPI();
+}
+
+void UITask::setupAPI()
+{
+  if (!server_ || !ws_) return;
+  
+  // Add WebSocket handler
+  server_->addHandler(ws_);
+  
+  // Simple test page if SPIFFS fails
+  server_->on("/test", HTTP_GET, [](AsyncWebServerRequest *request){
+    String html = "<!DOCTYPE html><html><head><title>ESP32 Motor Control - Test</title></head><body>";
+    html += "<h1>ESP32 Motor Control - Test Page</h1>";
+    html += "<p>If you see this, the web server is working!</p>";
+    html += "<p>WebSocket connection test:</p>";
+    html += "<button onclick='testWS()'>Test WebSocket</button>";
+    html += "<div id='output'>Connecting...</div>";
+    html += "<script>";
+    html += "let ws = new WebSocket('ws://192.168.4.1/ws');";
+    html += "ws.onopen = () => document.getElementById('output').innerHTML = 'WebSocket Connected!';";
+    html += "ws.onclose = () => document.getElementById('output').innerHTML = 'WebSocket Disconnected';";
+    html += "function testWS() { if(ws.readyState === 1) ws.send('stop'); }";
+    html += "</script></body></html>";
+    request->send(200, "text/html", html);
+  });
+
+  // REST API endpoints
+  server_->on("/api/status", HTTP_GET, [](AsyncWebServerRequest *request){
+    if (!instance_) {
+      request->send(500, "application/json", "{\"error\":\"No UITask instance\"}");
+      return;
+    }
+
+    float vel = 0.0f, pos = 0.0f;
+    if (instance_->velocityShare_) vel = instance_->velocityShare_->get();
+    if (instance_->positionShare_) pos = instance_->positionShare_->get();
+    
+    // Get IMU data
+    EulerAngles euler = {0, 0, 0};
+    GyroData gyro = {0, 0, 0};
+    AccelData accel = {0, 0, 0};
+    
+    if (instance_->eulerAngles_) euler = instance_->eulerAngles_->get();
+    if (instance_->gyroData_) gyro = instance_->gyroData_->get();
+    if (instance_->accelData_) accel = instance_->accelData_->get();
+    
+    String json = "{";
+    json += "\"velocity\":" + String(vel, 2) + ",";
+    json += "\"position\":" + String(pos, 2) + ",";
+    json += "\"euler\":[" + String(euler.x, 1) + "," + String(euler.y, 1) + "," + String(euler.z, 1) + "],";
+    json += "\"gyro\":[" + String(gyro.x, 2) + "," + String(gyro.y, 2) + "," + String(gyro.z, 2) + "],";
+    json += "\"accel\":[" + String(accel.x, 2) + "," + String(accel.y, 2) + "," + String(accel.z, 2) + "],";
+    json += "\"wifi_ap_mode\":" + String(WiFi.getMode() == WIFI_AP ? "true" : "false") + ",";
+    json += "\"wifi_connected\":" + String(WiFi.status() == WL_CONNECTED ? "true" : "false") + ",";
+    json += "\"free_heap\":" + String(ESP.getFreeHeap());
+    json += "}";
+    
+    request->send(200, "application/json", json);
+  });
+}
+
+String UITask::createTelemetryMessage()
+{
+  float vel = 0.0f, pos = 0.0f;
+  if (velocityShare_) vel = velocityShare_->get();
+  if (positionShare_) pos = positionShare_->get();
+  
+  // Get IMU data
+  EulerAngles euler = {0, 0, 0};
+  GyroData gyro = {0, 0, 0};
+  AccelData accel = {0, 0, 0};
+  
+  if (eulerAngles_) euler = eulerAngles_->get();
+  if (gyroData_) gyro = gyroData_->get();
+  if (accelData_) accel = accelData_->get();
+  
+  String json = "{";
+  json += "\"type\":\"telemetry\",";
+  json += "\"velocity\":" + String(vel, 2) + ",";
+  json += "\"position\":" + String(pos, 2) + ",";
+  json += "\"euler\":[" + String(euler.x, 1) + "," + String(euler.y, 1) + "," + String(euler.z, 1) + "],";
+  json += "\"gyro\":[" + String(gyro.x, 2) + "," + String(gyro.y, 2) + "," + String(gyro.z, 2) + "],";
+  json += "\"accel\":[" + String(accel.x, 2) + "," + String(accel.y, 2) + "," + String(accel.z, 2) + "],";
+  json += "\"timestamp\":" + String(millis());
+  json += "}";
+  
+  return json;
+}
+
+void UITask::broadcastTelemetry()
+{
+  if (!ws_) return;
+  
+  String message = createTelemetryMessage();
+  ws_->textAll(message);
+}
+
+void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String& message)
+{
+  // Parse JSON command from web interface
+  // For now, implement basic commands
+  if (message == "stop") {
+    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::STOP));
+    sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
+  }
+  else if (message == "zero") {
+    sendEncoderCmdZero();
+    sendWebSocketResponse(client, "{\"status\":\"zeroed\"}");
+  }
+  else if (message.startsWith("velocity:")) {
+    float vel = message.substring(9).toFloat();
+    if (vref_) vref_->put(static_cast<int8_t>(vel));
+    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::VELOCITY_RUN));
+    sendWebSocketResponse(client, "{\"status\":\"velocity_set\",\"value\":" + String(vel) + "}");
+  }
+  else if (message.startsWith("position:")) {
+    float pos = message.substring(9).toFloat();
+    if (posref_) posref_->put(static_cast<int16_t>(pos));
+    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::POSITION_RUN));
+    sendWebSocketResponse(client, "{\"status\":\"position_set\",\"value\":" + String(pos) + "}");
+  }
+}
+
+void UITask::sendWebSocketResponse(AsyncWebSocketClient* client, const String& response)
+{
+  if (client && client->status() == WS_CONNECTED) {
+    client->text(response);
+  }
+}
+
+// Static callback for WebSocket events
+void UITask::onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, 
+                             AwsEventType type, void *arg, uint8_t *data, size_t len)
+{
+  if (!instance_) return;
+  
+  switch (type) {
+    case WS_EVT_CONNECT:
+      Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+      break;
+      
+    case WS_EVT_DISCONNECT:
+      Serial.printf("WebSocket client #%u disconnected\n", client->id());
+      break;
+      
+    case WS_EVT_DATA: {
+      AwsFrameInfo *info = (AwsFrameInfo*)arg;
+      if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+        data[len] = 0; // null terminate
+        String message = (char*)data;
+        instance_->processWebSocketMessage(client, message);
+      }
+      break;
+    }
+      
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
+      break;
+  }
+}
+
+uint32_t UITask::getWebSocketClientCount() const
+{
+  return ws_ ? ws_->count() : 0;
+}

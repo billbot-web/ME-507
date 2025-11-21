@@ -1,7 +1,18 @@
+/**
+ * @file EncoderTask.h
+ * @brief FreeRTOS task wrapper for encoder management with FSM-based control
+ * 
+ * @author Encoder Control Team
+ * @date November 2025
+ * @version 1.5
+ */
+
 #pragma once
 #include <Arduino.h>
 #include "Encoder.h"
 #include "freertos/FreeRTOS.h"
+#include "State.h"
+#include <cstdint>
 #include "freertos/task.h"
 #include "taskqueue.h"
 #include "taskshare.h"  // For Share<T>

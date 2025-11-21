@@ -1,3 +1,28 @@
+/**
+ * @file MotorTask.h
+ * @brief FreeRTOS task for comprehensive motor control with PID velocity and position control
+ * 
+ * This file implements a sophisticated motor control task that provides both velocity
+ * and position control modes using PID controllers. The task operates within a
+ * finite state machine framework, allowing for clean state transitions and
+ * command-based operation from other system components.
+ * 
+ * Key Features:
+ * - Dual-mode operation: velocity control and position control
+ * - PID controllers for precise motion control
+ * - FSM-based state management (WAIT/VELOCITY_RUN/POSITION_RUN)
+ * - Thread-safe communication via Share<T> objects
+ * - DRV883 motor driver integration
+ * - Real-time encoder feedback processing
+ * 
+ * @author Motor Control Team
+ * @date November 2025
+ * @version 2.3
+ * 
+ * @see MotorTask.cpp Implementation details and PID tuning parameters
+ * @see DRV883.h Motor driver hardware interface
+ */
+
 #pragma once
 #include "FSM.h"
 #include "DRV883.h"

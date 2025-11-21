@@ -1,3 +1,12 @@
+/**
+ * @file UITask.h
+ * @brief Comprehensive user interface task with web server, WebSocket, and serial control
+ * 
+ * @author User Interface Team
+ * @date November 2025
+ * @version 3.1
+ * 
+ */
 #pragma once
 #include <Arduino.h>
 #include "FSM.h"
@@ -5,17 +14,27 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "taskqueue.h"
+#include "State.h"
 #include "taskshare.h"  // Share<T>
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
+#include <SPIFFS.h>
+#include "IMU_TASK.h"
+
+// Forward declarations for IMU data structures
+struct EulerAngles;
+struct GyroData;
+struct AccelData;
 
 /**
- * @brief Simple serial UI task with three states: WAIT_FOR_INPUT, VELOCITY_RUN, POSITION_RUN.
+ * @brief UI task with web server, WebSocket, and serial interface
  *
- * Commands on Serial:
- *  - 'v' : velocity display/run
- *  - 'p' : position display/run
- *  - 's' : stop (return to wait)
- *  - 'z' : zero encoder (forwarded as command)
- *  - 'h' or '?' : help
+ * Features:
+ * - Serial commands: v, p, s, z, h/?
+ * - Web server: serves static files from SPIFFS
+ * - WebSocket: real-time bidirectional communication
+ * - REST API: HTTP endpoints for status/commands
  */
 class UITask {
 public:
@@ -45,16 +64,32 @@ public:
     Share<int8_t>*  vref,
     Share<int16_t>*  posref,
     Share<int8_t>*  cmdShare,
+    Share<EulerAngles>* eulerAngles,
+    Share<GyroData>* gyroData,
+    Share<AccelData>* accelData,
     uint32_t        updateMs = 200) noexcept;
 
+  /**
+   * @brief Initialize web server and WiFi
+   * @param ssid WiFi network name
+   * @param password WiFi password
+   * @return true if successful
+   */
+  bool initWebServer(const String& ssid = "", const String& password = "");
+
   void start(uint8_t priority = 1, int8_t core = 1);
-  void update() noexcept { fsm_.run_curstate(); }
+  void update() noexcept;
   // FreeRTOS entry function is defined in the .cpp as a C-linkage function
   // extern "C" void ui_task_func(void* pvParameters);
 
   // Public accessors used by the C-style task entry
   uint32_t get_updateMs() const noexcept { return updateMs_; }
   static void set_instance(UITask* inst) { instance_ = inst; }
+
+  // Web interface accessors
+  bool isWiFiConnected() const { return WiFi.status() == WL_CONNECTED; }
+  String getIPAddress() const { return WiFi.localIP().toString(); }
+  uint32_t getWebSocketClientCount() const;
 
 private:
   // Shares / queue
@@ -63,6 +98,9 @@ private:
   Share<int8_t>*  vref_ = nullptr;
   Share<int8_t>*  cmdShare_ = nullptr;
   Share<int16_t>*  posref_ = nullptr;
+  Share<EulerAngles>* eulerAngles_ = nullptr;
+  Share<GyroData>* gyroData_ = nullptr;
+  Share<AccelData>* accelData_ = nullptr;
 
   // Timing
   uint32_t updateMs_ = 200;
@@ -75,6 +113,16 @@ private:
   size_t inputPos_ = 0;
   // Input mode: 0=selecting mode, 'v'=velocity input, 'p'=position input
   char inputMode_ = 0;
+
+  // Web server components
+  AsyncWebServer* server_ = nullptr;
+  AsyncWebSocket* ws_ = nullptr;
+  String ssid_;
+  String password_;
+  unsigned long lastConnectAttempt_ = 0;
+  unsigned long lastTelemetryBroadcast_ = 0;
+  bool connecting_ = false;
+  const unsigned long telemetryInterval_ = 200; // 200ms = 5Hz
 
   // FSM
     // FSM + states
@@ -94,6 +142,25 @@ private:
   static void sendEncoderCmdZero();
   static void sendEncoderCmdStart();
   static void sendEncoderCmdStop();
+
+  // Web server methods
+  bool initSPIFFS();
+  void setupWebRoutes();
+  void setupAPI();
+  void connectToWiFi();
+  void updateWebServer();
+  void broadcastTelemetry();
+  String createTelemetryMessage();
+  void processWebSocketMessage(AsyncWebSocketClient* client, const String& message);
+  void sendWebSocketResponse(AsyncWebSocketClient* client, const String& response);
+  
+  // Static WebSocket event handler
+  static void onWebSocketEvent(AsyncWebSocket *server, 
+                              AsyncWebSocketClient *client, 
+                              AwsEventType type, 
+                              void *arg, 
+                              uint8_t *data, 
+                              size_t len);
 
   // Singleton for static callbacks
   static UITask* instance_;

@@ -1,3 +1,41 @@
+/**
+ * @file DRV883.h
+ * @brief Motor driver class for DRV883 series dual H-bridge motor controllers
+ * 
+ * This file contains the DRV883 class which provides an interface for controlling
+ * DC motors using the Texas Instruments DRV883x series motor driver ICs. The class
+ * implements PWM-based speed control with direction control using two input pins.
+ * 
+ * Key Features:
+ * - Bidirectional motor control (-100% to +100% effort)
+ * - ESP32 LEDC PWM hardware acceleration 
+ * - Configurable PWM frequency and resolution
+ * - Active braking support
+ * - Hardware protection via DRV883x built-in features
+ * 
+ * Hardware Requirements:
+ * - ESP32 microcontroller
+ * - DRV883x motor driver IC (DRV8833, DRV8835, etc.)
+ * - Two GPIO pins for motor direction control (IN1, IN2)
+ * - External power supply for motor (VM pin on DRV883x)
+ * 
+ * Wiring:
+ * - ESP32 GPIO -> DRV883x IN1 (direction control pin 1)
+ * - ESP32 GPIO -> DRV883x IN2 (direction control pin 2) 
+ * - Motor + terminal -> DRV883x OUT1
+ * - Motor - terminal -> DRV883x OUT2
+ * - External V+ -> DRV883x VM (motor power supply)
+ * - ESP32 3.3V -> DRV883x VCC (logic power supply)
+ * - Common GND between ESP32, DRV883x, and motor supply
+ * 
+ * @author Motor Control Team
+ * @date November 2025
+ * @version 1.2
+ * 
+ * @see https://www.ti.com/lit/ds/symlink/drv8833.pdf DRV8833 Datasheet
+ * @see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html ESP32 LEDC Documentation
+ */
+
 #pragma once
 #include <Arduino.h>
 

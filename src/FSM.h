@@ -1,3 +1,11 @@
+/**
+ * @file FSM.h
+ * @brief Table-driven Finite State Machine framework with execute-driven state transitions
+ * 
+ * @author FSM Framework Team
+ * @date November 2025
+ * @version 2.0
+ */
 #pragma once
 #include <cstddef>
 #include "State.h"

@@ -1,3 +1,35 @@
+/**
+ * @file Encoder.h
+ * @brief ESP32 PCNT-based quadrature encoder interface with velocity smoothing
+ * 
+ * This file implements a high-performance quadrature encoder reader using the ESP32's
+ * built-in Pulse Counter (PCNT) peripheral. The implementation provides X4 decoding
+ * (counting all edges of both phases) and includes advanced velocity smoothing using
+ * a sliding window algorithm.
+ * 
+ * Key Features:
+ * - Hardware-accelerated quadrature decoding via ESP32 PCNT peripheral
+ * - X4 encoding support (4 counts per encoder cycle for maximum resolution)
+ * - Real-time velocity calculation with 5-sample smoothing window
+ * - Automatic overflow/underflow handling for continuous operation
+ * - MicroPython-compatible API for easy migration
+ * - Microsecond-precision timing for accurate velocity measurements
+ * 
+ * Technical Implementation:
+ * - Uses one PCNT unit with both channels for true X4 decoding:
+ *   - Channel 0: Phase A as pulse input, Phase B as control
+ *   - Channel 1: Phase B as pulse input, Phase A as control  
+ * - 16-bit signed counter range: [-32,768 to +32,767]
+ * - Automatic wrap-around detection and compensation
+ * - Sliding window velocity smoothing reduces noise and jitter
+ * 
+ * @author Encoder Control Team  
+ * @date November 2025
+ * @version 2.1
+ * 
+ * @see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/pcnt.html ESP32 PCNT Documentation
+ */
+
 #pragma once
 #include <Arduino.h>
 #include "driver/pcnt.h"

@@ -1,8 +1,30 @@
 #include "Encoder.h"
 #include "driver/gpio.h"
+#include <cstdint>
 
 /**
- * @brief Construct encoder with pins/unit; hardware setup happens in begin().
+ * @brief Construct Encoder instance with GPIO pins and PCNT unit assignment
+ * 
+ * This constructor initializes the encoder object with the specified GPIO pins
+ * and PCNT unit, but does not configure the hardware yet. Actual hardware
+ * configuration occurs in the begin() method to allow for error handling.
+ * 
+ * Initial State:
+ * - Sets GPIO pin assignments for quadrature phases A and B
+ * - Assigns PCNT unit for hardware counter operations
+ * - Initializes timing variables with current microsecond timestamp
+ * - Sets default gear ratio (70:1 gearbox * 64 CPR = 4480 counts/revolution)
+ * - Clears position accumulator and velocity smoothing windows
+ * 
+ * @param pinA GPIO pin for encoder Phase A (must support PCNT input)
+ * @param pinB GPIO pin for encoder Phase B (must support PCNT input)
+ * @param unit PCNT unit to use (PCNT_UNIT_0 through PCNT_UNIT_7)
+ * 
+ * @note Hardware configuration deferred to begin() method
+ * @note GPIO pins must be capable of PCNT input (most ESP32 pins supported)
+ * @note Each PCNT unit can only be used by one Encoder instance
+ * 
+ * @see begin() for hardware initialization
  */
 Encoder::Encoder(gpio_num_t pinA, gpio_num_t pinB, pcnt_unit_t unit)
 {
@@ -17,7 +39,35 @@ Encoder::Encoder(gpio_num_t pinA, gpio_num_t pinB, pcnt_unit_t unit)
 }
 
 /**
- * @brief Low-level helper to configure one PCNT channel.
+ * @brief Configure a single PCNT channel for quadrature decoding
+ * 
+ * This low-level helper function configures one channel of the PCNT peripheral
+ * for quadrature encoder operation. Each channel handles one phase of the
+ * quadrature signal with the other phase serving as control input.
+ * 
+ * Channel Configuration:
+ * - Pulse GPIO: The phase signal being counted (edges detected)
+ * - Control GPIO: The other phase signal (controls count direction)
+ * - Count modes: Define counting behavior on positive/negative edges
+ * - Control modes: Define how control signal affects counting
+ * 
+ * For X4 decoding, two channels are configured:
+ * - CH0: Phase A pulses, Phase B control
+ * - CH1: Phase B pulses, Phase A control
+ * 
+ * @param ch PCNT channel number (PCNT_CHANNEL_0 or PCNT_CHANNEL_1)
+ * @param pulse_gpio GPIO pin for pulse input (phase being counted)
+ * @param ctrl_gpio GPIO pin for control input (direction control phase)
+ * @param pos_mode Count mode for positive edges (PCNT_COUNT_INC/DEC/DIS)
+ * @param neg_mode Count mode for negative edges (PCNT_COUNT_INC/DEC/DIS)
+ * @param lctrl_mode Control mode when control signal is LOW
+ * @param hctrl_mode Control mode when control signal is HIGH
+ * 
+ * @return true if configuration successful, false if error occurred
+ * 
+ * @note This function is called internally by begin() method
+ * @note Configuration must be done before starting PCNT counter
+ * @see begin() for complete PCNT setup sequence
  */
 bool Encoder::configChannel(pcnt_channel_t ch,
                             gpio_num_t pulse_gpio,
