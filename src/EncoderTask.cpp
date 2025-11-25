@@ -47,7 +47,10 @@ EncoderTask::EncoderTask(Encoder* encoder,
   EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(10); // 10 ms tick
   for (;;) {
-    if (encoderTask) encoderTask-> update();
+    if (encoderTask) {
+      EncoderTask::instance_ = encoderTask;  // Set instance for this task's context
+      encoderTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -61,6 +64,16 @@ uint8_t EncoderTask::exec_wait() noexcept
 {
   if (!instance_) return -1;
 
+  static uint32_t lastDebug = 0;
+  if (millis() - lastDebug > 3000) {
+    Serial.println("[EncoderTask] In WAIT state");
+    if (instance_->cmdShare_) {
+      Serial.print("[EncoderTask] cmdShare value: ");
+      Serial.println(instance_->cmdShare_->get());
+    }
+    lastDebug = millis();
+  }
+
   // Read latest command from the shared command variable (if present)
   if (instance_->cmdShare_) {
     int8_t raw_cmd = instance_->cmdShare_->get();
@@ -73,8 +86,10 @@ uint8_t EncoderTask::exec_wait() noexcept
         instance_->cmdShare_->put(static_cast<int8_t>(1));
         break;
       case 1: // VeloRUN
+        Serial.println("[EncoderTask] Transitioning to RUN state");
         return static_cast<int>(RUN);
       case 2: // PosRUN 
+        Serial.println("[EncoderTask] Transitioning to RUN state");
         return static_cast<int>(RUN);
       case 0: // STOP
       default:
@@ -92,6 +107,12 @@ uint8_t EncoderTask::exec_wait() noexcept
 uint8_t EncoderTask::exec_run() noexcept
 {
   if (!instance_) return -1;
+
+  static uint32_t lastDebug = 0;
+  if (millis() - lastDebug > 3000) {
+    Serial.println("[EncoderTask] In RUN state, reading encoder");
+    lastDebug = millis();
+  }
 
   // Handle any pending commands without blocking
   //The commands are:
@@ -122,7 +143,17 @@ uint8_t EncoderTask::exec_run() noexcept
   if (instance_->encoder_) {
     instance_->encoder_->update();
     const float pos = instance_->encoder_->get_position();
-    const float vel_cps = static_cast<float>(instance_->encoder_->get_velocity() * 1e6); // counts/sec
+    //degrees/second
+    const float vel_cps = static_cast<float>(instance_->encoder_->get_velocity() * 1e6); // degrees/second
+
+    static uint32_t lastPrint = 0;
+    if (millis() - lastPrint > 3000) {
+      Serial.print("[EncoderTask] Raw position: ");
+      Serial.print(pos);
+      Serial.print(", velocity: ");
+      Serial.println(vel_cps);
+      lastPrint = millis();
+    }
 
     if (instance_->positionShare_) instance_->positionShare_->put(pos);
     if (instance_->velocityShare_) instance_->velocityShare_->put(vel_cps);

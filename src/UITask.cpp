@@ -430,7 +430,27 @@ void UITask::setupWebRoutes()
 {
   if (!server_) return;
   
-  // Serve static files from SPIFFS (now that we have proper file structure)
+  // Diagnostic test page at /test
+  server_->on("/test", HTTP_GET, [](AsyncWebServerRequest *request){
+    String html = "<!DOCTYPE html><html><head><title>ESP32 Motor Control Test</title>";
+    html += "<style>body{font-family:Arial;max-width:800px;margin:20px auto;padding:20px;}";
+    html += ".status{background:#e8f4fd;padding:15px;border-radius:5px;margin:10px 0;}";
+    html += ".connected{color:green;} .disconnected{color:red;}</style></head><body>";
+    html += "<h1>ESP32 Motor Control - WebSocket Test</h1>";
+    html += "<div class='status'><p><strong>WebSocket:</strong> <span id='ws-status' class='disconnected'>Connecting...</span></p></div>";
+    html += "<div id='output'></div>";
+    html += "<button onclick='ws.send(\"stop\")'>Test Send</button>";
+    html += "<script>";
+    html += "let ws = new WebSocket('ws://' + location.hostname + '/ws');";
+    html += "ws.onopen = () => { document.getElementById('ws-status').textContent = 'Connected'; document.getElementById('ws-status').className = 'connected'; };";
+    html += "ws.onclose = () => { document.getElementById('ws-status').textContent = 'Disconnected'; document.getElementById('ws-status').className = 'disconnected'; };";
+    html += "ws.onerror = (e) => { document.getElementById('output').innerHTML += 'Error: ' + e + '<br>'; };";
+    html += "ws.onmessage = (e) => { document.getElementById('output').innerHTML += 'Received: ' + e.data + '<br>'; };";
+    html += "</script></body></html>";
+    request->send(200, "text/html", html);
+  });
+  
+  // Serve static files from SPIFFS (normal UI)
   server_->serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
   
@@ -505,6 +525,16 @@ String UITask::createTelemetryMessage()
   if (velocityShare_) vel = velocityShare_->get();
   if (positionShare_) pos = positionShare_->get();
   
+  // Temporary debug
+  static uint32_t lastDebug = 0;
+  if (millis() - lastDebug > 2000) {
+    Serial.print("Telemetry: vel=");
+    Serial.print(vel);
+    Serial.print(", pos=");
+    Serial.println(pos);
+    lastDebug = millis();
+  }
+  
   // Get IMU data
   EulerAngles euler = {0, 0, 0};
   GyroData gyro = {0, 0, 0};
@@ -529,10 +559,23 @@ String UITask::createTelemetryMessage()
 
 void UITask::broadcastTelemetry()
 {
-  if (!ws_) return;
+  if (!ws_) {
+    Serial.println("[UITask] ERROR: WebSocket is null!");
+    return;
+  }
+  
+  static uint32_t broadcastCount = 0;
+  broadcastCount++;
   
   String message = createTelemetryMessage();
   ws_->textAll(message);
+  
+  if (broadcastCount % 10 == 0) {
+    Serial.print("[UITask] Broadcast #");
+    Serial.print(broadcastCount);
+    Serial.print(", clients: ");
+    Serial.println(ws_->count());
+  }
 }
 
 void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String& message)

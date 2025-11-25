@@ -31,43 +31,61 @@ extern "C" void encoder_task_func(void* arg);
 extern "C" void ui_task_func(void* arg);
 extern "C" void imu_task_func(void* arg);
 
-// ---------------- Motor pins ----------------
-#define IN1 GPIO_NUM_2
-#define IN2 GPIO_NUM_4
-// ---------------- Encoder pins/unit (adjust to your wiring) ----------------
-#define ENCODER_A_GPIO GPIO_NUM_5
-#define ENCODER_B_GPIO GPIO_NUM_18
-#define ENCODER_UNIT   PCNT_UNIT_0
+// ----------------Pan Motor pins ----------------
+#define PanIN1 GPIO_NUM_2
+#define PanIN2 GPIO_NUM_5
+#define nSLP_PIN GPIO_NUM_13
+// ---------------- Pan Encoder pins/unit (adjust to your wiring) ----------------
+#define TiltENCODER_A_GPIO GPIO_NUM_14
+#define TiltENCODER_B_GPIO GPIO_NUM_19
+#define TiltENCODER_UNIT   PCNT_UNIT_0
+// ----------------Tilt Motor pins ----------------
+#define TiltIN1 GPIO_NUM_18
+#define TiltIN2 GPIO_NUM_23
+// ---------------- Tilt Encoder pins/unit (adjust to your wiring) ----------------
+#define PanENCODER_A_GPIO GPIO_NUM_4
+#define PanENCODER_B_GPIO GPIO_NUM_3
+#define PanENCODER_UNIT   PCNT_UNIT_1
+
 
 // Motor: IN1/IN2 on LEDC channels 0 and 1
-DRV883 motor(IN1, IN2, /*LEDC chs*/ 0, 1);
-Encoder encoder(ENCODER_A_GPIO, ENCODER_B_GPIO, ENCODER_UNIT);
-//IMU:
+DRV883 panmotor(PanIN1, PanIN2, /*LEDC chs*/ 0, 1);
+Encoder panencoder(PanENCODER_A_GPIO, PanENCODER_B_GPIO, PanENCODER_UNIT);
+DRV883 tiltmotor(TiltIN1, TiltIN2, /*LEDC chs*/ 2, 3);
+Encoder tiltencoder(TiltENCODER_A_GPIO, TiltENCODER_B_GPIO, TiltENCODER_UNIT);
+
+// IMU instances (global so they can be accessed from loop)
 TwoWire I2C = TwoWire(0);
 Adafruit_BNO055 bno055_sensor = Adafruit_BNO055(1234, 0x28, &I2C);
 
 // Encoder telemetry shares (declare BEFORE tasks that reference them)
-Share<float> g_encPosition{"enc_pos"};
-Share<float>   g_encVelocity{"enc_vel"};
+Share<float> tilt_encPosition{"tiltenc_pos"};
+Share<float> tilt_encVelocity{"tiltenc_vel"};
+Share<float> pan_encPosition{"panenc_pos"};
+Share<float> pan_encVelocity{"panenc_vel"};
 // Motor reference (0-100)
 // Motor reference (-100..100)
-Share<int8_t> g_vref{"vref"};
-Share<int16_t> g_posref{"posref"};
-
+Share<int8_t> tilt_vref{"tiltvref"};
+Share<int16_t> tilt_posref{"tiltposref"};
+Share<int8_t> pan_vref{"panvref"};
+Share<int16_t> pan_posref{"panposref"};
 // Shared command for encoder/motor (0=STOP,1=RUN,2=ZERO)
-Share<int8_t> g_encCmd{"enc_cmd"};
-
-//Queue for IMU data:
+Share<int8_t> tilt_encCmd{"tiltenc_cmd"};
+Share<int8_t> pan_encCmd{"panenc_cmd"};
+//shares for IMU
 // where the 
 Share<EulerAngles> g_eulerAngles{"euler_angles"};
 Share<GyroData> g_gyroData{"gyro_data"};
 Share<AccelData> g_accelData{"accel_data"};
 
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
-MotorTask motorTask(&motor, &g_encCmd, &g_encVelocity, &g_vref, &g_encPosition, &g_posref); 
-EncoderTask encoderTask(&encoder, &g_encPosition, &g_encVelocity, &g_encCmd);
-UITask uiTask(&g_encPosition, &g_encVelocity, &g_vref, &g_posref, 
-  &g_encCmd, &g_eulerAngles, &g_gyroData, &g_accelData);
+MotorTask tiltmotorTask(&tiltmotor, &tilt_encCmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
+EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_encCmd);
+MotorTask panmotorTask(&panmotor, &pan_encCmd, &pan_encVelocity, &pan_vref, &pan_encPosition, &pan_posref);
+EncoderTask panencoderTask(&panencoder, &pan_encPosition, &pan_encVelocity, &pan_encCmd);
+// MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
+UITask uiTask(&tilt_encPosition, &tilt_encVelocity, &tilt_vref, &tilt_posref, 
+  &tilt_encCmd, &g_eulerAngles, &g_gyroData, &g_accelData);
 IMUTask imuTask(&bno055_sensor, &g_eulerAngles, &g_gyroData, &g_accelData);
 
 void setup() {
@@ -77,6 +95,9 @@ void setup() {
   I2C.setPins(21, 22);
   Serial.println("=== SporTrackr IMU Data Reader ===");
   Serial.println("Initializing IMU...");
+  //enable motors
+  pinMode(nSLP_PIN, OUTPUT);
+  digitalWrite(nSLP_PIN, HIGH);
   
   // Initialize and start IMU task
   if (imuTask.initIMU()) {
@@ -94,24 +115,43 @@ void setup() {
   Serial.println("UITask web server initialized as Access Point");
 
   // Start Motor task (100 ms tick in its own entry function)
+  // Start Tilt Motor task
   xTaskCreate(
     motor_task_func,
-    "MotorTask",
+    "TiltMotorTask",
     2048,
-    &motorTask,
+    &tiltmotorTask,
     2,
     nullptr
   );
-  // Start Encoder task (10 ms tick in its own entry function)
+  // Start Tilt Encoder task
   xTaskCreate(
     encoder_task_func,
-    "EncoderTask",
+    "TiltEncoderTask",
     2048,
-    &encoderTask,
+    &tiltencoderTask,
     3,
     nullptr
   );
-  // Start UI task (200 ms tick in its own entry function)
+  // Start Pan Motor task
+  xTaskCreate(
+    motor_task_func,
+    "PanMotorTask",
+    2048,
+    &panmotorTask,
+    2,
+    nullptr
+  );
+  // Start Pan Encoder task
+  xTaskCreate(
+    encoder_task_func,
+    "PanEncoderTask",
+    2048,
+    &panencoderTask,
+    3,
+    nullptr
+  );
+  // Start UI task
   xTaskCreate(
     ui_task_func,
     "UITask",
@@ -120,7 +160,7 @@ void setup() {
     1,
     nullptr
   );
-   // Start UI task (200 ms tick in its own entry function)
+  // Start IMU task
   xTaskCreate(
     imu_task_func,
     "IMUTask",

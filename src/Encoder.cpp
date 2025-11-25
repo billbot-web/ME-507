@@ -194,7 +194,8 @@ void Encoder::update()
  */
 float Encoder::get_position() const
 {
-  return position_/GR_;
+  //counts/counts/rev*deg/rev = degrees
+  return 360*position_/GR_;
 }
 
 /**
@@ -209,7 +210,8 @@ double Encoder::get_velocity() const
     t_sum   += static_cast<uint64_t>(t_list_[i]);
   }
   if (t_sum == 0) return 0.0;
-  return (static_cast<double>(pos_sum) / (static_cast<double>(t_sum)*GR_));
+  //counts/microsecond*360/Gear ratio = degrees/microsecond
+  return (static_cast<double>(pos_sum)*360 / (static_cast<double>(t_sum)*GR_));
 }
 
 /**

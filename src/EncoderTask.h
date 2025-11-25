@@ -23,6 +23,9 @@
 class EncoderTask {
 public:
     /// State IDs (index into state table)
+     /// Singleton instance pointer for static callbacks
+    static EncoderTask* instance_;
+
     enum StateId {
         WAIT = 0,   ///< Waiting for command
         RUN = 1     ///< Reading encoder
@@ -68,6 +71,5 @@ private:
     static uint8_t exec_wait() noexcept;
     static uint8_t exec_run() noexcept;
 
-    /// Singleton instance pointer for static callbacks
-    static EncoderTask* instance_;
+    
 };

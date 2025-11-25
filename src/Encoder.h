@@ -115,7 +115,7 @@ private:
   int32_t  delta_      = 0;       ///< last delta counts
   uint32_t prev_time_  = 0;       ///< previous timestamp (us)
   uint32_t dt_us_      = 0;       ///< last dt (us)
-  uint16_t GR_         = 70*32;   ///< Gear ratio (counts per output revolution)
+  uint16_t GR_         = 70*32;   ///< Gear ratio/360 (counts per output degree )
 
   static constexpr size_t WIN = 5;              ///< smoothing window length
   std::array<int32_t, WIN>  pos_list_{};        ///< recent deltas

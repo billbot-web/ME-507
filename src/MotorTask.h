@@ -43,6 +43,9 @@ class MotorTask {
 public:
   enum Ids { WAIT = 0, VRUN = 1 , PRUN = 2};
 
+  // Single instance pointer for the static wrappers
+  static MotorTask* instance_;
+
   // Accept a pointer to the motor driver (caller retains ownership).
   // Signature: motor, command queue, optional velocity share, and signed vref share
   MotorTask(DRV883* motor, Share<int8_t>* cmdShare, Share<float>* veloShare, Share<int8_t>* vref, 
@@ -57,8 +60,6 @@ private:
   static uint8_t exec_velorun() noexcept;
   static uint8_t exec_posrun() noexcept;
 
-  // Single instance pointer for the static wrappers
-  static MotorTask* instance_;
 
   //Motor Hardware pointer
   DRV883* motor_ = nullptr;

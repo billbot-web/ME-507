@@ -22,7 +22,7 @@ MotorTask::MotorTask(DRV883* motor,
     position_pid_(),
     fsm_(states_, 3)
 {
-  instance_ = this;
+  // Don't set instance_ here - it will be set in task function
   // Initialize PID controllers with gains
   // Kp, Ki, Kd
   velocity_pid_.Init(100.0, 0.0, 0.0);
@@ -39,7 +39,10 @@ MotorTask::MotorTask(DRV883* motor,
   MotorTask* motorTask = static_cast<MotorTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(100); // 100 ms tick
   for (;;) {
-    if (motorTask) motorTask-> update();
+    if (motorTask) {
+      MotorTask::instance_ = motorTask;  // Set instance for this task's context
+      motorTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -58,6 +61,7 @@ uint8_t MotorTask::exec_wait() noexcept {
   if (instance_->cmdShare_) {
     int8_t cmd = instance_->cmdShare_->get();
     if (cmd == static_cast<int8_t>(1)) { // VELOCITY_RUN
+      Serial.println("[MotorTask] Received VELOCITY_RUN command, transitioning to VRUN state");
       return static_cast<int>(VRUN);  
     }  
     else if (cmd == static_cast<int8_t>(2)) { // POSITION_RUN
