@@ -17,12 +17,16 @@
 #include "taskshare.h"
 #include "taskqueue.h"
 
-class AxisControllerTask {
+class ControllerTask {
 public:
     /// FSM state IDs
     enum StateId : uint8_t {
-        CTL_WAIT = 0,   ///< Effort = 0, waiting for RUN command
-        CTL_RUN  = 1    ///< PID control active
+        CALIBRATE = 0,  ///< Calibration state
+        WAIT = 1,   ///< Effort = 0, waiting for RUN command
+        SCAN  = 2,    ///< Scanning for target (not implemented)
+        TRACKR = 3,  ///< Tracking mode
+        TELEOP = 4    ///< Manual teleoperation (not implemented)
+
     };
 
     /**
@@ -32,45 +36,58 @@ public:
      * @param cmdShare     Command share: 0=STOP, 1=RUN, 2=ZERO
      * @param updateMs     Control period in milliseconds
      */
-    AxisControllerTask(Share<int16_t>* errShare,
-                       Share<int8_t>*  effortShare,
-                       Share<int8_t>*  cmdShare,
-                       uint32_t updateMs = 10) noexcept;
+    ControllerTask(Share<int16_t>* pan_err,
+                   Share<int16_t>*  tilt_err,
+                       Share<float_t>*  tiltVelo,
+                       Share<float_t>*  panVelo,
+                       Share<uint8_t>*  Cam_mode,
+                       Share<bool>*       hasLed,
+                       Share<uint8_t>* UI_mode,
+                       Share<bool>* dcalibrate,
+                       uint32_t updateMs = 50) noexcept;
 
     /// Called by FreeRTOS task wrapper
     void update() noexcept { fsm_.run_curstate(); }
+
+    /// Get update period in milliseconds (for task delay)
+    uint32_t getUpdateMs() const noexcept { return updateMs_; }
 
 private:
     // Timing
     uint32_t       updateMs_;
 
     // Shares
-    Share<int16_t>* errShare_;
-    Share<int8_t>*  effortShare_;
-    Share<int8_t>*  cmdShare_;
+    Share<int16_t>* pan_err_;
+    Share<int16_t>* tilt_err_;
+    Share<float_t>* tiltVelo_;
+    Share<float_t>* panVelo_;
+    Share<uint8_t>*  Cam_mode_;
+    Share<bool>*       hasLed_;
+    Share<uint8_t>*  UI_mode_;
+    Share<bool>*  dcalibrate_;
 
-    // --- PID state ---
-    float kp_  = 0.5f;    ///< Proportional gain
-    float ki_  = 0.0f;    ///< Integral gain
-    float kd_  = 0.01f;   ///< Derivative gain
-
-    float integral_   = 0.0f;
-    float prev_error_ = 0.0f;
+    //Base Scan Velocities
+    const int16_t SCAN_PAN_VELO = 15;   // degrees/sec
 
     // FSM + states
-    State state_wait_{ CTL_WAIT, "CTL_WAIT", &AxisControllerTask::exec_wait };
-    State state_run_{  CTL_RUN,  "CTL_RUN",  &AxisControllerTask::exec_run  };
-    State* states_[2] = { &state_wait_, &state_run_ };
+    State state_calibrate_{ CALIBRATE, "CTL_CALIBRATE", &ControllerTask::exec_calibrate };
+    State state_wait_{ WAIT, "CTL_WAIT", &ControllerTask::exec_wait };
+    State state_scan_{  SCAN,  "CTL_SCAN",  &ControllerTask::exec_scan };
+    State state_trackr_{ TRACKR, "CTL_TRACKR", &ControllerTask::exec_trackr };
+    State state_teleop_{  TELEOP,  "CTL_TELEOP",  &ControllerTask::exec_teleop };
+    State* states_[5] = { &state_calibrate_, &state_wait_, &state_scan_, &state_trackr_, &state_teleop_ };
     FSM    fsm_;
 
     // State functions (static wrappers)
-    static uint8_t exec_wait() noexcept;
-    static uint8_t exec_run()  noexcept;
+    static uint8_t exec_calibrate();
+    static uint8_t exec_wait();
+    static uint8_t exec_scan();
+    static uint8_t exec_trackr();
+    static uint8_t exec_teleop();
 
     /// Singleton instance pointer for static callbacks
-    static AxisControllerTask* instance_;
+    static ControllerTask* instance_;
 
-    // Helpers
-    static int8_t clamp_effort(float u) noexcept;
+
 };
 

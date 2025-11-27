@@ -21,11 +21,11 @@ public:
   using Execute = uint8_t (*)();
 
   /// Construct a state with id, name, and behavior.
-  constexpr State(int id, const char* name, Execute exec) noexcept
+  constexpr State(uint8_t id, const char* name, Execute exec) noexcept
     : id_(id), name_(name), exec_(exec) {}
 
   /// @return small integer ID for external reference
-  constexpr int get_id() const noexcept { return id_; }
+  constexpr uint8_t get_id() const noexcept { return id_; }
 
   /// @return state name for diagnostics
   constexpr const char* get_name() const noexcept { return name_; }

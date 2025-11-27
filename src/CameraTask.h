@@ -41,12 +41,12 @@ public:
      * @param updateMs Update period in milliseconds
      */
     CameraTask(OV5640Camera* camera,
-               Share<int16_t>* x_err,
-               Share<int16_t>* y_err,
-               Share<bool>* hasLed,
-               Share<uint8_t>* ledThreshold,
-               Share<uint8_t>* camMode,
-               uint32_t updateMs = 10) noexcept;
+               Share<int16_t>* pan_err,
+               Share<int16_t>* tilt_err,
+               Share<bool>*    hasLed,
+               Share<uint16_t>* ledThreshold,
+               Share<uint8_t>* cam_Mode,
+               uint32_t updateMs = 50) noexcept;
 
     /// Run one FSM cycle
     void update() noexcept { fsm_.run_curstate(); }
@@ -54,11 +54,11 @@ public:
 private:
     OV5640Camera*   camera_;
     uint32_t        updateMs_;
-    Share<int16_t>* x_err_;
-    Share<int16_t>* y_err_;
+    Share<int16_t>* pan_err_;
+    Share<int16_t>* tilt_err_;
     Share<bool>*    hasLed_;
-    Share<uint8_t>* ledThreshold_;
-    Share<uint8_t>* camMode_;
+    Share<uint16_t>* ledThreshold_;
+    Share<uint8_t>* cam_Mode_;
 
     // FSM + states
     State state_wait_           {WAIT, "WAIT", &CameraTask::exec_wait};
@@ -69,9 +69,9 @@ private:
     FSM fsm_;
 
     // --- State function prototypes ---
-    static uint8_t exec_wait() noexcept;
-    static uint8_t exec_capture_send_err() noexcept;
-    static uint8_t exec_capture_send_return() noexcept;
+    static uint8_t exec_wait();
+    static uint8_t exec_capture_send_err();
+    static uint8_t exec_capture_send_return();
 
     /// Singleton instance pointer for static callbacks
     static CameraTask* instance_;

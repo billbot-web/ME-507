@@ -25,8 +25,8 @@ MotorTask::MotorTask(DRV883* motor,
   // Don't set instance_ here - it will be set in task function
   // Initialize PID controllers with gains
   // Kp, Ki, Kd
-  velocity_pid_.Init(100.0, 0.0, 0.0);
-  position_pid_.Init(100.0, 1.0, 0.0);
+  velocity_pid_.Init(1.0, 0.0, 0.0);
+  position_pid_.Init(0.80, 0.05, 0.0);
 }
 
 /**
@@ -152,8 +152,6 @@ uint8_t MotorTask::exec_posrun() noexcept {
   
   // Apply motor effort
   if (instance_->motor_) {
-    Serial.print("[MotorTask] setting effort: ");
-    Serial.println(motor_effort);
     instance_->motor_->setEff(motor_effort);
   }
   // Store last effort for debugging/continuity

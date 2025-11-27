@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 #include "UITask.h"
+#include "IMU_Task.h"
 #include "EncoderTask.h"  // for EncoderTask::Command enum
 
 // Static instance
@@ -46,6 +47,10 @@ extern "C" void ui_task_func(void* pvParameters) {
 // Main update method called by the FreeRTOS task
 void UITask::update() noexcept
 {
+  static uint32_t lastDebug = 0;
+  if (millis() - lastDebug > 5000) {
+    lastDebug = millis();
+  }
   // Run the finite state machine
   fsm_.run_curstate();
   // Update web server (if initialized)
@@ -384,6 +389,13 @@ void UITask::updateWebServer()
       lastTelemetryBroadcast_ = now;
       broadcastTelemetry();
     }
+  } else {
+    Serial.print("DEBUG: updateWebServer conditions not met - server_: ");
+    Serial.print(server_ ? "OK" : "NULL");
+    Serial.print(", WiFi mode: ");
+    Serial.print(WiFi.getMode());
+    Serial.print(", WiFi status: ");
+    Serial.println(WiFi.status());
   }
 }
 
@@ -525,16 +537,6 @@ String UITask::createTelemetryMessage()
   if (velocityShare_) vel = velocityShare_->get();
   if (positionShare_) pos = positionShare_->get();
   
-  // Temporary debug
-  static uint32_t lastDebug = 0;
-  if (millis() - lastDebug > 2000) {
-    Serial.print("Telemetry: vel=");
-    Serial.print(vel);
-    Serial.print(", pos=");
-    Serial.println(pos);
-    lastDebug = millis();
-  }
-  
   // Get IMU data
   EulerAngles euler = {0, 0, 0};
   GyroData gyro = {0, 0, 0};
@@ -559,23 +561,13 @@ String UITask::createTelemetryMessage()
 
 void UITask::broadcastTelemetry()
 {
+  
   if (!ws_) {
-    Serial.println("[UITask] ERROR: WebSocket is null!");
+    Serial.println("DEBUG: ws_ is null!");
     return;
   }
-  
-  static uint32_t broadcastCount = 0;
-  broadcastCount++;
-  
   String message = createTelemetryMessage();
   ws_->textAll(message);
-  
-  if (broadcastCount % 10 == 0) {
-    Serial.print("[UITask] Broadcast #");
-    Serial.print(broadcastCount);
-    Serial.print(", clients: ");
-    Serial.println(ws_->count());
-  }
 }
 
 void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String& message)

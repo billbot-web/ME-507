@@ -7,7 +7,7 @@
  * @version 2.5
  */
 
-// ===== ESP32 Motor Control System with IMU Integration =====
+// ===== ESP32 Pan and Tilt Motor Control System with IMU Integration =====
 #include <Arduino.h>
 #include <cstdint>
 #include "DRV883.h"
@@ -18,6 +18,9 @@
 #include "IMU_Task.h"
 #include <Wire.h>
 #include "Adafruit_BNO055.h"
+#include "CameraTask.h"
+#include "ControllerTask.h"
+#include "OV5640_camera.h"
 // FreeRTOS APIs used to create tasks/queues
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -30,7 +33,10 @@ extern "C" void motor_task_func(void* arg);
 extern "C" void encoder_task_func(void* arg);
 extern "C" void ui_task_func(void* arg);
 extern "C" void imu_task_func(void* arg);
+extern "C" void controller_task_func(void* arg);
+extern "C" void camera_task_func(void* arg);
 
+// ----------------Pin Declarations ----------------
 // ----------------Pan Motor pins ----------------
 #define PanIN1 GPIO_NUM_2
 #define PanIN2 GPIO_NUM_5
@@ -46,18 +52,30 @@ extern "C" void imu_task_func(void* arg);
 #define PanENCODER_A_GPIO GPIO_NUM_4
 #define PanENCODER_B_GPIO GPIO_NUM_3
 #define PanENCODER_UNIT   PCNT_UNIT_1
+// --------------------------------------------------
 
-
+// ---------------- Hardware Objects ----------------
+//Camera Object 
+OV5640Camera camera = OV5640Camera(760);
 // Motor: IN1/IN2 on LEDC channels 0 and 1
 DRV883 panmotor(PanIN1, PanIN2, /*LEDC chs*/ 0, 1);
 Encoder panencoder(PanENCODER_A_GPIO, PanENCODER_B_GPIO, PanENCODER_UNIT);
 DRV883 tiltmotor(TiltIN1, TiltIN2, /*LEDC chs*/ 2, 3);
 Encoder tiltencoder(TiltENCODER_A_GPIO, TiltENCODER_B_GPIO, TiltENCODER_UNIT);
-
 // IMU instances (global so they can be accessed from loop)
 TwoWire I2C = TwoWire(0);
 Adafruit_BNO055 bno055_sensor = Adafruit_BNO055(1234, 0x28, &I2C);
+// --------------------------------------------------
 
+// ---------------- Shares and Queues ----------------
+//Camera Shares:
+Share<int16_t> pan_err{"pan_err"};
+Share<int16_t> tilt_err{"tilt_err"};
+Share<bool> hasLed{"hasLed"};
+Share<uint16_t> ledThreshold{"ledThreshold"};
+Share<uint8_t> cam_Mode{"camMode"};
+Share<uint8_t> UI_mode{"UI_mode"};
+Share<bool> dcalibrate{"dcalibrate"};
 // Encoder telemetry shares (declare BEFORE tasks that reference them)
 Share<float> tilt_encPosition{"tiltenc_pos"};
 Share<float> tilt_encVelocity{"tiltenc_vel"};
@@ -77,7 +95,13 @@ Share<int8_t> pan_encCmd{"panenc_cmd"};
 Share<EulerAngles> g_eulerAngles{"euler_angles"};
 Share<GyroData> g_gyroData{"gyro_data"};
 Share<AccelData> g_accelData{"accel_data"};
+// --------------------------------------------------
 
+// ----------------   Task Objects   ----------------
+//Camera task
+CameraTask cameraTask(&camera, &pan_err, &tilt_err, &hasLed, &ledThreshold, &cam_Mode);
+//Controller task
+ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encVelocity, &pan_encVelocity, &cam_Mode, &hasLed, &UI_mode, &dcalibrate);
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
 MotorTask tiltmotorTask(&tiltmotor, &tilt_encCmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
 EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_encCmd);
@@ -87,6 +111,7 @@ EncoderTask panencoderTask(&panencoder, &pan_encPosition, &pan_encVelocity, &pan
 UITask uiTask(&tilt_encPosition, &tilt_encVelocity, &tilt_vref, &tilt_posref, 
   &tilt_encCmd, &g_eulerAngles, &g_gyroData, &g_accelData);
 IMUTask imuTask(&bno055_sensor, &g_eulerAngles, &g_gyroData, &g_accelData);
+// ---------------------------------------------------
 
 void setup() {
   Serial.begin(115200);
@@ -95,6 +120,14 @@ void setup() {
   I2C.setPins(21, 22);
   Serial.println("=== SporTrackr IMU Data Reader ===");
   Serial.println("Initializing IMU...");
+  // //camera initialization
+  // bool camera_ok = camera.begin();
+  // if (!camera_ok) {
+  //   Serial.println("ERROR: Camera initialization failed!");
+  //   Serial.println("Check camera wiring and connections!");
+  //   while (1) { delay(1000); }
+  // }
+  // Serial.println("Camera initialized successfully");
   //enable motors
   pinMode(nSLP_PIN, OUTPUT);
   digitalWrite(nSLP_PIN, HIGH);
@@ -130,7 +163,7 @@ void setup() {
     "TiltEncoderTask",
     2048,
     &tiltencoderTask,
-    3,
+    5,
     nullptr
   );
   // Start Pan Motor task
@@ -148,7 +181,7 @@ void setup() {
     "PanEncoderTask",
     2048,
     &panencoderTask,
-    3,
+    5,
     nullptr
   );
   // Start UI task
@@ -169,6 +202,25 @@ void setup() {
     0,
     nullptr
   );
+  // // Start Controller task
+  // xTaskCreate(
+  //   controller_task_func,
+  //   "ControllerTask",
+  //   2048,
+  //   &controllerTask,
+  //   3,
+  //   nullptr
+  // );
+  // Start Camera task (temporarily disabled to debug GPIO conflict)
+  // xTaskCreate(
+  //   camera_task_func,
+  //   "CameraTask",
+  //   4096,
+  //   &cameraTask,
+  //   4,
+  //   nullptr
+  // );
+
  }
 
 void loop() {

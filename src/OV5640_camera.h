@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Arduino.h>
+// Rename camera's sensor_t to avoid conflict with Adafruit
+#define sensor_t camera_sensor_t
 #include "esp_camera.h"
+#undef sensor_t
 #include "img_converters.h"   // fmt2rgb888()
 
 class OV5640Camera {
