@@ -81,12 +81,9 @@ extern "C" void ui_task_func(void* pvParameters) {
 // Main update method called by the FreeRTOS task
 void UITask::update() noexcept
 {
-  static uint32_t lastDebug = 0;
-  if (millis() - lastDebug > 5000) {
-    lastDebug = millis();
-  }
   // Run the finite state machine
   fsm_.run_curstate();
+  printf("[UITask] Current state: %s\n", fsm_.get_curstateidx());
   // Update web server (if initialized)
   updateWebServer();
 }
@@ -103,24 +100,25 @@ void UITask::update() noexcept
 uint8_t UITask::exec_choose_mode()
 {
   if (!instance_) return -1;
-
-  static bool printedState = false;
-  if (!printedState) {
-    Serial.println("[UITask] In CHOOSE_MODE state");
-    printedState = true;
-  }
+  // Debug: Check if we have a pending message
+  Serial.print("[CHOOSE_MODE] Checking pending message - length: ");
+  Serial.print(pendingMessage_.length());
+  Serial.print(", client: ");
+  Serial.println(pendingClient_ ? "OK" : "NULL");
 
   // Process any pending WebSocket messages
   if (pendingMessage_.length() > 0 && pendingClient_) {
+    Serial.println("[CHOOSE_MODE] Processing pending message");
     handleChooseModeMessage(pendingClient_, pendingMessage_);
     pendingMessage_ = "";
     pendingClient_ = nullptr;
+  } else if (pendingMessage_.length() > 0) {
+    Serial.println("[CHOOSE_MODE] Have message but no client!");
   }
 
   // Check for calibration request
   if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
-    printedState = false;
     return static_cast<int>(CALIBRATE);
   }
 
@@ -133,15 +131,12 @@ uint8_t UITask::exec_choose_mode()
     }
     if (mode == 1) {
       Serial.println("[UITask] Transitioning to TRACKER state");
-      printedState = false;
       return static_cast<int>(TRACKER);
     } else if (mode == 2) {
       Serial.println("[UITask] Transitioning to TELEOP state");
-      printedState = false;
       return static_cast<int>(TELEOP);
     } else if (mode == 3) {
       Serial.println("[UITask] Transitioning to MOTOR_TEST state");
-      printedState = false;
       return static_cast<int>(MOTOR_TEST);
     }
   }
@@ -158,12 +153,6 @@ uint8_t UITask::exec_calibrate()
 {
   if (!instance_) return -1;
 
-  static bool printedState = false;
-  if (!printedState) {
-    Serial.println("[UITask] In CALIBRATE state");
-    printedState = true;
-  }
-
   // Process any pending WebSocket messages
   if (pendingMessage_.length() > 0 && pendingClient_) {
     handleCalibrateMessage(pendingClient_, pendingMessage_);
@@ -174,7 +163,6 @@ uint8_t UITask::exec_calibrate()
   // Check if calibration is done
   if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Calibration complete, returning to CHOOSE_MODE");
-    printedState = false;
     return static_cast<int>(CHOOSE_MODE);
   }
 
@@ -190,12 +178,6 @@ uint8_t UITask::exec_motor_test()
 {
   if (!instance_) return -1;
 
-  static bool printedState = false;
-  if (!printedState) {
-    Serial.println("[UITask] In MOTOR_TEST state");
-    printedState = true;
-  }
-
   // Process any pending WebSocket messages
   if (pendingMessage_.length() > 0 && pendingClient_) {
     handleMotorTestMessage(pendingClient_, pendingMessage_);
@@ -208,15 +190,15 @@ uint8_t UITask::exec_motor_test()
     uint8_t mode = instance_->ui_mode_->get();
     if (mode == 0) {
       Serial.println("[UITask] Returning to CHOOSE_MODE");
-      printedState = false;
+      
       return static_cast<int>(CHOOSE_MODE);
     } else if (mode == 1) {
       Serial.println("[UITask] Switching to TRACKER state");
-      printedState = false;
+      
       return static_cast<int>(TRACKER);
     } else if (mode == 2) {
       Serial.println("[UITask] Switching to TELEOP state");
-      printedState = false;
+      
       return static_cast<int>(TELEOP);
     }
   }
@@ -224,7 +206,7 @@ uint8_t UITask::exec_motor_test()
   // Check for calibration request
   if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
-    printedState = false;
+    
     return static_cast<int>(CALIBRATE);
   }
 
@@ -589,6 +571,8 @@ void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String&
 void UITask::handleChooseModeMessage(AsyncWebSocketClient* client, const String& message)
 {
   if (!instance_) return;
+
+  Serial.println(message);
   
   // Mode selection commands
   if (message == "mode:idle") {

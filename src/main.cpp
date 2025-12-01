@@ -207,7 +207,7 @@ void setup() {
     "UITask",
     2048,
     &uiTask,
-    1,
+    6,
     nullptr
   );
   // Start IMU task

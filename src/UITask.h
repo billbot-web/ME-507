@@ -177,12 +177,12 @@ private:
 
   // FSM
     // FSM + states
-  State state_choose_mode_{0, "CHOOSE_MODE", &UITask::exec_choose_mode};
-  State state_calibrate_{1, "CALIBRATE", &UITask::exec_calibrate};
-  State state_motor_test_{2, "MOTOR_TEST", &UITask::exec_motor_test};
-  State state_teleop_{3, "TELEOP", &UITask::exec_teleop};
-  State state_tracker_{4, "TRACKER", &UITask::exec_tracker};
-  State* states_[5] = { &state_choose_mode_, &state_calibrate_, &state_motor_test_, &state_teleop_, &state_tracker_ };
+  State state_choose_mode_{CHOOSE_MODE, "CHOOSE_MODE", &UITask::exec_choose_mode};
+  State state_calibrate_{CALIBRATE, "CALIBRATE", &UITask::exec_calibrate};
+  State state_motor_test_{MOTOR_TEST, "MOTOR_TEST", &UITask::exec_motor_test};
+  State state_teleop_{TELEOP, "TELEOP", &UITask::exec_teleop};
+  State state_tracker_{TRACKER, "TRACKER", &UITask::exec_tracker};
+  State* states_[5] = {&state_choose_mode_, &state_tracker_, &state_teleop_, &state_motor_test_, &state_calibrate_ };
   FSM fsm_;
 
   // State functions
