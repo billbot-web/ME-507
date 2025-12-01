@@ -87,9 +87,19 @@ Share<int8_t> tilt_vref{"tiltvref"};
 Share<int16_t> tilt_posref{"tiltposref"};
 Share<int8_t> pan_vref{"panvref"};
 Share<int16_t> pan_posref{"panposref"};
-// Shared command for encoder/motor (0=STOP,1=RUN,2=ZERO)
-Share<int8_t> tilt_encCmd{"tiltenc_cmd"};
-Share<int8_t> pan_encCmd{"panenc_cmd"};
+// Shared command for encoder/motor (0=STOP, 1=VELOCITY_RUN, 2=POSITION_RUN)
+Share<uint8_t> tilt_Cmd{"tiltenc_cmd"};
+Share<uint8_t> pan_Cmd{"panenc_cmd"};
+// Shared zero flags for encoders
+Share<bool> tilt_encZero{"tiltenc_zero"};
+Share<bool> pan_encZero{"panenc_zero"};
+// D-pad direction shares (-1, 0, 1)
+Share<int8_t> dpad_pan{"dpad_pan"};
+Share<int8_t> dpad_tilt{"dpad_tilt"};
+// Motor test mode control (true = velocity control, false = position control)
+Share<bool> motortest_mode{"motortest_mode"};
+// IMU mode control (true = send IMU data, false = don't send)
+Share<bool> imu_mode{"imu_mode"};
 //shares for IMU
 // where the 
 Share<EulerAngles> g_eulerAngles{"euler_angles"};
@@ -101,21 +111,28 @@ Share<AccelData> g_accelData{"accel_data"};
 //Camera task
 CameraTask cameraTask(&camera, &pan_err, &tilt_err, &hasLed, &ledThreshold, &cam_Mode);
 //Controller task
-ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encVelocity, &pan_encVelocity, &cam_Mode, &hasLed, &UI_mode, &dcalibrate);
+ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encVelocity, &pan_encVelocity, &tilt_Cmd, &pan_Cmd, &cam_Mode, &hasLed, &UI_mode, &dcalibrate, &dpad_pan, &dpad_tilt);
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
-MotorTask tiltmotorTask(&tiltmotor, &tilt_encCmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
-EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_encCmd);
-MotorTask panmotorTask(&panmotor, &pan_encCmd, &pan_encVelocity, &pan_vref, &pan_encPosition, &pan_posref);
-EncoderTask panencoderTask(&panencoder, &pan_encPosition, &pan_encVelocity, &pan_encCmd);
+MotorTask tiltmotorTask(&tiltmotor, &tilt_Cmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
+EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_Cmd, &tilt_encZero);
+MotorTask panmotorTask(&panmotor, &pan_Cmd, &pan_encVelocity, &pan_vref, &pan_encPosition, &pan_posref);
+EncoderTask panencoderTask(&panencoder, &pan_encPosition, &pan_encVelocity, &pan_Cmd, &pan_encZero);
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
-UITask uiTask(&tilt_encPosition, &tilt_encVelocity, &tilt_vref, &tilt_posref, 
-  &tilt_encCmd, &g_eulerAngles, &g_gyroData, &g_accelData);
+UITask uiTask(&tilt_encPosition, &tilt_encVelocity, &tilt_vref, &tilt_posref, &tilt_Cmd, &tilt_encZero,
+  &pan_encPosition, &pan_encVelocity, &pan_vref, &pan_posref, &pan_Cmd, &pan_encZero,
+  &dpad_pan, &dpad_tilt, &imu_mode, &UI_mode, &motortest_mode, &dcalibrate, &g_eulerAngles, &g_gyroData, &g_accelData);
 IMUTask imuTask(&bno055_sensor, &g_eulerAngles, &g_gyroData, &g_accelData);
 // ---------------------------------------------------
 
 void setup() {
   Serial.begin(115200);
   delay(300);
+  
+  // Initialize Serial2 with custom pins: RX=IO0, TX=IO12
+  Serial2.begin(115200, SERIAL_8N1, 0, 12);  // baudrate, config, RX pin, TX pin
+  delay(100);
+  Serial2.println("=== Serial2 initialized on IO0 (RX) and IO12 (TX) ===");
+  
   // Set I2C pins for ESP32
   I2C.setPins(21, 22);
   Serial.println("=== SporTrackr IMU Data Reader ===");

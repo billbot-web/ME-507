@@ -38,32 +38,52 @@ struct AccelData;
  */
 class UITask {
 public:
-  /// Commands that can be casted to queue
-    enum class Command {     
-        STOP = 0,       ///< Stop encoder readings
-        VELOCITY_RUN = 1,         ///< Start encoder readings
-        POSITION_RUN = 2,///< Start position run
-        ZERO = 3       ///< Reset position to zero
-    };
 
   enum StateId : uint8_t {
-    WAIT_FOR_INPUT = 0,
-    VELOCITY_RUN   = 1,
-    POSITION_RUN   = 2,
+    CHOOSE_MODE = 0,  ///< Waiting for mode selection (UI_mode == 0)
+    CALIBRATE = 4,    ///< Calibration mode (dcalibrate == true)
+    MOTOR_TEST = 3,   ///< Motor testing with velocity/position control
+    TELEOP = 2,       ///< Teleop mode (UI_mode == 2)
+    TRACKER = 1       ///< Tracker mode (UI_mode == 1)
   };
 
   /**
    * @brief Construct UI task.
-   * @param positionShare Pointer to position share (may be nullptr)
-   * @param velocityShare Pointer to velocity share (may be nullptr)
-   * @param encoderCmdQueue Queue handle to send commands to EncoderTask (may be nullptr)
+   * @param tilt_positionShare Tilt encoder position share
+   * @param tilt_velocityShare Tilt encoder velocity share
+   * @param tilt_vref Tilt motor velocity reference share
+   * @param tilt_posref Tilt motor position reference share
+   * @param tilt_cmdShare Tilt encoder command share
+   * @param tilt_zeroShare Tilt encoder zero share
+   * @param pan_positionShare Pan encoder position share
+   * @param pan_velocityShare Pan encoder velocity share
+   * @param pan_vref Pan motor velocity reference share
+   * @param pan_posref Pan motor position reference share
+   * @param pan_cmdShare Pan encoder command share
+   * @param pan_zeroShare Pan encoder zero share
+   * @param eulerAngles IMU euler angles share
+   * @param gyroData IMU gyro data share
+   * @param accelData IMU accel data share
    * @param updateMs UI update/scan period in ms
    */
-  UITask(Share<float>* positionShare,
-    Share<float>*   velocityShare,
-    Share<int8_t>*  vref,
-    Share<int16_t>*  posref,
-    Share<int8_t>*  cmdShare,
+  UITask(Share<float>* tilt_positionShare,
+    Share<float>*   tilt_velocityShare,
+    Share<int8_t>*  tilt_vref,
+    Share<int16_t>*  tilt_posref,
+    Share<uint8_t>*  tilt_cmdShare,
+    Share<bool>*    tilt_zeroShare,
+    Share<float>* pan_positionShare,
+    Share<float>*   pan_velocityShare,
+    Share<int8_t>*  pan_vref,
+    Share<int16_t>*  pan_posref,
+    Share<uint8_t>*  pan_cmdShare,
+    Share<bool>*    pan_zeroShare,
+    Share<int8_t>*  dpad_pan,
+    Share<int8_t>*  dpad_tilt,
+    Share<bool>*    imu_mode,
+    Share<uint8_t>* ui_mode,
+    Share<bool>*    motortest_mode,
+    Share<bool>*    dcalibrate,
     Share<EulerAngles>* eulerAngles,
     Share<GyroData>* gyroData,
     Share<AccelData>* accelData,
@@ -92,15 +112,46 @@ public:
   uint32_t getWebSocketClientCount() const;
 
 private:
-  // Shares / queue
-  Share<float>* positionShare_ = nullptr;
-  Share<float>*   velocityShare_ = nullptr;
-  Share<int8_t>*  vref_ = nullptr;
-  Share<int8_t>*  cmdShare_ = nullptr;
-  Share<int16_t>*  posref_ = nullptr;
+  // Tilt motor shares
+  Share<float>* tilt_positionShare_ = nullptr;
+  Share<float>* tilt_velocityShare_ = nullptr;
+  Share<int8_t>* tilt_vref_ = nullptr;
+  Share<int16_t>* tilt_posref_ = nullptr;
+  Share<uint8_t>* tilt_cmdShare_ = nullptr;
+  Share<bool>* tilt_zeroShare_ = nullptr;
+  
+  // Pan motor shares
+  Share<float>* pan_positionShare_ = nullptr;
+  Share<float>* pan_velocityShare_ = nullptr;
+  Share<int8_t>* pan_vref_ = nullptr;
+  Share<int16_t>* pan_posref_ = nullptr;
+  Share<uint8_t>* pan_cmdShare_ = nullptr;
+  Share<bool>* pan_zeroShare_ = nullptr;
+  // Motor test mode share
+  Share<bool>* motortest_mode_ = nullptr;
+  
+  // D-pad direction shares
+  Share<int8_t>* dpad_pan_ = nullptr;
+  Share<int8_t>* dpad_tilt_ = nullptr;
+  
+  // IMU mode control
+  Share<bool>* imu_mode_ = nullptr;
+  
+  // UI mode and calibration control
+  Share<uint8_t>* ui_mode_ = nullptr;
+  Share<bool>* dcalibrate_ = nullptr;
+  
+  // IMU shares
   Share<EulerAngles>* eulerAngles_ = nullptr;
   Share<GyroData>* gyroData_ = nullptr;
   Share<AccelData>* accelData_ = nullptr;
+  
+  // Legacy compatibility pointers (point to tilt for backward compatibility)
+  Share<float>* positionShare_ = nullptr;
+  Share<float>* velocityShare_ = nullptr;
+  Share<int8_t>* vref_ = nullptr;
+  Share<int16_t>* posref_ = nullptr;
+  Share<uint8_t>* cmdShare_ = nullptr;
 
   // Timing
   uint32_t updateMs_ = 200;
@@ -126,22 +177,21 @@ private:
 
   // FSM
     // FSM + states
-  State state_wait_{0, "WAIT_FOR_INPUT", &UITask::exec_waitForInput};
-  State state_velocity_run_{1, "VELOCITY_RUN", &UITask::exec_velocityRun};
-  State state_position_run_{2, "POSITION_RUN", &UITask::exec_positionRun};
-  State* states_[3] = { &state_wait_, &state_velocity_run_, &state_position_run_ };
+  State state_choose_mode_{0, "CHOOSE_MODE", &UITask::exec_choose_mode};
+  State state_calibrate_{1, "CALIBRATE", &UITask::exec_calibrate};
+  State state_motor_test_{2, "MOTOR_TEST", &UITask::exec_motor_test};
+  State state_teleop_{3, "TELEOP", &UITask::exec_teleop};
+  State state_tracker_{4, "TRACKER", &UITask::exec_tracker};
+  State* states_[5] = { &state_choose_mode_, &state_calibrate_, &state_motor_test_, &state_teleop_, &state_tracker_ };
   FSM fsm_;
 
   // State functions
-  static uint8_t exec_waitForInput();
-  static uint8_t exec_velocityRun();
-  static uint8_t exec_positionRun();
-
-  // Helpers
-  static void printHelpOnce();
-  static void sendEncoderCmdZero();
-  static void sendEncoderCmdStart();
-  static void sendEncoderCmdStop();
+  static uint8_t exec_choose_mode();
+  static uint8_t exec_calibrate();
+  static uint8_t exec_motor_test();
+  static uint8_t exec_teleop();
+  static uint8_t exec_tracker();
+ 
 
   // Web server methods
   bool initSPIFFS();
@@ -152,7 +202,18 @@ private:
   void broadcastTelemetry();
   String createTelemetryMessage();
   void processWebSocketMessage(AsyncWebSocketClient* client, const String& message);
-  void sendWebSocketResponse(AsyncWebSocketClient* client, const String& response);
+  static void sendWebSocketResponse(AsyncWebSocketClient* client, const String& response);
+  
+  // State-specific message handlers
+  static void handleChooseModeMessage(AsyncWebSocketClient* client, const String& message);
+  static void handleCalibrateMessage(AsyncWebSocketClient* client, const String& message);
+  static void handleMotorTestMessage(AsyncWebSocketClient* client, const String& message);
+  static void handleTeleopMessage(AsyncWebSocketClient* client, const String& message);
+  static void handleTrackerMessage(AsyncWebSocketClient* client, const String& message);
+  
+  // Pending message queue
+  static String pendingMessage_;
+  static AsyncWebSocketClient* pendingClient_;
   
   // Static WebSocket event handler
   static void onWebSocketEvent(AsyncWebSocket *server, 

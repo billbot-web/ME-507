@@ -48,7 +48,7 @@ public:
 
   // Accept a pointer to the motor driver (caller retains ownership).
   // Signature: motor, command queue, optional velocity share, and signed vref share
-  MotorTask(DRV883* motor, Share<int8_t>* cmdShare, Share<float>* veloShare, Share<int8_t>* vref, 
+  MotorTask(DRV883* motor, Share<uint8_t>* cmdShare, Share<float>* veloShare, Share<int8_t>* vref, 
     Share<float>* posShare, Share<int16_t>* posref) noexcept;
 
   /// Run one FSM tick: scan states and execute the selected state's behavior
@@ -65,7 +65,7 @@ private:
   DRV883* motor_ = nullptr;
   // Command queue pointer
   // Command share pointer (values: 0=STOP,1=RUN,2=ZERO)
-  Share<int8_t>* cmdShare_ = nullptr;
+  Share<uint8_t>* cmdShare_ = nullptr;
   // Velocity share pointer (desired velocity / effort)
   Share<float>* veloShare_ = nullptr;
   // Signed reference share pointer (-100..100)

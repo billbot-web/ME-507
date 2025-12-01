@@ -37,13 +37,15 @@ public:
      * @param encoder Pointer to Encoder object
      * @param positionShare Share for current position
      * @param velocityShare Share for current velocity
-     * @param cmdQueue Queue for commands
+     * @param cmdShare Share for commands
+     * @param zeroShare Share for zero command (boolean)
      * @param updateMs Update period in milliseconds
      */
     EncoderTask(Encoder* encoder,
                 Share<float>* positionShare,
                 Share<float>* velocityShare,
-                Share<int8_t>* cmdShare,
+                Share<uint8_t>* cmdShare,
+                Share<bool>* zeroShare,
                 uint32_t updateMs = 10) noexcept;
 
     void update() noexcept { fsm_.run_curstate(); }
@@ -56,7 +58,8 @@ private:
     // Shared resources
     Share<float>* positionShare_;
     Share<float>* velocityShare_;
-    Share<int8_t>* cmdShare_;
+    Share<uint8_t>* cmdShare_;
+    Share<bool>* zeroShare_;
 
     // State management
     static State stateTable_[];

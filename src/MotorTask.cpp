@@ -6,7 +6,7 @@
 MotorTask* MotorTask::instance_ = nullptr;
 
 MotorTask::MotorTask(DRV883* motor,
-                     Share<int8_t>* cmdShare,
+                     Share<uint8_t>* cmdShare,
                      Share<float>* veloShare,
                      Share<int8_t>* vref, 
                      Share<float>* posShare,
@@ -37,7 +37,7 @@ MotorTask::MotorTask(DRV883* motor,
 // This entry repeatedly calls MotorTask::update() at a fixed period.
   extern "C" void motor_task_func(void* arg) {
   MotorTask* motorTask = static_cast<MotorTask*>(arg);
-  const TickType_t delayTicks = pdMS_TO_TICKS(100); // 100 ms tick
+  const TickType_t delayTicks = pdMS_TO_TICKS(50); // 50 ms tick
   for (;;) {
     if (motorTask) {
       MotorTask::instance_ = motorTask;  // Set instance for this task's context
@@ -59,7 +59,7 @@ uint8_t MotorTask::exec_wait() noexcept {
 
   // Read latest command from the shared command variable (if present).
   if (instance_->cmdShare_) {
-    int8_t cmd = instance_->cmdShare_->get();
+    uint8_t cmd = instance_->cmdShare_->get();
     if (cmd == static_cast<int8_t>(1)) { // VELOCITY_RUN
       Serial.println("[MotorTask] Received VELOCITY_RUN command, transitioning to VRUN state");
       return static_cast<int>(VRUN);  
@@ -84,22 +84,48 @@ uint8_t MotorTask::exec_velorun() noexcept {
   if (instance_->cmdShare_) {
     int8_t new_state = instance_->cmdShare_->get();
     if (new_state == static_cast<int8_t>(0)) { // STOP
+      instance_->motor_->brake();
       return static_cast<int>(WAIT);
+    }
+    if (new_state == static_cast<int8_t>(2)) { // POSITION_RUN
+      Serial.println("[MotorTask] Velocity run switching to position run");
+      return static_cast<int>(PRUN);
     }
     // otherwise continue running
   }
-
-  {
-    // Read signed vref (-100 .. +100) and apply to motor (supports forward/reverse)
-    int vref = instance_->last_effort_; // Preserve last effort initially
-    if (instance_->vref_) {
-      vref = static_cast<int>(instance_->vref_->get());
-    }
-    //set motor effort
-    if (instance_->motor_) {
-      instance_->motor_->setEff(vref);
-    }
+  
+  // Position PID Control
+  float desired_velocity = 0.0f;  // Default setpoint
+  float current_velocity = 0.0f;  // Current position
+  
+  // Get desired position from posref share
+  if (instance_->posref_) {
+    desired_velocity = static_cast<float>(instance_->vref_->get());
   }
+  // Get current position from position share
+  if (instance_->posShare_) {
+    current_velocity = instance_->posShare_->get();
+  }
+  
+  // Calculate position error (setpoint - current)
+  float velocity_error = desired_velocity - current_velocity;
+ 
+  
+  // Update PID with position error
+  instance_->position_pid_.UpdateError(velocity_error);
+  
+  // Get PID output (motor effort)
+  double pid_output = instance_->position_pid_.TotalError();
+  
+  // Convert to motor effort range (-100 to 100)
+  int motor_effort = static_cast<int>(pid_output);
+  
+  // Apply motor effort
+  if (instance_->motor_) {
+    instance_->motor_->setEff(motor_effort);
+  }
+  // Store last effort for debugging/continuity
+  instance_->last_effort_ = motor_effort;
 
   return static_cast<int>(VRUN);
 }
@@ -113,11 +139,11 @@ uint8_t MotorTask::exec_posrun() noexcept {
 
   // Pull latest mode each tick to allow immediate stop
   if (instance_->cmdShare_) {
-    int8_t new_state = instance_->cmdShare_->get();
-    if (new_state == static_cast<int8_t>(0)) { // STOP
+    uint8_t new_state = instance_->cmdShare_->get();
+    if (new_state == static_cast<uint8_t>(0)) { // STOP
       Serial.println("[MotorTask] Position run received STOP, returning to WAIT");
       return static_cast<int>(WAIT);
-    } else if (new_state == static_cast<int8_t>(1)) { // VELOCITY_RUN
+    } else if (new_state == static_cast<uint8_t>(1)) { // VELOCITY_RUN
       Serial.println("[MotorTask] Position run switching to velocity run");
       return static_cast<int>(VRUN);
     }

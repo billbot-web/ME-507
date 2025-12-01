@@ -7,27 +7,61 @@
 
 // Static instance
 UITask* UITask::instance_ = nullptr;
+String UITask::pendingMessage_ = "";
+AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
 
-  UITask::UITask(Share<float>* positionShare,
-               Share<float>*   velocityShare,
-               Share<int8_t>* vref,
-               Share<int16_t>* posref,
-               Share<int8_t>*   cmdShare,
+  UITask::UITask(Share<float>* tilt_positionShare,
+               Share<float>*   tilt_velocityShare,
+               Share<int8_t>* tilt_vref,
+               Share<int16_t>* tilt_posref,
+               Share<uint8_t>*   tilt_cmdShare,
+               Share<bool>*     tilt_zeroShare,
+               Share<float>* pan_positionShare,
+               Share<float>*   pan_velocityShare,
+               Share<int8_t>* pan_vref,
+               Share<int16_t>* pan_posref,
+               Share<uint8_t>*   pan_cmdShare,
+               Share<bool>*     pan_zeroShare,
+               Share<int8_t>*   dpad_pan,
+               Share<int8_t>*   dpad_tilt,
+               Share<bool>*     imu_mode,
+               Share<uint8_t>*  ui_mode,
+               Share<bool>*     motortest_mode,
+               Share<bool>*     dcalibrate,
                Share<EulerAngles>* eulerAngles,
                Share<GyroData>* gyroData,
                Share<AccelData>* accelData,
                uint32_t        updateMs) noexcept
-  : positionShare_(positionShare),
-    velocityShare_(velocityShare),
-    vref_(vref),
-    posref_(posref),
-    cmdShare_(cmdShare),
+  : tilt_positionShare_(tilt_positionShare),
+    tilt_velocityShare_(tilt_velocityShare),
+    tilt_vref_(tilt_vref),
+    tilt_posref_(tilt_posref),
+    tilt_cmdShare_(tilt_cmdShare),
+    tilt_zeroShare_(tilt_zeroShare),
+    pan_positionShare_(pan_positionShare),
+    pan_velocityShare_(pan_velocityShare),
+    pan_vref_(pan_vref),
+    pan_posref_(pan_posref),
+    pan_cmdShare_(pan_cmdShare),
+    pan_zeroShare_(pan_zeroShare),
+    dpad_pan_(dpad_pan),
+    dpad_tilt_(dpad_tilt),
+    imu_mode_(imu_mode),
+    ui_mode_(ui_mode),
+    motortest_mode_(motortest_mode),
+    dcalibrate_(dcalibrate),
     eulerAngles_(eulerAngles),
     gyroData_(gyroData),
     accelData_(accelData),
     updateMs_(updateMs),
-    fsm_(states_, 3)
+    fsm_(states_, 5)
 {
+  // Set legacy pointers to tilt for backward compatibility
+  positionShare_ = tilt_positionShare;
+  velocityShare_ = tilt_velocityShare;
+  vref_ = tilt_vref;
+  posref_ = tilt_posref;
+  cmdShare_ = tilt_cmdShare;
   instance_ = this;
 }
 
@@ -56,286 +90,243 @@ void UITask::update() noexcept
   // Update web server (if initialized)
   updateWebServer();
 }
-
-// ---------------- Helpers ----------------
-
-void UITask::printHelpOnce()
-{
-  if (!instance_) return;
-  const uint32_t now = millis();
-  if (now - instance_->lastMenuPrintMs_ < 1000) return; // throttle menu spam
-  instance_->lastMenuPrintMs_ = now;
-  Serial.println();
-  Serial.println("UI commands: v=velocity, s=stop, z=zero, h/?=help");
-}
-
-// Send encoder commands if queue is available
-void UITask::sendEncoderCmdZero()
-{
-  if (!instance_ || !instance_->cmdShare_) return;
-  const int8_t code = static_cast<int8_t>(3); // ZERO command is now 3
-  instance_->cmdShare_->put(code);
-}
-
-void UITask::sendEncoderCmdStart()
-{
-  if (!instance_ || !instance_->cmdShare_) return;
-  const int8_t code = static_cast<int8_t>(UITask::Command::VELOCITY_RUN);
-  instance_->cmdShare_->put(code);
-}
-
-void UITask::sendEncoderCmdStop()
-{
-  if (!instance_ || !instance_->cmdShare_) return;
-  const int8_t code = static_cast<int8_t>(UITask::Command::STOP);
-  Serial.println("[UITask] *** SENDING STOP COMMAND ***");
-  instance_->cmdShare_->put(code);
-}
-
 // ---------------- States ----------------
 
 // WAIT_FOR_INPUT: show prompt; parse serial; forward commands
-uint8_t UITask::exec_waitForInput()
+// ---------------- State implementations ----------------
+
+/**
+ * @brief CHOOSE_MODE state: Idle, waiting for mode selection via web interface
+ * Transitions based on UI_mode and dcalibrate flags
+ * @return Next state id
+ */
+uint8_t UITask::exec_choose_mode()
 {
   if (!instance_) return -1;
 
-  // Print the appropriate prompt based on input mode
-  if (!instance_->menuPrinted_) {
-    Serial.println();
-    if (instance_->inputMode_ == 0) {
-      Serial.print("Select mode - v for velocity, p for position, z to zero: ");
-    } else if (instance_->inputMode_ == 'v') {
-      Serial.print("Enter velocity (-100 to 100): ");
-    } else if (instance_->inputMode_ == 'p') {
-      Serial.print("Enter position: ");
-    }
-    instance_->menuPrinted_ = true;
-    instance_->inputPos_ = 0;
-    instance_->inputBuf_[0] = '\0';
+  static bool printedState = false;
+  if (!printedState) {
+    Serial.println("[UITask] In CHOOSE_MODE state");
+    printedState = true;
   }
 
-  while (Serial.available() > 0) {
-    char ch = static_cast<char>(Serial.read());
-    // Echo back
-    Serial.print(ch);
-    
-    if (ch == '\r' || ch == '\n') {
-      if (instance_->inputPos_ == 0) {
-        // empty line, ignore
-        continue;
-      }
-      instance_->inputBuf_[instance_->inputPos_] = '\0';
-      
-      if (instance_->inputMode_ == 0) {
-        // Mode selection step
-        if (instance_->inputPos_ == 1) {
-          char mode = instance_->inputBuf_[0];
-          if (mode == 'z' || mode == 'Z') {
-            // Zero command - execute immediately
-            sendEncoderCmdZero();
-            Serial.println();
-            Serial.print("Select mode - v for velocity, p for position, z to zero: ");
-            instance_->inputPos_ = 0;
-            instance_->inputBuf_[0] = '\0';
-            continue;
-          } else if (mode == 'v' || mode == 'V') {
-            // Switch to velocity input mode
-            instance_->inputMode_ = 'v';
-            instance_->menuPrinted_ = false;
-            instance_->inputPos_ = 0;
-            instance_->inputBuf_[0] = '\0';
-            continue;
-          } else if (mode == 'p' || mode == 'P') {
-            // Switch to position input mode
-            instance_->inputMode_ = 'p';
-            instance_->menuPrinted_ = false;
-            instance_->inputPos_ = 0;
-            instance_->inputBuf_[0] = '\0';
-            continue;
-          }
-        }
-        // Invalid mode selection
-        Serial.println();
-        Serial.println("Invalid selection. Choose v, p, or z");
-        Serial.print("Select mode - v for velocity, p for position, z to zero: ");
-        instance_->inputPos_ = 0;
-        instance_->inputBuf_[0] = '\0';
-        continue;
-        
-      } else if (instance_->inputMode_ == 'v') {
-        // Velocity value input
-        char* endptr = nullptr;
-        long val = strtol(instance_->inputBuf_, &endptr, 10);
-        if (endptr != instance_->inputBuf_ && (*endptr == '\0')) {
-          // clamp to -100..100 and publish to vref share
-          if (val > 100) val = 100;
-          if (val < -100) val = -100;
-          if (instance_->vref_) {
-            instance_->vref_->put(static_cast<int8_t>(val));
-            Serial.print("[UITask] published velocity = "); Serial.println(val);
-            // tell encoder/motor to start velocity run
-            instance_->cmdShare_->put(static_cast<int8_t>(UITask::Command::VELOCITY_RUN));
-          }
-          
-          // Clear any leftover characters in serial buffer to prevent immediate stops
-          while (Serial.available() > 0) {
-            Serial.read(); // Discard leftover characters
-          }
-          Serial.println("[UITask] Serial buffer cleared");
-          
-          instance_->menuPrinted_ = false;
-          instance_->inputMode_ = 0; // Reset to mode selection
-          return static_cast<int>(VELOCITY_RUN);
-        } else {
-          Serial.println();
-          Serial.println("Invalid number, try again");
-          Serial.print("Enter velocity (-100 to 100): ");
-          instance_->inputPos_ = 0;
-          instance_->inputBuf_[0] = '\0';
-          continue;
-        }
-        
-      } else if (instance_->inputMode_ == 'p') {
-        // Position value input  
-        char* endptr = nullptr;
-        long val = strtol(instance_->inputBuf_, &endptr, 10);
-        if (endptr != instance_->inputBuf_ && (*endptr == '\0')) {
-          // Publish position reference to posref share
-          if (instance_->posref_) {
-            instance_->posref_->put(static_cast<int16_t>(val));
-            Serial.print("[UITask] published position = "); Serial.println(val);
-          } 
-          // tell encoder/motor to start position run
-          Serial.println("[UITask] Setting cmdShare to POSITION_RUN (2)"); 
-          instance_->cmdShare_->put(static_cast<int8_t>(UITask::Command::POSITION_RUN));
-          
-          // Clear any leftover characters in serial buffer to prevent immediate stops
-          while (Serial.available() > 0) {
-            Serial.read(); // Discard leftover characters
-          }
-          Serial.println("[UITask] Serial buffer cleared");
-          
-          instance_->menuPrinted_ = false;
-          instance_->inputMode_ = 0; // Reset to mode selection
-          return static_cast<int>(POSITION_RUN);
-        } else {
-          Serial.println();
-          Serial.println("Invalid number, try again");
-          Serial.print("Enter position: ");
-          instance_->inputPos_ = 0;
-          instance_->inputBuf_[0] = '\0';
-          continue;
-        }
-      }
-    } else {
-      // accumulate printable characters
-      if (instance_->inputPos_ + 1 < sizeof(instance_->inputBuf_)) {
-        if (ch >= ' ' && ch <= '~') instance_->inputBuf_[instance_->inputPos_++] = ch;
-      }
+  // Process any pending WebSocket messages
+  if (pendingMessage_.length() > 0 && pendingClient_) {
+    handleChooseModeMessage(pendingClient_, pendingMessage_);
+    pendingMessage_ = "";
+    pendingClient_ = nullptr;
+  }
+
+  // Check for calibration request
+  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+    Serial.println("[UITask] Transitioning to CALIBRATE state");
+    printedState = false;
+    return static_cast<int>(CALIBRATE);
+  }
+
+  // Check UI mode
+  if (instance_->ui_mode_) {
+    uint8_t mode = instance_->ui_mode_->get();
+    if (mode != 0) {
+      Serial.print("[CHOOSE_MODE] Detected ui_mode change to: ");
+      Serial.println(mode);
+    }
+    if (mode == 1) {
+      Serial.println("[UITask] Transitioning to TRACKER state");
+      printedState = false;
+      return static_cast<int>(TRACKER);
+    } else if (mode == 2) {
+      Serial.println("[UITask] Transitioning to TELEOP state");
+      printedState = false;
+      return static_cast<int>(TELEOP);
+    } else if (mode == 3) {
+      Serial.println("[UITask] Transitioning to MOTOR_TEST state");
+      printedState = false;
+      return static_cast<int>(MOTOR_TEST);
     }
   }
-  return static_cast<int>(WAIT_FOR_INPUT);
+
+  // Stay in choose mode
+  return static_cast<int>(CHOOSE_MODE);
 }
 
-// VELOCITY_RUN: print velocity; allow switching/stopping
-u_int8_t UITask::exec_velocityRun()
+/**
+ * @brief CALIBRATE state: Handle calibration operations via web interface
+ * @return Next state id
+ */
+uint8_t UITask::exec_calibrate()
 {
   if (!instance_) return -1;
 
-  // Input handling (non-blocking)
-  while (Serial.available() > 0) {
-    const char ch = static_cast<char>(Serial.read());
-    switch (ch) {
-      case 'v': case 'V':
-        // stop running and allow entering new velocity
-        sendEncoderCmdStop();
-        instance_->menuPrinted_ = false;
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 's': case 'S':
-        // stop running and return to wait
-        sendEncoderCmdStop();
-        printHelpOnce();
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 'p': case 'P':
-        // switch to position run
-        sendEncoderCmdStop();
-        instance_->menuPrinted_ = false;
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 'z': case 'Z':
-        // zero encoder
-        sendEncoderCmdZero();
-        break;
-      case 'h': case 'H': case '?':
-        printHelpOnce();
-        break;
-      default:
-        break;
-      
-    }
-  }
-  // Periodic value print
-  const uint32_t now = millis();
-  if (now - instance_->lastValuePrintMs_ >= 200) {
-    instance_->lastValuePrintMs_ = now;
-    float vel = 0.0f;
-    float pos = 0.0f;
-    if (instance_->velocityShare_) vel = instance_->velocityShare_->get();
-    if (instance_->positionShare_) pos = instance_->positionShare_->get();
-    Serial.print("velo: "); Serial.print(vel, 2);
-    Serial.print(" , ");
-    Serial.print("pos: "); Serial.println(pos, 2);
+  static bool printedState = false;
+  if (!printedState) {
+    Serial.println("[UITask] In CALIBRATE state");
+    printedState = true;
   }
 
-  return static_cast<int>(VELOCITY_RUN);
+  // Process any pending WebSocket messages
+  if (pendingMessage_.length() > 0 && pendingClient_) {
+    handleCalibrateMessage(pendingClient_, pendingMessage_);
+    pendingMessage_ = "";
+    pendingClient_ = nullptr;
+  }
+
+  // Check if calibration is done
+  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
+    Serial.println("[UITask] Calibration complete, returning to CHOOSE_MODE");
+    printedState = false;
+    return static_cast<int>(CHOOSE_MODE);
+  }
+
+  // Continue calibration mode
+  return static_cast<int>(CALIBRATE);
 }
-  // Position_RUN: print position; allow switching/stopping
-u_int8_t UITask::exec_positionRun()
+
+/**
+ * @brief MOTOR_TEST state: Manual motor testing via web interface sliders
+ * @return Next state id
+ */
+uint8_t UITask::exec_motor_test()
 {
   if (!instance_) return -1;
 
-  // Input handling (non-blocking)
-  
-  while (Serial.available() > 0) {
-    const char ch = static_cast<char>(Serial.read());
-    switch (ch) {
-      case 'v': case 'V':
-        // stop running and allow entering new velocity
-        sendEncoderCmdStop();
-        instance_->menuPrinted_ = false;
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 's': case 'S':
-        sendEncoderCmdStop();
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 'p': case 'P':
-        // switch to position run
-        sendEncoderCmdStop();
-        instance_->menuPrinted_ = false;
-        return static_cast<int>(WAIT_FOR_INPUT);
-      case 'z': case 'Z':
-        // zero encoder
-        sendEncoderCmdZero();
-        break;
-      case 'h': case 'H': case '?':
-        printHelpOnce();
-        break;
-      default:
-        break;
+  static bool printedState = false;
+  if (!printedState) {
+    Serial.println("[UITask] In MOTOR_TEST state");
+    printedState = true;
+  }
+
+  // Process any pending WebSocket messages
+  if (pendingMessage_.length() > 0 && pendingClient_) {
+    handleMotorTestMessage(pendingClient_, pendingMessage_);
+    pendingMessage_ = "";
+    pendingClient_ = nullptr;
+  }
+
+  // Check for mode change
+  if (instance_->ui_mode_) {
+    uint8_t mode = instance_->ui_mode_->get();
+    if (mode == 0) {
+      Serial.println("[UITask] Returning to CHOOSE_MODE");
+      printedState = false;
+      return static_cast<int>(CHOOSE_MODE);
+    } else if (mode == 1) {
+      Serial.println("[UITask] Switching to TRACKER state");
+      printedState = false;
+      return static_cast<int>(TRACKER);
+    } else if (mode == 2) {
+      Serial.println("[UITask] Switching to TELEOP state");
+      printedState = false;
+      return static_cast<int>(TELEOP);
     }
   }
 
-  // Periodic value print
-  const uint32_t now = millis();
-  if (now - instance_->lastValuePrintMs_ >= 200) {
-    instance_->lastValuePrintMs_ = now;
-    float vel = 0.0f;
-    float pos = 0.0f;
-    if (instance_->velocityShare_) vel = instance_->velocityShare_->get();
-    if (instance_->positionShare_) pos = instance_->positionShare_->get();
-    Serial.print("velo: "); Serial.print(vel, 2);
-    Serial.print(" , ");
-    Serial.print("pos: "); Serial.println(pos, 2);
+  // Check for calibration request
+  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+    Serial.println("[UITask] Transitioning to CALIBRATE state");
+    printedState = false;
+    return static_cast<int>(CALIBRATE);
   }
-  return static_cast<int>(POSITION_RUN);
+
+  return static_cast<int>(MOTOR_TEST);
+}
+
+/**
+ * @brief TELEOP state: Manual D-pad control mode
+ * @return Next state id
+ */
+uint8_t UITask::exec_teleop()
+{
+  if (!instance_) return -1;
+
+  static bool printedState = false;
+  if (!printedState) {
+    Serial.println("[UITask] In TELEOP state");
+    printedState = true;
+  }
+
+  // Process any pending WebSocket messages
+  if (pendingMessage_.length() > 0 && pendingClient_) {
+    handleTeleopMessage(pendingClient_, pendingMessage_);
+    pendingMessage_ = "";
+    pendingClient_ = nullptr;
+  }
+
+  // Check for mode change
+  if (instance_->ui_mode_) {
+    uint8_t mode = instance_->ui_mode_->get();
+    if (mode == 0) {
+      Serial.println("[UITask] Returning to CHOOSE_MODE");
+      printedState = false;
+      return static_cast<int>(CHOOSE_MODE);
+    } else if (mode == 1) {
+      Serial.println("[UITask] Switching to TRACKER state");
+      printedState = false;
+      return static_cast<int>(TRACKER);
+    } else if (mode == 3) {
+      Serial.println("[UITask] Switching to MOTOR_TEST state");
+      printedState = false;
+      return static_cast<int>(MOTOR_TEST);
+    }
+  }
+
+  // Check for calibration request
+  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+    Serial.println("[UITask] Transitioning to CALIBRATE state");
+    printedState = false;
+    return static_cast<int>(CALIBRATE);
+  }
+
+  return static_cast<int>(TELEOP);
+}
+
+/**
+ * @brief TRACKER state: Automatic tracking mode
+ * @return Next state id
+ */
+uint8_t UITask::exec_tracker()
+{
+  if (!instance_) return -1;
+
+  static bool printedState = false;
+  if (!printedState) {
+    Serial.println("[UITask] In TRACKER state");
+    printedState = true;
+  }
+
+  // Process any pending WebSocket messages
+  if (pendingMessage_.length() > 0 && pendingClient_) {
+    handleTrackerMessage(pendingClient_, pendingMessage_);
+    pendingMessage_ = "";
+    pendingClient_ = nullptr;
+  }
+
+  // Check for mode change
+  if (instance_->ui_mode_) {
+    uint8_t mode = instance_->ui_mode_->get();
+    if (mode == 0) {
+      Serial.println("[UITask] Returning to CHOOSE_MODE");
+      printedState = false;
+      return static_cast<int>(CHOOSE_MODE);
+    } else if (mode == 2) {
+      Serial.println("[UITask] Switching to TELEOP state");
+      printedState = false;
+      return static_cast<int>(TELEOP);
+    } else if (mode == 3) {
+      Serial.println("[UITask] Switching to MOTOR_TEST state");
+      printedState = false;
+      return static_cast<int>(MOTOR_TEST);
+    }
+  }
+
+  // Check for calibration request
+  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+    Serial.println("[UITask] Transitioning to CALIBRATE state");
+    printedState = false;
+    return static_cast<int>(CALIBRATE);
+  }
+
+  return static_cast<int>(TRACKER);
 }
 
 // ---------------- Web Server Methods ----------------
@@ -533,9 +524,15 @@ void UITask::setupAPI()
 
 String UITask::createTelemetryMessage()
 {
-  float vel = 0.0f, pos = 0.0f;
-  if (velocityShare_) vel = velocityShare_->get();
-  if (positionShare_) pos = positionShare_->get();
+  // Get tilt motor data
+  float tilt_vel = 0.0f, tilt_pos = 0.0f;
+  if (tilt_velocityShare_) tilt_vel = tilt_velocityShare_->get();
+  if (tilt_positionShare_) tilt_pos = tilt_positionShare_->get();
+  
+  // Get pan motor data
+  float pan_vel = 0.0f, pan_pos = 0.0f;
+  if (pan_velocityShare_) pan_vel = pan_velocityShare_->get();
+  if (pan_positionShare_) pan_pos = pan_positionShare_->get();
   
   // Get IMU data
   EulerAngles euler = {0, 0, 0};
@@ -548,8 +545,12 @@ String UITask::createTelemetryMessage()
   
   String json = "{";
   json += "\"type\":\"telemetry\",";
-  json += "\"velocity\":" + String(vel, 2) + ",";
-  json += "\"position\":" + String(pos, 2) + ",";
+  json += "\"tilt_velocity\":" + String(tilt_vel, 2) + ",";
+  json += "\"tilt_position\":" + String(tilt_pos, 2) + ",";
+  json += "\"pan_velocity\":" + String(pan_vel, 2) + ",";
+  json += "\"pan_position\":" + String(pan_pos, 2) + ",";
+  json += "\"velocity\":" + String(tilt_vel, 2) + ","; // Legacy
+  json += "\"position\":" + String(tilt_pos, 2) + ","; // Legacy
   json += "\"euler\":[" + String(euler.x, 1) + "," + String(euler.y, 1) + "," + String(euler.z, 1) + "],";
   json += "\"gyro\":[" + String(gyro.x, 2) + "," + String(gyro.y, 2) + "," + String(gyro.z, 2) + "],";
   json += "\"accel\":[" + String(accel.x, 2) + "," + String(accel.y, 2) + "," + String(accel.z, 2) + "],";
@@ -572,27 +573,63 @@ void UITask::broadcastTelemetry()
 
 void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String& message)
 {
-  // Parse JSON command from web interface
-  // For now, implement basic commands
-  if (message == "stop") {
-    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::STOP));
+  // Store message for processing in state function (different task context)
+  Serial.print("[UITask] WebSocket message received: ");
+  Serial.println(message);
+  Serial.print("[UITask] Current FSM state: ");
+  Serial.println(instance_->fsm_.get_curstate()->get_id());
+  
+  // Queue the message to be processed by the state function
+  pendingMessage_ = message;
+  pendingClient_ = client;
+}
+
+// ---------------- State-Specific Message Handlers ----------------
+
+void UITask::handleChooseModeMessage(AsyncWebSocketClient* client, const String& message)
+{
+  if (!instance_) return;
+  
+  // Mode selection commands
+  if (message == "mode:idle") {
+    Serial.println("[CHOOSE_MODE] Mode: Idle (staying in choose mode)");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0); // 0 = CHOOSE_MODE
+    sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
+  }
+  else if (message == "mode:trackr") {
+    Serial.println("[CHOOSE_MODE] Mode: Tracker - setting ui_mode to 1");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(1); // 1 = TRACKER
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_trackr\"}");
+  }
+  else if (message == "mode:teleop") {
+    Serial.println("[CHOOSE_MODE] Mode: Teleop - setting ui_mode to 2");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(2); // 2 = TELEOP
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_teleop\"}");
+  }
+  else if (message == "mode:test") {
+    Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
+  }
+  else if (message == "mode:calibrate") {
+    Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_calibrate\"}");
+  
+  }
+  // Basic control commands (available in choose mode)
+  else if (message == "stop") {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0);
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0);
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
-  }
-  else if (message == "zero") {
-    sendEncoderCmdZero();
-    sendWebSocketResponse(client, "{\"status\":\"zeroed\"}");
-  }
-  else if (message.startsWith("velocity:")) {
-    float vel = message.substring(9).toFloat();
-    if (vref_) vref_->put(static_cast<int8_t>(vel));
-    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::VELOCITY_RUN));
-    sendWebSocketResponse(client, "{\"status\":\"velocity_set\",\"value\":" + String(vel) + "}");
-  }
-  else if (message.startsWith("position:")) {
-    float pos = message.substring(9).toFloat();
-    if (posref_) posref_->put(static_cast<int16_t>(pos));
-    if (cmdShare_) cmdShare_->put(static_cast<int8_t>(Command::POSITION_RUN));
-    sendWebSocketResponse(client, "{\"status\":\"position_set\",\"value\":" + String(pos) + "}");
   }
 }
 
@@ -637,4 +674,255 @@ void UITask::onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *clie
 uint32_t UITask::getWebSocketClientCount() const
 {
   return ws_ ? ws_->count() : 0;
+}
+
+void UITask::handleCalibrateMessage(AsyncWebSocketClient* client, const String& message)
+{
+  if (!instance_) return;
+  
+  // Check for return to choose mode
+  if (message == "mode:idle") {
+    Serial.println("[CALIBRATE] Returning to CHOOSE_MODE");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0);
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(false);
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
+    return;
+  }
+  
+  // Calibration-specific commands
+  if (message.startsWith("calibrate:")) {
+    String calibCmd = message.substring(10); // Remove "calibrate:" prefix
+    
+    if (calibCmd == "imu:start") {
+      Serial.println("[CALIBRATE] Starting IMU calibration");
+      // TODO: Trigger IMU calibration routine
+      sendWebSocketResponse(client, "{\"status\":\"imu_calibration_started\"}");
+    }
+    else if (calibCmd == "imu:load") {
+      Serial.println("[CALIBRATE] Loading IMU calibration data");
+      // TODO: Load IMU calibration from storage
+      sendWebSocketResponse(client, "{\"status\":\"imu_calibration_loaded\"}");
+    }
+    else if (calibCmd == "pan:home") {
+      Serial.println("[CALIBRATE] Setting pan home position");
+      if (instance_->pan_positionShare_) {
+        float currentPos = instance_->pan_positionShare_->get();
+        Serial.printf("[CALIBRATE] Current pan position: %.2f - saving as home\n", currentPos);
+        // Zero the encoder at current position
+        if (instance_->pan_zeroShare_) instance_->pan_zeroShare_->put(true);
+      }
+      sendWebSocketResponse(client, "{\"status\":\"pan_home_set\"}");
+    }
+    else if (calibCmd == "tilt:zero") {
+      Serial.println("[CALIBRATE] Setting tilt zero position");
+      if (instance_->tilt_positionShare_) {
+        float currentPos = instance_->tilt_positionShare_->get();
+        Serial.printf("[CALIBRATE] Current tilt position: %.2f - saving as zero\n", currentPos);
+        // Zero the encoder at current position
+        if (instance_->tilt_zeroShare_) instance_->tilt_zeroShare_->put(true);
+        // TODO: Calculate and store tilt limits from this zero position
+      }
+      sendWebSocketResponse(client, "{\"status\":\"tilt_zero_set\"}");
+    }
+    else if (calibCmd == "motor:save") {
+      Serial.println("[CALIBRATE] Saving motor calibration data");
+      // TODO: Save calibration data to SPIFFS/EEPROM
+      Serial.println("[CALIBRATE] Motor calibration saved (placeholder)");
+      sendWebSocketResponse(client, "{\"status\":\"calibration_saved\"}");
+    }
+    else if (calibCmd == "done") {
+      Serial.println("[CALIBRATE] Exiting calibration mode");
+      if (instance_->dcalibrate_) instance_->dcalibrate_->put(false);
+      sendWebSocketResponse(client, "{\"status\":\"calibration_done\"}");
+    }
+  }
+  // Allow stop command in calibrate
+  else if (message == "stop") {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(CHOOSE_MODE));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(CHOOSE_MODE));
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
+  }
+}
+
+void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& message)
+{
+  if (!instance_) return;
+  
+  // Check for return to choose mode
+  if (message == "mode:idle") {
+    Serial.println("[MOTOR_TEST] Returning to CHOOSE_MODE");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0);
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
+    return;
+  }
+  
+  // Motor test commands - full velocity and position control
+  if (message.startsWith("pan:velocity:")) {
+    float vel = message.substring(13).toFloat();
+    Serial.println("[MOTOR_TEST] Setting pan velocity to " + String(vel));
+    if (instance_->pan_vref_) instance_->pan_vref_->put(static_cast<int8_t>(vel));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(1));
+    sendWebSocketResponse(client, "{\"status\":\"pan_velocity_set\",\"value\":" + String(vel) + "}");
+  }
+  else if (message.startsWith("pan:position:")) {
+    float pos = message.substring(13).toFloat();
+    if (instance_->pan_posref_) instance_->pan_posref_->put(static_cast<int16_t>(pos));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(2));
+    sendWebSocketResponse(client, "{\"status\":\"pan_position_set\",\"value\":" + String(pos) + "}");
+  }
+  else if (message.startsWith("tilt:velocity:")) {
+    float vel = message.substring(14).toFloat();
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(static_cast<int8_t>(vel));
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(1));
+    sendWebSocketResponse(client, "{\"status\":\"tilt_velocity_set\",\"value\":" + String(vel) + "}");
+  }
+  else if (message.startsWith("tilt:position:")) {
+    float pos = message.substring(14).toFloat();
+    if (instance_->tilt_posref_) instance_->tilt_posref_->put(static_cast<int16_t>(pos));
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(2));
+    sendWebSocketResponse(client, "{\"status\":\"tilt_position_set\",\"value\":" + String(pos) + "}");
+  }
+  // Legacy single motor commands (control tilt)
+  else if (message.startsWith("velocity:")) {
+    float vel = message.substring(9).toFloat();
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(static_cast<int8_t>(vel));
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(1));
+    sendWebSocketResponse(client, "{\"status\":\"velocity_set\",\"value\":" + String(vel) + "}");
+  }
+  else if (message.startsWith("position:")) {
+    float pos = message.substring(9).toFloat();
+    if (instance_->tilt_posref_) instance_->tilt_posref_->put(static_cast<int16_t>(pos));
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(2));
+    sendWebSocketResponse(client, "{\"status\":\"position_set\",\"value\":" + String(pos) + "}");
+  }
+  else if (message == "stop") {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
+    instance_->sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
+  }
+  else if (message == "center") {
+    // Center position (go to 0,0)
+    if (instance_->tilt_posref_) instance_->tilt_posref_->put(0);
+    if (instance_->pan_posref_) instance_->pan_posref_->put(0);
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(2));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(2));
+    instance_->sendWebSocketResponse(client, "{\"status\":\"centering\"}");
+  }
+}
+
+void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& message)
+{
+  if (!instance_) return;
+  
+  // Check for return to choose mode
+  if (message == "mode:idle") {
+    Serial.println("[TELEOP] Returning to CHOOSE_MODE");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0);
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    // Stop D-pad
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
+    return;
+  }
+  
+  // D-pad directional commands
+  if (message == "dpad:up") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_up\"}");
+  }
+  else if (message == "dpad:down") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(-1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_down\"}");
+  }
+  else if (message == "dpad:left") {
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(-1);
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_left\"}");
+  }
+  else if (message == "dpad:right") {
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(1);
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_right\"}");
+  }
+  else if (message == "dpad:up-left") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(-1);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_up_left\"}");
+  }
+  else if (message == "dpad:up-right") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(1);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_up_right\"}");
+  }
+  else if (message == "dpad:down-left") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(-1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(-1);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_down_left\"}");
+  }
+  else if (message == "dpad:down-right") {
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(-1);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(1);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_down_right\"}");
+  }
+  else if (message == "dpad:center" || message == "dpad:stop") {
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"dpad_stop\"}");
+  }
+  else if (message == "stop") {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
+    if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
+    if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
+  }
+}
+
+void UITask::handleTrackerMessage(AsyncWebSocketClient* client, const String& message)
+{
+  if (!instance_) return;
+  
+  // Check for return to choose mode
+  if (message == "mode:idle") {
+    Serial.println("[TRACKER] Returning to CHOOSE_MODE");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0);
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
+    return;
+  }
+  
+  // Tracker mode commands
+  if (message.startsWith("threshold:")) {
+    int threshold = message.substring(10).toInt();
+    Serial.printf("[TRACKER] LED threshold set to: %d\n", threshold);
+    sendWebSocketResponse(client, "{\"status\":\"threshold_set\",\"value\":" + String(threshold) + "}");
+  }
+  else if (message == "track:start") {
+    Serial.println("[TRACKER] Tracking started");
+    sendWebSocketResponse(client, "{\"status\":\"tracking_started\"}");
+  }
+  else if (message == "track:stop") {
+    Serial.println("[TRACKER] Tracking stopped");
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"tracking_stopped\"}");
+  }
+  else if (message == "stop") {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if (instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"stopped\"}");
+  }
 }

@@ -34,16 +34,22 @@ public:
      * @param errShare     Share for error from camera (pixels, signed)
      * @param effortShare  Share to publish motor effort [-100, 100]
      * @param cmdShare     Command share: 0=STOP, 1=RUN, 2=ZERO
+     * @param dpad_pan     D-pad pan direction: -1 (left), 0 (none), 1 (right)
+     * @param dpad_tilt    D-pad tilt direction: -1 (down), 0 (none), 1 (up)
      * @param updateMs     Control period in milliseconds
      */
     ControllerTask(Share<int16_t>* pan_err,
                    Share<int16_t>*  tilt_err,
                        Share<float_t>*  tiltVelo,
                        Share<float_t>*  panVelo,
+                       Share<uint8_t>*  tilt_mode,
+                       Share<uint8_t>*  pan_mode,
                        Share<uint8_t>*  Cam_mode,
                        Share<bool>*       hasLed,
                        Share<uint8_t>* UI_mode,
                        Share<bool>* dcalibrate,
+                       Share<int8_t>* dpad_pan,
+                       Share<int8_t>* dpad_tilt,
                        uint32_t updateMs = 50) noexcept;
 
     /// Called by FreeRTOS task wrapper
@@ -61,10 +67,14 @@ private:
     Share<int16_t>* tilt_err_;
     Share<float_t>* tiltVelo_;
     Share<float_t>* panVelo_;
+    Share<uint8_t>*  tilt_mode_;
+    Share<uint8_t>*  pan_mode_;
     Share<uint8_t>*  Cam_mode_;
     Share<bool>*       hasLed_;
     Share<uint8_t>*  UI_mode_;
     Share<bool>*  dcalibrate_;
+    Share<int8_t>* dpad_pan_;
+    Share<int8_t>* dpad_tilt_;
 
     //Base Scan Velocities
     const int16_t SCAN_PAN_VELO = 15;   // degrees/sec

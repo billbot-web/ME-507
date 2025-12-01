@@ -1,7 +1,7 @@
 /**
  * @file EncoderTask.cpp
- * @brief Implementation of EncoderTask: a FreeRTOS-based task that uses a simple
- *        WAIT/RUN FSM to sample an Encoder and publish position/velocity.
+ * @brief Implementation of EncoderTask: a FreeRTOS-based task with 5-state FSM
+ *        States: CHOOSE_MODE, CALIBRATE, MOTOR_TEST, TELEOP, TRACKER
  */
 // Keep includes minimal; FSM/State are required for the task FSM
 #include <Arduino.h>
@@ -19,19 +19,24 @@ EncoderTask* EncoderTask::instance_ = nullptr;
  * @param encoder        Pointer to Encoder (not owned)
  * @param positionShare  Share to publish position (counts)
  * @param velocityShare  Share to publish velocity (counts/sec)
- * @param cmdQueue       Queue to receive EncoderTask::Command
+ * @param cmdShare       Share to receive EncoderTask::Command
+ * @param zeroShare      Share to receive zero command (boolean)
+ * @param ui_mode        Share for UI mode (0=choose, 1=tracker, 2=teleop)
+ * @param dcalibrate     Share for calibration flag
  * @param updateMs       Period in ms between updates
  */
 EncoderTask::EncoderTask(Encoder* encoder,
                          Share<float>* positionShare,
                          Share<float>* velocityShare,
-                         Share<int8_t>* cmdShare,
+                         Share<uint8_t>* cmdShare,
+                         Share<bool>* zeroShare,
                          uint32_t updateMs) noexcept
   : encoder_(encoder),
     updateMs_(updateMs),
     positionShare_(positionShare),
     velocityShare_(velocityShare),
     cmdShare_(cmdShare),
+    zeroShare_(zeroShare),
     fsm_(states_, 2)
 {
   instance_ = this;
@@ -74,17 +79,20 @@ uint8_t EncoderTask::exec_wait() noexcept
     lastDebug = millis();
   }
 
+  // Check for zero command
+  if (instance_->zeroShare_ && instance_->zeroShare_->get()) {
+    if (instance_->encoder_) instance_->encoder_->zero();
+    if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
+    if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
+    // Clear the zero flag
+    instance_->zeroShare_->put(false);
+    Serial.println("[EncoderTask] Encoder zeroed");
+  }
+
   // Read latest command from the shared command variable (if present)
   if (instance_->cmdShare_) {
-    int8_t raw_cmd = instance_->cmdShare_->get();
+    uint8_t raw_cmd = instance_->cmdShare_->get();
     switch (raw_cmd) {
-      case 3: // ZERO
-        if (instance_->encoder_) instance_->encoder_->zero();
-        if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
-        if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
-        // clear the ZERO command to avoid repeated zeros
-        instance_->cmdShare_->put(static_cast<int8_t>(1));
-        break;
       case 1: // VeloRUN
         Serial.println("[EncoderTask] Transitioning to RUN state");
         return static_cast<int>(RUN);
@@ -114,22 +122,25 @@ uint8_t EncoderTask::exec_run() noexcept
     lastDebug = millis();
   }
 
+  // Check for zero command
+  if (instance_->zeroShare_ && instance_->zeroShare_->get()) {
+    if (instance_->encoder_) instance_->encoder_->zero();
+    if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
+    if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
+    // Clear the zero flag
+    instance_->zeroShare_->put(false);
+    Serial.println("[EncoderTask] Encoder zeroed");
+  }
+
   // Handle any pending commands without blocking
   //The commands are:
   // 0: STOP
-  // 1: START
-  // 2: ZERO
+  // 1: VELOCITY_RUN
+  // 2: POSITION_RUN
   int8_t raw = 0;
   if (instance_->cmdShare_) {
     raw = instance_->cmdShare_->get();
     switch (raw) {
-      case 3: // ZERO (changed from 2 to avoid conflict with POSITION_RUN)
-        if (instance_->encoder_) instance_->encoder_->zero();
-        if (instance_->positionShare_) instance_->positionShare_->put(0.0f);
-        if (instance_->velocityShare_) instance_->velocityShare_->put(0.0f);
-        // clear the ZERO command to avoid repeated zeros
-        instance_->cmdShare_->put(static_cast<int8_t>(1));
-        break;
       case 0: // STOP
         return static_cast<int>(WAIT);
       case 1: // VELOCITY_RUN

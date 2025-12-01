@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Motor Control</title>
+    <title>SporTrackr Control</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>ESP32 Motor Control</h1>
+        <h1>SporTrackr Control</h1>
         
         <div class="status">
             <p><strong>WiFi:</strong> <span id="wifi-status" class="connected">Connected (AP Mode)</span></p>
@@ -16,35 +16,363 @@
             <p><strong>Mode:</strong> <span id="current-mode">Idle</span></p>
         </div>
 
-        <div class="controls">
-            <div class="control-group">
-                <h3>Velocity Control</h3>
-                <input type="number" id="velocity-input" placeholder="Velocity (-100 to 100)" min="-100" max="100" value="0">
-                <button onclick="setVelocity()">Set Velocity</button>
+        <!-- Mode Selection Page -->
+        <div id="page-mode-select" class="page active">
+            <h2>Select Control Mode</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="selectMode('trackr')">
+                    <h3>Tracker Mode</h3>
+                    <p>Automatic LED tracking with camera</p>
+                </button>
+                <button class="mode-btn" onclick="selectMode('teleop')">
+                    <h3>Teleop Mode</h3>
+                    <p>Manual D-pad control</p>
+                </button>
+                <button class="mode-btn" onclick="selectMode('motor-test')">
+                    <h3>Motor Test</h3>
+                    <p>Slider control and testing</p>
+                </button>
+                <button class="mode-btn" onclick="selectMode('calibrate')">
+                    <h3>Calibrate</h3>
+                    <p>IMU and motor calibration</p>
+                </button>
             </div>
             
-            <div class="control-group">
-                <h3>Position Control</h3>
-                <input type="number" id="position-input" placeholder="Position" step="0.1" value="0">
-                <button onclick="setPosition()">Set Position</button>
+            <div class="telemetry">
+                <strong>Live System Data:</strong><br>
+                <strong>Pan Motor:</strong><br>
+                &nbsp;&nbsp;Velocity: <span id="pan-velocity">--</span>°/s | Position: <span id="pan-position">--</span>°<br>
+                <strong>Tilt Motor:</strong><br>
+                &nbsp;&nbsp;Velocity: <span id="tilt-velocity">--</span>°/s | Position: <span id="tilt-position">--</span>°<br>
             </div>
         </div>
 
-        <div style="text-align: center; margin: 20px 0;">
-            <button onclick="stopMotor()" class="stop">STOP</button>
-            <button onclick="zeroEncoder()">Zero Encoder</button>
+        <!-- Tracker Mode Page -->
+        <div id="page-trackr" class="page">
+            <button class="back-btn" onclick="goBack()">← Back to Mode Select</button>
+            <h2>Tracker Mode</h2>
+            
+            <!-- Lock Status Banner -->
+            <div id="lock-status" class="lock-status">
+                <span id="lock-icon"></span>
+                <span id="lock-text">Searching for target...</span>
+            </div>
+            
+            <div class="tracker-controls">
+                <div class="control-group">
+                    <h3>Camera Settings</h3>
+                    <label>LED Threshold: <span id="threshold-display">760</span></label>
+                    <input type="range" id="led-threshold" min="100" max="2000" value="760" 
+                           oninput="updateThreshold(this.value)">
+                    <p class="control-info">LED Detected: <span id="led-status" class="disconnected">No</span></p>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Tracking Control</h3>
+                    <button onclick="startTracking()" class="success">Start Tracking</button>
+                    <button onclick="stopTracking()" class="stop">Stop Tracking</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Target Error</h3>
+                    <p>Pan Error: <span id="pan-error">--</span> px</p>
+                    <p>Tilt Error: <span id="tilt-error">--</span> px</p>
+                </div>
+            </div>
+            
+            <div class="telemetry">
+                <strong>Tracking Data:</strong><br>
+                <strong>Pan:</strong> Vel: <span id="trackr-pan-velocity">--</span>°/s | Pos: <span id="trackr-pan-position">--</span>°<br>
+                <strong>Tilt:</strong> Vel: <span id="trackr-tilt-velocity">--</span>°/s | Pos: <span id="trackr-tilt-position">--</span>°<br>
+                <strong>IMU:</strong> <span id="trackr-euler">-- , -- , --</span>°<br>
+                <strong>Status:</strong> <span id="trackr-status">Ready</span>
+            </div>
+            
+            <div class="telemetry imu-section">
+                <h3>IMU Sensor Data</h3>
+                <div class="imu-data-grid">
+                    <div class="imu-data-item">
+                        <label>Heading (Yaw):</label>
+                        <span id="trackr-imu-euler-x" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Roll:</label>
+                        <span id="trackr-imu-euler-y" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Pitch:</label>
+                        <span id="trackr-imu-euler-z" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro X:</label>
+                        <span id="trackr-imu-gyro-x" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Y:</label>
+                        <span id="trackr-imu-gyro-y" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Z:</label>
+                        <span id="trackr-imu-gyro-z" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel X:</label>
+                        <span id="trackr-imu-accel-x" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Y:</label>
+                        <span id="trackr-imu-accel-y" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Z:</label>
+                        <span id="trackr-imu-accel-z" class="imu-value">--</span> m/s²
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="telemetry" id="telemetry">
-            <strong>📊 Live Data:</strong><br>
-            <strong>Motor:</strong><br>
-            &nbsp;&nbsp;Velocity: <span id="velocity-value">--</span><br>
-            &nbsp;&nbsp;Position: <span id="position-value">--</span><br>
-            <strong>IMU Sensor:</strong><br>
-            &nbsp;&nbsp;Euler (°): <span id="euler-value">-- , -- , --</span><br>
-            &nbsp;&nbsp;Gyro (°/s): <span id="gyro-value">-- , -- , --</span><br>
-            &nbsp;&nbsp;Accel (m/s²): <span id="accel-value">-- , -- , --</span><br>
-            <strong>Status:</strong> <span id="status-value">Waiting for connection...</span>
+        <!-- Teleop Mode Page -->
+        <div id="page-teleop" class="page">
+            <button class="back-btn" onclick="goBack()">← Back to Mode Select</button>
+            <h2>Teleop Mode</h2>
+            
+            <div class="teleop-controls">
+                <!-- D-Pad Control -->
+                <div class="control-group dpad-container">
+                    <h3>D-Pad Control</h3>
+                    <div class="dpad">
+                        <div class="dpad-row">
+                            <button class="dpad-btn dpad-diagonal" onmousedown="startDpadMove('up-left')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('up-left')" ontouchend="stopDpadMove()">
+                                ◤
+                            </button>
+                            <button class="dpad-btn dpad-up" onmousedown="startDpadMove('up')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('up')" ontouchend="stopDpadMove()">
+                                ▲
+                            </button>
+                            <button class="dpad-btn dpad-diagonal" onmousedown="startDpadMove('up-right')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('up-right')" ontouchend="stopDpadMove()">
+                                ◥
+                            </button>
+                        </div>
+                        <div class="dpad-row">
+                            <button class="dpad-btn dpad-left" onmousedown="startDpadMove('left')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('left')" ontouchend="stopDpadMove()">
+                                ◄
+                            </button>
+                            <button class="dpad-btn dpad-center" onclick="centerPosition()">
+                                ●
+                            </button>
+                            <button class="dpad-btn dpad-right" onmousedown="startDpadMove('right')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('right')" ontouchend="stopDpadMove()">
+                                ►
+                            </button>
+                        </div>
+                        <div class="dpad-row">
+                            <button class="dpad-btn dpad-diagonal" onmousedown="startDpadMove('down-left')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('down-left')" ontouchend="stopDpadMove()">
+                                ◣
+                            </button>
+                            <button class="dpad-btn dpad-down" onmousedown="startDpadMove('down')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('down')" ontouchend="stopDpadMove()">
+                                ▼
+                            </button>
+                            <button class="dpad-btn dpad-diagonal" onmousedown="startDpadMove('down-right')" onmouseup="stopDpadMove()" ontouchstart="startDpadMove('down-right')" ontouchend="stopDpadMove()">
+                                ◢
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Quick Controls</h3>
+                    <button onclick="stopAll()" class="stop">STOP ALL</button>
+                    <button onclick="centerPosition()">Center Position</button>
+                </div>
+            </div>
+            
+            <div class="telemetry">
+                <strong>Teleop Data:</strong><br>
+                <strong>Pan:</strong> Vel: <span id="teleop-pan-velocity">--</span> | Pos: <span id="teleop-pan-position">--</span>°<br>
+                <strong>Tilt:</strong> Vel: <span id="teleop-tilt-velocity">--</span> | Pos: <span id="teleop-tilt-position">--</span>°<br>
+                <strong>IMU:</strong> <span id="teleop-euler">-- , -- , --</span>°<br>
+                <strong>Status:</strong> <span id="teleop-status">Manual Control Active</span>
+            </div>
+            
+            <div class="telemetry imu-section">
+                <h3>IMU Sensor Data</h3>
+                <div class="imu-data-grid">
+                    <div class="imu-data-item">
+                        <label>Heading (Yaw):</label>
+                        <span id="teleop-imu-euler-x" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Roll:</label>
+                        <span id="teleop-imu-euler-y" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Pitch:</label>
+                        <span id="teleop-imu-euler-z" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro X:</label>
+                        <span id="teleop-imu-gyro-x" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Y:</label>
+                        <span id="teleop-imu-gyro-y" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Z:</label>
+                        <span id="teleop-imu-gyro-z" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel X:</label>
+                        <span id="teleop-imu-accel-x" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Y:</label>
+                        <span id="teleop-imu-accel-y" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Z:</label>
+                        <span id="teleop-imu-accel-z" class="imu-value">--</span> m/s²
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motor Test Mode Page -->
+        <div id="page-motor-test" class="page">
+            <button class="back-btn" onclick="goBack()">← Back to Mode Select</button>
+            <h2>Motor Test Mode</h2>
+            
+            <!-- Control Mode Selector -->
+            <div class="control-mode-selector">
+                <button id="test-velocity-mode-btn" class="mode-toggle active" onclick="setTestControlMode('velocity')">
+                    Velocity Control
+                </button>
+                <button id="test-position-mode-btn" class="mode-toggle" onclick="setTestControlMode('position')">
+                    Position Control
+                </button>
+            </div>
+            
+            <div class="teleop-controls">
+                <!-- Slider Controls -->
+                <div class="control-group">
+                    <h3>Pan Control</h3>
+                    <div id="test-pan-velocity-controls">
+                        <label>Velocity (°/s): -100 to 100</label>
+                        <input type="range" id="test-pan-velocity-slider" min="-100" max="100" value="0" 
+                               oninput="updateTestPanVelocity(this.value)">
+                        <input type="number" id="test-pan-velocity-input" min="-100" max="100" value="0">
+                        <button onclick="setTestPanVelocity()">Set Pan Velocity</button>
+                    </div>
+                    <div id="test-pan-position-controls" style="display:none;">
+                        <label>Position (degrees)</label>
+                        <input type="number" id="test-pan-position-input" step="1" value="0">
+                        <button onclick="setTestPanPosition()">Go To Position</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Tilt Control</h3>
+                    <div id="test-tilt-velocity-controls">
+                        <label>Velocity (°/s): -100 to 100</label>
+                        <input type="range" id="test-tilt-velocity-slider" min="-100" max="100" value="0" 
+                               oninput="updateTestTiltVelocity(this.value)">
+                        <input type="number" id="test-tilt-velocity-input" min="-100" max="100" value="0">
+                        <button onclick="setTestTiltVelocity()">Set Tilt Velocity</button>
+                    </div>
+                    <div id="test-tilt-position-controls" style="display:none;">
+                        <label>Position (degrees)</label>
+                        <input type="number" id="test-tilt-position-input" step="1" value="0">
+                        <button onclick="setTestTiltPosition()">Go To Position</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Quick Controls</h3>
+                    <button onclick="stopAll()" class="stop">STOP ALL</button>
+                    <button onclick="centerPosition()">Center Position</button>
+                </div>
+            </div>
+            
+            <div class="telemetry">
+                <strong>Motor Test Data:</strong><br>
+                <strong>Pan:</strong> Vel: <span id="test-pan-velocity">--</span>°/s | Pos: <span id="test-pan-position">--</span>°<br>
+                <strong>Tilt:</strong> Vel: <span id="test-tilt-velocity">--</span>°/s | Pos: <span id="test-tilt-position">--</span>°<br>
+                <strong>IMU:</strong> <span id="test-euler">-- , -- , --</span>°<br>
+                <strong>Status:</strong> <span id="test-status">Motor Testing Active</span>
+            </div>
+            
+            <div class="telemetry imu-section">
+                <h3>IMU Sensor Data</h3>
+                <div class="imu-data-grid">
+                    <div class="imu-data-item">
+                        <label>Heading (Yaw):</label>
+                        <span id="test-imu-euler-x" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Roll:</label>
+                        <span id="test-imu-euler-y" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Pitch:</label>
+                        <span id="test-imu-euler-z" class="imu-value">--</span>°
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro X:</label>
+                        <span id="test-imu-gyro-x" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Y:</label>
+                        <span id="test-imu-gyro-y" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Gyro Z:</label>
+                        <span id="test-imu-gyro-z" class="imu-value">--</span>°/s
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel X:</label>
+                        <span id="test-imu-accel-x" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Y:</label>
+                        <span id="test-imu-accel-y" class="imu-value">--</span> m/s²
+                    </div>
+                    <div class="imu-data-item">
+                        <label>Accel Z:</label>
+                        <span id="test-imu-accel-z" class="imu-value">--</span> m/s²
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calibrate Mode Page -->
+        <div id="page-calibrate" class="page">
+            <button class="back-btn" onclick="goBack()">← Back to Mode Select</button>
+            <h2>Calibration Mode</h2>
+            
+            <div class="calibrate-controls">
+                <div class="control-group">
+                    <h3>IMU Calibration</h3>
+                    <p class="control-info">Calibrate the IMU sensor for accurate orientation tracking.</p>
+                    <button onclick="startIMUCalibration()" class="success">Start IMU Calibration</button>
+                    <button onclick="loadIMUCalibration()">Load Saved Calibration</button>
+                    <p class="control-info">Status: <span id="imu-cal-status">Ready</span></p>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Motor Calibration</h3>
+                    <p class="control-info">Set home position for pan motor and zero position for tilt motor. Tilt limits are automatically set from zero.</p>
+                    <button onclick="setPanHome()">Set Pan Home (Current Position)</button>
+                    <button onclick="setTiltZero()">Set Tilt Zero (Current Position)</button>
+                    <p class="control-info">Pan Home: <span id="pan-home">--</span>° | Tilt Zero: <span id="tilt-zero">--</span>°</p>
+                    <button onclick="saveMotorCalibration()" class="success">Save Motor Calibration</button>
+                </div>
+            </div>
+            
+            <div class="telemetry">
+                <strong>Current Positions:</strong><br>
+                <strong>Pan:</strong> <span id="cal-pan-position">--</span>°<br>
+                <strong>Tilt:</strong> <span id="cal-tilt-position">--</span>°<br>
+                <strong>IMU:</strong> <span id="cal-euler">-- , -- , --</span>°<br>
+                <strong>Status:</strong> <span id="cal-status">Ready for calibration</span>
+            </div>
         </div>
     </div>
 

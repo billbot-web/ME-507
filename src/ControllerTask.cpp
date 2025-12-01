@@ -18,20 +18,28 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
                                        Share<int16_t>*  tilt_err,
                                        Share<float_t>*  tiltVelo,
                                        Share<float_t>*  panVelo_,
-                                       Share<u_int8_t>* Cam_mode,
+                                       Share<uint8_t>* tilt_mode,
+                                       Share<uint8_t>* pan_mode,
+                                       Share<uint8_t>* Cam_mode,
                                        Share<bool>*       hasLed,
                                        Share<uint8_t>*   UI_mode,
                                        Share<bool>*   dcalibrate,
+                                       Share<int8_t>*  dpad_pan,
+                                       Share<int8_t>*  dpad_tilt,
                                        uint32_t updateMs) noexcept
   : updateMs_(updateMs),
     pan_err_(pan_err),
     tilt_err_(tilt_err),
     tiltVelo_(tiltVelo),
     panVelo_(panVelo_),
+    tilt_mode_(tilt_mode),
+    pan_mode_(pan_mode),
     Cam_mode_(Cam_mode),
     hasLed_(hasLed),
     UI_mode_(UI_mode),
     dcalibrate_(dcalibrate),
+    dpad_pan_(dpad_pan),
+    dpad_tilt_(dpad_tilt),
 
     fsm_(states_, 2)
 {
@@ -124,7 +132,10 @@ uint8_t ControllerTask::exec_scan()
 
     switch (cmd) {
         case 0: // stop go back to wait
+            //set mototo modes
             // set motor efforts to zero
+            if (instance_->pan_mode_) instance_->pan_mode_->put(0);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
             return WAIT;
@@ -155,8 +166,12 @@ uint8_t ControllerTask::exec_trackr()
 
     switch (cmd) {
         case 0: // STOP
+            // set motor efforts to zero
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(0);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
             return WAIT;
 
         case 2: // ZERO integrator but keep running
@@ -188,15 +203,30 @@ uint8_t ControllerTask::exec_teleop()
     if (instance_->UI_mode_) {
         cmd = instance_->UI_mode_->get();
     }
+    // Read dpad inputs
+    if (instance_->dpad_pan_ && instance_->dpad_tilt_) {
+        int8_t pan_dir = instance_->dpad_pan_->get();
+        int8_t tilt_dir = instance_->dpad_tilt_->get();
+        // Set velocities based on dpad input
+        if (instance_->panVelo_) instance_->panVelo_->put(pan_dir * instance_->SCAN_PAN_VELO); 
+        // 15 deg/sec per button press
+        if (instance_->tiltVelo_) instance_->tiltVelo_->put(tilt_dir * instance_->SCAN_PAN_VELO);
+    }
 
     switch (cmd) {
         case 0: // STOP
             // set motor efforts to zero
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(0);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
             return WAIT;
 
         case 1:
+            //set scan velocities
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
             return SCAN;
