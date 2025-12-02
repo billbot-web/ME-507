@@ -23,10 +23,10 @@ public:
     enum StateId : uint8_t {
         CALIBRATE = 0,  ///< Calibration state
         WAIT = 1,   ///< Effort = 0, waiting for RUN command
-        SCAN  = 2,    ///< Scanning for target (not implemented)
+        SCAN  = 2,    ///< Scanning for target
         TRACKR = 3,  ///< Tracking mode
-        TELEOP = 4    ///< Manual teleoperation (not implemented)
-
+        TELEOP = 4,    ///< Manual teleoperation
+        MOTOR_TEST = 5  ///< Motor testing mode
     };
 
     /**
@@ -41,8 +41,8 @@ public:
     ControllerTask(Share<int16_t>* pan_err,
                    Share<int16_t>*  tilt_err,
                        Share<float_t>*  tiltpos,
-                       Share<float_t>*  tiltVelo,
-                       Share<float_t>*  panVelo,
+                       Share<int8_t>*  tiltVelo,
+                       Share<int8_t>*  panVelo,
                        Share<uint8_t>*  tilt_mode,
                        Share<uint8_t>*  pan_mode,
                        Share<uint8_t>*  Cam_mode,
@@ -69,8 +69,8 @@ private:
     Share<int16_t>* pan_err_;
     Share<int16_t>* tilt_err_;
     Share<float_t>* tiltpos_;
-    Share<float_t>* tiltVelo_;
-    Share<float_t>* panVelo_;
+    Share<int8_t>* tiltVelo_;
+    Share<int8_t>* panVelo_;
     Share<uint8_t>*  tilt_mode_;
     Share<uint8_t>*  pan_mode_;
     Share<uint8_t>*  Cam_mode_;
@@ -89,7 +89,8 @@ private:
     State state_scan_{  SCAN,  "CTL_SCAN",  &ControllerTask::exec_scan };
     State state_trackr_{ TRACKR, "CTL_TRACKR", &ControllerTask::exec_trackr };
     State state_teleop_{  TELEOP,  "CTL_TELEOP",  &ControllerTask::exec_teleop };
-    State* states_[5] = { &state_calibrate_, &state_wait_, &state_scan_, &state_trackr_, &state_teleop_ };
+    State state_motor_test_{ MOTOR_TEST, "CTL_MOTOR_TEST", &ControllerTask::exec_motor_test };
+    State* states_[6] = { &state_calibrate_, &state_wait_, &state_scan_, &state_trackr_, &state_teleop_, &state_motor_test_ };
     FSM    fsm_;
 
     // State functions (static wrappers)
@@ -98,6 +99,7 @@ private:
     static uint8_t exec_scan();
     static uint8_t exec_trackr();
     static uint8_t exec_teleop();
+    static uint8_t exec_motor_test();
 
     /// Singleton instance pointer for static callbacks
     static ControllerTask* instance_;

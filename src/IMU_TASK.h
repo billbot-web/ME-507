@@ -56,7 +56,7 @@ public:
    * @param updateMs IMU sampling interval in ms
    */
   IMUTask(Adafruit_BNO055* imu, Share<EulerAngles>* EulerAngles, Share<GyroData>* GyroData, 
-    Share<AccelData>* AccelData, uint32_t updateMs = 200) noexcept;
+    Share<AccelData>* AccelData, uint32_t updateMs = 500) noexcept;
 
   /**
    * @brief Initialize the IMU sensor

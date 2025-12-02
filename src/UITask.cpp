@@ -69,6 +69,8 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
   motortest_mode_->put(false); // Default motor test mode to false
   tilt_cmdShare_->put(0);
   pan_cmdShare_->put(0);
+  tilt_zeroShare_->put(false);
+  pan_zeroShare_->put(false);
 }
 
 // FreeRTOS C-style task entry function. Matches EncoderTask pattern where the
@@ -551,12 +553,20 @@ void UITask::handleChooseModeMessage(AsyncWebSocketClient* client, const String&
   if (message == "mode:idle") {
     Serial.println("[CHOOSE_MODE] Mode: Idle (staying in choose mode)");
     if (instance_->ui_mode_) instance_->ui_mode_->put(0); // 0 = CHOOSE_MODE
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
   }
   else if (message == "mode:trackr") {
     Serial.println("[CHOOSE_MODE] Mode: Tracker - setting ui_mode to 1");
     if (instance_->ui_mode_) instance_->ui_mode_->put(1); // 1 = TRACKER
     if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_trackr\"}");
   }
   else if (message == "mode:teleop") {
@@ -646,6 +656,10 @@ void UITask::handleCalibrateMessage(AsyncWebSocketClient* client, const String& 
     if (instance_->ui_mode_) instance_->ui_mode_->put(0);
     if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
@@ -730,6 +744,10 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
     Serial.println("[MOTOR_TEST] Returning to CHOOSE_MODE");
     if (instance_->ui_mode_) instance_->ui_mode_->put(0);
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
@@ -762,7 +780,7 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
     float vel = message.substring(13).toFloat();
     Serial.println("[MOTOR_TEST] Setting pan velocity to " + String(vel));
     if (instance_->pan_vref_) instance_->pan_vref_->put(static_cast<int8_t>(vel));
-    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(2));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(1));
     sendWebSocketResponse(client, "{\"status\":\"pan_velocity_set\",\"value\":" + String(vel) + "}");
   }
   else if (message.startsWith("pan:position:")) {
@@ -773,6 +791,7 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
   }
   else if (message.startsWith("tilt:velocity:")) {
     float vel = message.substring(14).toFloat();
+    Serial.println("[MOTOR_TEST] Setting tilt velocity to " + String(vel));
     if (instance_->tilt_vref_) instance_->tilt_vref_->put(static_cast<int8_t>(vel));
     if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(1));
     sendWebSocketResponse(client, "{\"status\":\"tilt_velocity_set\",\"value\":" + String(vel) + "}");
@@ -825,6 +844,10 @@ void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& mes
     // Stop D-pad
     if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
     if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(0);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
@@ -849,6 +872,11 @@ void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& mes
     sendWebSocketResponse(client, "{\"status\":\"mode_calibrate\"}");
   }
   Serial.print(message);
+  //enable velocity control on dpad command
+  if (message.startsWith("dpad:")) {
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1);
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1);
+  }
   if (message == "dpad:up") {
     if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(1);
     if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
@@ -914,6 +942,10 @@ void UITask::handleTrackerMessage(AsyncWebSocketClient* client, const String& me
     Serial.println("[TRACKER] Returning to CHOOSE_MODE");
     if (instance_->ui_mode_) instance_->ui_mode_->put(0);
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0); // wait
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0); // wait
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }

@@ -54,6 +54,9 @@ public:
   /// Run one FSM tick: scan states and execute the selected state's behavior
   void update() noexcept { fsm_.run_curstate(); }
 
+  // Set the static instance pointer (called by task function before each update)
+  static void set_instance(MotorTask* inst) { instance_ = inst; }
+
 private:
   // Static wrappers used for State C-style function pointers
   static uint8_t exec_wait() noexcept;

@@ -17,8 +17,8 @@ ControllerTask* ControllerTask::instance_ = nullptr;
 ControllerTask::ControllerTask(Share<int16_t>* pan_err,
                                        Share<int16_t>*  tilt_err,
                                        Share<float_t>*  tiltpos,
-                                       Share<float_t>*  tiltVelo,
-                                       Share<float_t>*  panVelo_,
+                                       Share<int8_t>*  tiltVelo,
+                                       Share<int8_t>*  panVelo,
                                        Share<uint8_t>* tilt_mode,
                                        Share<uint8_t>* pan_mode,
                                        Share<uint8_t>* Cam_mode,
@@ -43,7 +43,7 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
     dpad_pan_(dpad_pan),
     dpad_tilt_(dpad_tilt),
     //fsm initialization
-    fsm_(states_, 5)
+    fsm_(states_, 6)
 {
     instance_ = this;
     // Initialize output to zero effort to both motors
@@ -90,10 +90,6 @@ uint8_t ControllerTask::exec_wait()
 
     //instance_->ConstrainTiltMotor(instance_->tiltpos_);
 
-    // Ensure effort is zero in WAIT
-    if (instance_->panVelo_) instance_->panVelo_->put(0);
-    if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
-
     // Read latest command form UI (non-blocking)
     int8_t cmd = 0;
     if (instance_->UI_mode_) {
@@ -108,13 +104,21 @@ uint8_t ControllerTask::exec_wait()
     }
 
     switch (cmd) {
+        case 3: // motor test mode
+            Serial.println("Switching to MOTOR_TEST mode from wait");
+            return MOTOR_TEST;
+
         case 2: // run in telop mode
             Serial.println("Switching to TELEOP mode from wait");
+            if (instance_-> pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_-> tilt_mode_) instance_->tilt_mode_->put(1);
             return TELEOP;
 
         case 1: //run in scan mode
             Serial.println("Switching to SCAN mode from wait");
             // set scan velocities
+            if (instance_-> pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_-> tilt_mode_) instance_->tilt_mode_->put(1);
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
             return SCAN;
@@ -167,13 +171,25 @@ uint8_t ControllerTask::exec_scan()
 
         case 2: //go to teleop mode
             Serial.println("Switching to TELEOP mode from SCAN");
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
              //set motor modes
             return TELEOP;
+        case 3: //go to motor test mode
+            Serial.println("Switching to MOTOR_TEST mode from SCAN");
+            return MOTOR_TEST;
     }
     // Check if LED is found to switch to TRACKR
     if (instance_->hasLed_) {
         bool led_found = instance_->hasLed_->get();
         if (led_found) {
+            if (instance_-> pan_mode_) instance_->pan_mode_->put(2);
+            if (instance_-> tilt_mode_) instance_->tilt_mode_->put(2);
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
             return TRACKR;
         }
     }
@@ -203,8 +219,19 @@ uint8_t ControllerTask::exec_trackr()
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
             return WAIT;
 
+        case 3: 
+            //go to teleop mode
+            Serial.println("Switching to Motor Test mode from TRACKR");
+            return MOTOR_TEST;
+
+
         case 2: // ZERO integrator but keep running
-            break;
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            return TELEOP;
 
         case 1:
         default:
@@ -262,12 +289,66 @@ uint8_t ControllerTask::exec_teleop()
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
             return SCAN;
+        case 3: //go to motor test mode
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            return MOTOR_TEST;
     }
 
     // --- PID computation ---
 
     return TELEOP;   // stay in RUN until STOP command
 }
+
+uint8_t ControllerTask::exec_motor_test()
+{
+    if (!instance_) return WAIT;
+
+    // Handle commands while running
+    int8_t cmd = 3;
+    if (instance_->UI_mode_) {
+        cmd = instance_->UI_mode_->get();
+    }
+
+    // In motor test mode, the UI directly controls motor velocities
+    // via tiltVelo_ and panVelo_ shares, so we don't need to do anything here
+    // except monitor for mode changes
+
+    switch (cmd) {
+        case 0: // STOP - return to wait
+            // set motor efforts to zero
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            //set motor modes to 0
+            if (instance_->pan_mode_) instance_->pan_mode_->put(0);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
+            Serial.println("[ControllerTask] Returning to WAIT from MOTOR_TEST");
+            return WAIT;
+
+        case 1: // Switch to SCAN
+            Serial.println("[ControllerTask] Switching to SCAN from MOTOR_TEST");
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+            return SCAN;
+        case 2: // Switch to TELEOP
+            if (instance_->pan_mode_) instance_->pan_mode_->put(1);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            Serial.println("[ControllerTask] Switching to TELEOP from MOTOR_TEST");
+            return TELEOP;
+
+        case 3: // Stay in MOTOR_TEST
+        default:
+            break;
+    }
+
+    return MOTOR_TEST;
+}
+
 // void ControllerTask::ConstrainTiltMotor(Share<float_t>* tiltpos) noexcept {
 //     if (!tiltpos) return;
 

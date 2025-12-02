@@ -22,7 +22,7 @@ MotorTask::MotorTask(DRV883* motor,
     position_pid_(),
     fsm_(states_, 3)
 {
-  instance_ = this;
+  // Don't set instance_ here - will be set by task function
   // Initialize PID controllers with gains
   // Kp, Ki, Kd
   velocity_pid_.Init(1.0, 0.0, 0.0);
@@ -35,6 +35,13 @@ MotorTask::MotorTask(DRV883* motor,
  */
 uint8_t MotorTask::exec_wait() noexcept {
   if (!instance_) return -1;
+
+  static uint32_t lastDebug = 0;
+  if (millis() - lastDebug > 2000) {
+    Serial.print("[MotorTask WAIT] Motor pointer: 0x");
+    Serial.println((uint32_t)instance_->motor_, HEX);
+    lastDebug = millis();
+  }
 
   // Always keep motor stopped while waiting
   if (instance_->motor_) instance_->motor_->brake();
@@ -67,6 +74,7 @@ uint8_t MotorTask::exec_velorun() noexcept {
     int8_t new_state = instance_->cmdShare_->get();
     if (new_state == static_cast<int8_t>(0)) { // STOP
       instance_->motor_->brake();
+      Serial.print("[MotorTask] Velocity run switching to wait");
       return static_cast<int>(WAIT);
     }
     if (new_state == static_cast<int8_t>(2)) { // POSITION_RUN
@@ -83,10 +91,11 @@ uint8_t MotorTask::exec_velorun() noexcept {
   // Get desired position from posref share
   if (instance_->posref_) {
     desired_velocity = static_cast<float>(instance_->vref_->get());
+    Serial.println("Desired Velocity: " + String(desired_velocity));
   }
   // Get current position from position share
-  if (instance_->posShare_) {
-    current_velocity = instance_->posShare_->get();
+  if (instance_->veloShare_) {
+    current_velocity = instance_->veloShare_->get();
   }
   
   // Calculate position error (setpoint - current)
@@ -94,10 +103,10 @@ uint8_t MotorTask::exec_velorun() noexcept {
  
   
   // Update PID with position error
-  instance_->position_pid_.UpdateError(velocity_error);
+  instance_->velocity_pid_.UpdateError(velocity_error);
   
   // Get PID output (motor effort)
-  double pid_output = instance_->position_pid_.TotalError();
+  double pid_output = instance_->velocity_pid_.TotalError();
   
   // Convert to motor effort range (-100 to 100)
   int motor_effort = static_cast<int>(pid_output);
@@ -161,6 +170,7 @@ uint8_t MotorTask::exec_posrun() noexcept {
   // Apply motor effort
   if (instance_->motor_) {
     instance_->motor_->setEff(motor_effort);
+    Serial.println("Motor Effort: " + String(motor_effort));
   }
   // Store last effort for debugging/continuity
   instance_->last_effort_ = motor_effort;

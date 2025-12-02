@@ -50,6 +50,9 @@ public:
 
     void update() noexcept { fsm_.run_curstate(); }
     
+    // Set the static instance pointer (called by task function before each update)
+    static void set_instance(EncoderTask* inst) { instance_ = inst; }
+    
 private:
     // Hardware / timing config
     Encoder* encoder_;
@@ -74,5 +77,5 @@ private:
     static uint8_t exec_wait() noexcept;
     static uint8_t exec_run() noexcept;
 
-    
+    // Static instance pointer for state functions
 };

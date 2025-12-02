@@ -39,7 +39,7 @@ EncoderTask::EncoderTask(Encoder* encoder,
     zeroShare_(zeroShare),
     fsm_(states_, 2)
 {
-  instance_ = this;
+  // Don't set instance_ here - will be set by task function
   if (encoder_) (void)encoder_->begin();
 }
 

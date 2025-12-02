@@ -39,7 +39,10 @@ extern "C" void tilt_motor_task_func(void* arg) {
   MotorTask* motorTask = static_cast<MotorTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(50);
   for (;;) {
-    if (motorTask) motorTask->update();
+    if (motorTask) {
+      MotorTask::set_instance(motorTask);  // Set instance before each update
+      motorTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -48,7 +51,10 @@ extern "C" void pan_motor_task_func(void* arg) {
   MotorTask* motorTask = static_cast<MotorTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(50);
   for (;;) {
-    if (motorTask) motorTask->update();
+    if (motorTask) {
+      MotorTask::set_instance(motorTask);  // Set instance before each update
+      motorTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -57,7 +63,10 @@ extern "C" void tilt_encoder_task_func(void* arg) {
   EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(10);
   for (;;) {
-    if (encoderTask) encoderTask->update();
+    if (encoderTask) {
+      EncoderTask::set_instance(encoderTask);  // Set instance before each update
+      encoderTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -66,7 +75,10 @@ extern "C" void pan_encoder_task_func(void* arg) {
   EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
   const TickType_t delayTicks = pdMS_TO_TICKS(10);
   for (;;) {
-    if (encoderTask) encoderTask->update();
+    if (encoderTask) {
+      EncoderTask::set_instance(encoderTask);  // Set instance before each update
+      encoderTask->update();
+    }
     vTaskDelay(delayTicks);
   }
 }
@@ -146,7 +158,7 @@ Share<AccelData> g_accelData{"accel_data"};
 //Camera task
 CameraTask cameraTask(&camera, &pan_err, &tilt_err, &hasLed, &ledThreshold, &cam_Mode);
 //Controller task
-ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encPosition, &tilt_encVelocity, &pan_encVelocity, &tilt_Cmd, &pan_Cmd, &cam_Mode, &hasLed, &UI_mode, &dcalibrate, &dpad_pan, &dpad_tilt);
+ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encPosition, &tilt_vref, &pan_vref, &tilt_Cmd, &pan_Cmd, &cam_Mode, &hasLed, &UI_mode, &dcalibrate, &dpad_pan, &dpad_tilt);
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
 MotorTask tiltmotorTask(&tiltmotor, &tilt_Cmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
 EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_Cmd, &tilt_encZero);
@@ -265,7 +277,7 @@ void setup() {
   xTaskCreate(
     controller_task_func,
     "ControllerTask",
-    4096,
+    2048,
     &controllerTask,
     3,
     nullptr
