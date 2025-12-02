@@ -91,6 +91,7 @@ private:
 
   // IMU sensor
   Adafruit_BNO055* imu_;
+  bool imuInitialized_ = false;
   
   // Shared data
   Share<EulerAngles>* eulerAngles_;

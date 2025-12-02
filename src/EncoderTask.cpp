@@ -42,23 +42,7 @@ EncoderTask::EncoderTask(Encoder* encoder,
   instance_ = this;
   if (encoder_) (void)encoder_->begin();
 }
-/**
- * @brief FreeRTOS task entry; repeatedly calls update() at configured period.
- */
-// ---------------------------------------------------------------------------
-// FreeRTOS task entry
-// This entry repeatedly calls EncoderTask::update() at a fixed period.
-  extern "C" void encoder_task_func(void* arg) {
-  EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
-  const TickType_t delayTicks = pdMS_TO_TICKS(10); // 10 ms tick
-  for (;;) {
-    if (encoderTask) {
-      EncoderTask::instance_ = encoderTask;  // Set instance for this task's context
-      encoderTask->update();
-    }
-    vTaskDelay(delayTicks);
-  }
-}
+
 // ---------------- State implementations ----------------
 
 /**
@@ -70,14 +54,6 @@ uint8_t EncoderTask::exec_wait() noexcept
   if (!instance_) return -1;
 
   static uint32_t lastDebug = 0;
-  if (millis() - lastDebug > 3000) {
-    Serial.println("[EncoderTask] In WAIT state");
-    if (instance_->cmdShare_) {
-      Serial.print("[EncoderTask] cmdShare value: ");
-      Serial.println(instance_->cmdShare_->get());
-    }
-    lastDebug = millis();
-  }
 
   // Check for zero command
   if (instance_->zeroShare_ && instance_->zeroShare_->get()) {
@@ -115,13 +91,6 @@ uint8_t EncoderTask::exec_wait() noexcept
 uint8_t EncoderTask::exec_run() noexcept
 {
   if (!instance_) return -1;
-
-  static uint32_t lastDebug = 0;
-  if (millis() - lastDebug > 3000) {
-    Serial.println("[EncoderTask] In RUN state, reading encoder");
-    lastDebug = millis();
-  }
-
   // Check for zero command
   if (instance_->zeroShare_ && instance_->zeroShare_->get()) {
     if (instance_->encoder_) instance_->encoder_->zero();
@@ -156,15 +125,6 @@ uint8_t EncoderTask::exec_run() noexcept
     const float pos = instance_->encoder_->get_position();
     //degrees/second
     const float vel_cps = static_cast<float>(instance_->encoder_->get_velocity() * 1e6); // degrees/second
-
-    static uint32_t lastPrint = 0;
-    if (millis() - lastPrint > 3000) {
-      Serial.print("[EncoderTask] Raw position: ");
-      Serial.print(pos);
-      Serial.print(", velocity: ");
-      Serial.println(vel_cps);
-      lastPrint = millis();
-    }
 
     if (instance_->positionShare_) instance_->positionShare_->put(pos);
     if (instance_->velocityShare_) instance_->velocityShare_->put(vel_cps);

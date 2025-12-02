@@ -29,28 +29,63 @@
 #include "taskshare.h"
 
 // FreeRTOS task entry declared in MotorTask.cpp
-extern "C" void motor_task_func(void* arg);
-extern "C" void encoder_task_func(void* arg);
 extern "C" void ui_task_func(void* arg);
 extern "C" void imu_task_func(void* arg);
 extern "C" void controller_task_func(void* arg);
 extern "C" void camera_task_func(void* arg);
+
+// Create separate task functions for tilt and pan to avoid instance_ conflicts
+extern "C" void tilt_motor_task_func(void* arg) {
+  MotorTask* motorTask = static_cast<MotorTask*>(arg);
+  const TickType_t delayTicks = pdMS_TO_TICKS(50);
+  for (;;) {
+    if (motorTask) motorTask->update();
+    vTaskDelay(delayTicks);
+  }
+}
+
+extern "C" void pan_motor_task_func(void* arg) {
+  MotorTask* motorTask = static_cast<MotorTask*>(arg);
+  const TickType_t delayTicks = pdMS_TO_TICKS(50);
+  for (;;) {
+    if (motorTask) motorTask->update();
+    vTaskDelay(delayTicks);
+  }
+}
+
+extern "C" void tilt_encoder_task_func(void* arg) {
+  EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
+  const TickType_t delayTicks = pdMS_TO_TICKS(10);
+  for (;;) {
+    if (encoderTask) encoderTask->update();
+    vTaskDelay(delayTicks);
+  }
+}
+
+extern "C" void pan_encoder_task_func(void* arg) {
+  EncoderTask* encoderTask = static_cast<EncoderTask*>(arg);
+  const TickType_t delayTicks = pdMS_TO_TICKS(10);
+  for (;;) {
+    if (encoderTask) encoderTask->update();
+    vTaskDelay(delayTicks);
+  }
+}
 
 // ----------------Pin Declarations ----------------
 // ----------------Pan Motor pins ----------------
 #define PanIN1 GPIO_NUM_2
 #define PanIN2 GPIO_NUM_5
 #define nSLP_PIN GPIO_NUM_13
-// ---------------- Pan Encoder pins/unit (adjust to your wiring) ----------------
+// ---------------- Pan Encoder pins/unit ----------------
 #define TiltENCODER_A_GPIO GPIO_NUM_14
 #define TiltENCODER_B_GPIO GPIO_NUM_19
 #define TiltENCODER_UNIT   PCNT_UNIT_0
 // ----------------Tilt Motor pins ----------------
 #define TiltIN1 GPIO_NUM_18
 #define TiltIN2 GPIO_NUM_23
-// ---------------- Tilt Encoder pins/unit (adjust to your wiring) ----------------
-#define PanENCODER_A_GPIO GPIO_NUM_4
-#define PanENCODER_B_GPIO GPIO_NUM_3
+// ---------------- Tilt Encoder pins/unit ----------------
+#define PanENCODER_A_GPIO GPIO_NUM_3
+#define PanENCODER_B_GPIO GPIO_NUM_0 //should be GPIO
 #define PanENCODER_UNIT   PCNT_UNIT_1
 // --------------------------------------------------
 
@@ -65,7 +100,7 @@ Encoder tiltencoder(TiltENCODER_A_GPIO, TiltENCODER_B_GPIO, TiltENCODER_UNIT);
 // IMU instances (global so they can be accessed from loop)
 TwoWire I2C = TwoWire(0);
 Adafruit_BNO055 bno055_sensor = Adafruit_BNO055(1234, 0x28, &I2C);
-// --------------------------------------------------
+// // --------------------------------------------------
 
 // ---------------- Shares and Queues ----------------
 //Camera Shares:
@@ -111,7 +146,7 @@ Share<AccelData> g_accelData{"accel_data"};
 //Camera task
 CameraTask cameraTask(&camera, &pan_err, &tilt_err, &hasLed, &ledThreshold, &cam_Mode);
 //Controller task
-ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encVelocity, &pan_encVelocity, &tilt_Cmd, &pan_Cmd, &cam_Mode, &hasLed, &UI_mode, &dcalibrate, &dpad_pan, &dpad_tilt);
+ControllerTask controllerTask(&pan_err, &tilt_err, &tilt_encPosition, &tilt_encVelocity, &pan_encVelocity, &tilt_Cmd, &pan_Cmd, &cam_Mode, &hasLed, &UI_mode, &dcalibrate, &dpad_pan, &dpad_tilt);
 // MotorTask/EncoderTask/UITask instances (pass pointers to the above shares/queue)
 MotorTask tiltmotorTask(&tiltmotor, &tilt_Cmd, &tilt_encVelocity, &tilt_vref, &tilt_encPosition, &tilt_posref); 
 EncoderTask tiltencoderTask(&tiltencoder, &tilt_encPosition, &tilt_encVelocity, &tilt_Cmd, &tilt_encZero);
@@ -125,29 +160,20 @@ IMUTask imuTask(&bno055_sensor, &g_eulerAngles, &g_gyroData, &g_accelData);
 // ---------------------------------------------------
 
 void setup() {
+  // Don't initialize Serial (USB) because GPIO1 is used for pan encoder
   Serial.begin(115200);
   delay(300);
   
-  // Initialize Serial2 with custom pins: RX=IO0, TX=IO12
-  Serial2.begin(115200, SERIAL_8N1, 0, 12);  // baudrate, config, RX pin, TX pin
+  // // Use Serial for all debug output instead (RX=GPIO0, TX=GPIO12)
+  // Serial.begin(115200, SERIAL_8N1, 0, 12);
   delay(100);
-  Serial2.println("=== Serial2 initialized on IO0 (RX) and IO12 (TX) ===");
+  Serial.println("=== System Starting ===");
+  Serial.println("Note: Using Serial for debug (GPIO1 used by pan encoder)");
   
   // Set I2C pins for ESP32
   I2C.setPins(21, 22);
   Serial.println("=== SporTrackr IMU Data Reader ===");
   Serial.println("Initializing IMU...");
-  // //camera initialization
-  // bool camera_ok = camera.begin();
-  // if (!camera_ok) {
-  //   Serial.println("ERROR: Camera initialization failed!");
-  //   Serial.println("Check camera wiring and connections!");
-  //   while (1) { delay(1000); }
-  // }
-  // Serial.println("Camera initialized successfully");
-  //enable motors
-  pinMode(nSLP_PIN, OUTPUT);
-  digitalWrite(nSLP_PIN, HIGH);
   
   // Initialize and start IMU task
   if (imuTask.initIMU()) {
@@ -157,7 +183,23 @@ void setup() {
     // Load saved calibration offsets automatically
     Serial.println("Loading saved calibration offsets...");
     imuTask.loadSavedCalibration();
+  } else {
+    Serial.println("WARNING: IMU initialization failed!");
+    Serial.println("Continuing without IMU...");
   }
+  
+  // Camera initialization - skip if it fails (GPIO conflicts)
+  bool camera_ok = camera.begin();
+  if (!camera_ok) {
+    Serial.println("WARNING: Camera initialization failed!");
+    Serial.println("Continuing without camera...");
+  } else {
+    Serial.println("Camera initialized successfully");
+  }
+  
+  //enable motors
+  pinMode(nSLP_PIN, OUTPUT);
+  digitalWrite(nSLP_PIN, HIGH);
   
   // Initialize ESP32 as WiFi Access Point (much easier than connecting to existing networks!)
   // The ESP32 will create its own hotspot that you can connect to from any device
@@ -167,7 +209,7 @@ void setup() {
   // Start Motor task (100 ms tick in its own entry function)
   // Start Tilt Motor task
   xTaskCreate(
-    motor_task_func,
+    tilt_motor_task_func,
     "TiltMotorTask",
     2048,
     &tiltmotorTask,
@@ -176,7 +218,7 @@ void setup() {
   );
   // Start Tilt Encoder task
   xTaskCreate(
-    encoder_task_func,
+    tilt_encoder_task_func,
     "TiltEncoderTask",
     2048,
     &tiltencoderTask,
@@ -185,7 +227,7 @@ void setup() {
   );
   // Start Pan Motor task
   xTaskCreate(
-    motor_task_func,
+    pan_motor_task_func,
     "PanMotorTask",
     2048,
     &panmotorTask,
@@ -194,7 +236,7 @@ void setup() {
   );
   // Start Pan Encoder task
   xTaskCreate(
-    encoder_task_func,
+    pan_encoder_task_func,
     "PanEncoderTask",
     2048,
     &panencoderTask,
@@ -205,38 +247,38 @@ void setup() {
   xTaskCreate(
     ui_task_func,
     "UITask",
-    2048,
+    4096,
     &uiTask,
-    6,
+    1,
     nullptr
   );
-  // Start IMU task
+  //Start IMU task (disabled - I2C errors)
   xTaskCreate(
     imu_task_func,
     "IMUTask",
-    2048,
+    4096,
     &imuTask,
     0,
     nullptr
   );
-  // // Start Controller task
-  // xTaskCreate(
-  //   controller_task_func,
-  //   "ControllerTask",
-  //   2048,
-  //   &controllerTask,
-  //   3,
-  //   nullptr
-  // );
-  // Start Camera task (temporarily disabled to debug GPIO conflict)
-  // xTaskCreate(
-  //   camera_task_func,
-  //   "CameraTask",
-  //   4096,
-  //   &cameraTask,
-  //   4,
-  //   nullptr
-  // );
+  // Start Controller task
+  xTaskCreate(
+    controller_task_func,
+    "ControllerTask",
+    4096,
+    &controllerTask,
+    3,
+    nullptr
+  );
+  //Start Camera task (temporarily disabled to debug GPIO conflict)
+  xTaskCreate(
+    camera_task_func,
+    "CameraTask",
+    4096,
+    &cameraTask,
+    4,
+    nullptr
+  );
 
  }
 

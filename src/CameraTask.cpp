@@ -76,7 +76,7 @@ uint8_t CameraTask::exec_wait()
 /**
  * @brief CAP_SEND_ERR state:
  *        Capture, compute error, update shares, return frame.
- *        DOES NOT send image over serial.
+ *        DOES NOT send image over Serial.
  */
 uint8_t CameraTask::exec_capture_send_err()
 {

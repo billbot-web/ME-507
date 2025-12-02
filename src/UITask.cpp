@@ -63,6 +63,12 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
   posref_ = tilt_posref;
   cmdShare_ = tilt_cmdShare;
   instance_ = this;
+  ui_mode_->put(0);  // Default to mode 0 (choose mode)
+  imu_mode_->put(false); // Default IMU mode to false
+  dcalibrate_->put(false); // Default calibration to false
+  motortest_mode_->put(false); // Default motor test mode to false
+  tilt_cmdShare_->put(0);
+  pan_cmdShare_->put(0);
 }
 
 // FreeRTOS C-style task entry function. Matches EncoderTask pattern where the
@@ -71,7 +77,7 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
 extern "C" void ui_task_func(void* pvParameters) {
   UITask* UI_Task = static_cast<UITask*>(pvParameters);
   UITask::set_instance(UI_Task);
-  const TickType_t tick = pdMS_TO_TICKS(UI_Task ? UI_Task->get_updateMs() : 200);
+  const TickType_t tick = 200; // UITask default update period
   for (;;) {
     if (UI_Task) UI_Task->update();
     vTaskDelay(tick);
@@ -83,13 +89,12 @@ void UITask::update() noexcept
 {
   // Run the finite state machine
   fsm_.run_curstate();
-  printf("[UITask] Current state: %s\n", fsm_.get_curstateidx());
   // Update web server (if initialized)
   updateWebServer();
 }
 // ---------------- States ----------------
 
-// WAIT_FOR_INPUT: show prompt; parse serial; forward commands
+// WAIT_FOR_INPUT: show prompt; parse Serial; forward commands
 // ---------------- State implementations ----------------
 
 /**
@@ -100,24 +105,16 @@ void UITask::update() noexcept
 uint8_t UITask::exec_choose_mode()
 {
   if (!instance_) return -1;
-  // Debug: Check if we have a pending message
-  Serial.print("[CHOOSE_MODE] Checking pending message - length: ");
-  Serial.print(pendingMessage_.length());
-  Serial.print(", client: ");
-  Serial.println(pendingClient_ ? "OK" : "NULL");
 
   // Process any pending WebSocket messages
   if (pendingMessage_.length() > 0 && pendingClient_) {
-    Serial.println("[CHOOSE_MODE] Processing pending message");
     handleChooseModeMessage(pendingClient_, pendingMessage_);
     pendingMessage_ = "";
     pendingClient_ = nullptr;
-  } else if (pendingMessage_.length() > 0) {
-    Serial.println("[CHOOSE_MODE] Have message but no client!");
   }
 
   // Check for calibration request
-  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
     return static_cast<int>(CALIBRATE);
   }
@@ -125,10 +122,6 @@ uint8_t UITask::exec_choose_mode()
   // Check UI mode
   if (instance_->ui_mode_) {
     uint8_t mode = instance_->ui_mode_->get();
-    if (mode != 0) {
-      Serial.print("[CHOOSE_MODE] Detected ui_mode change to: ");
-      Serial.println(mode);
-    }
     if (mode == 1) {
       Serial.println("[UITask] Transitioning to TRACKER state");
       return static_cast<int>(TRACKER);
@@ -161,7 +154,7 @@ uint8_t UITask::exec_calibrate()
   }
 
   // Check if calibration is done
-  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
+  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Calibration complete, returning to CHOOSE_MODE");
     return static_cast<int>(CHOOSE_MODE);
   }
@@ -204,7 +197,7 @@ uint8_t UITask::exec_motor_test()
   }
 
   // Check for calibration request
-  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
     
     return static_cast<int>(CALIBRATE);
@@ -221,12 +214,6 @@ uint8_t UITask::exec_teleop()
 {
   if (!instance_) return -1;
 
-  static bool printedState = false;
-  if (!printedState) {
-    Serial.println("[UITask] In TELEOP state");
-    printedState = true;
-  }
-
   // Process any pending WebSocket messages
   if (pendingMessage_.length() > 0 && pendingClient_) {
     handleTeleopMessage(pendingClient_, pendingMessage_);
@@ -239,23 +226,19 @@ uint8_t UITask::exec_teleop()
     uint8_t mode = instance_->ui_mode_->get();
     if (mode == 0) {
       Serial.println("[UITask] Returning to CHOOSE_MODE");
-      printedState = false;
       return static_cast<int>(CHOOSE_MODE);
     } else if (mode == 1) {
       Serial.println("[UITask] Switching to TRACKER state");
-      printedState = false;
       return static_cast<int>(TRACKER);
     } else if (mode == 3) {
       Serial.println("[UITask] Switching to MOTOR_TEST state");
-      printedState = false;
       return static_cast<int>(MOTOR_TEST);
     }
   }
 
   // Check for calibration request
-  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
-    printedState = false;
     return static_cast<int>(CALIBRATE);
   }
 
@@ -302,7 +285,7 @@ uint8_t UITask::exec_tracker()
   }
 
   // Check for calibration request
-  if (instance_->dcalibrate_ && instance_->dcalibrate_->get()) {
+  if (instance_->dcalibrate_ && !instance_->dcalibrate_->get()) {
     Serial.println("[UITask] Transitioning to CALIBRATE state");
     printedState = false;
     return static_cast<int>(CALIBRATE);
@@ -356,11 +339,11 @@ void UITask::updateWebServer()
   // This will be called every update cycle, but only do something if web server is initialized
   if (server_ && (WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP)) {
     // Web server handles requests automatically
-    // Broadcast telemetry periodically
+    // Broadcast telemetry periodically (but wait 5 seconds after startup to let tasks initialize)
     const unsigned long now = millis();
-    if (now - lastTelemetryBroadcast_ >= telemetryInterval_) {
+    if (now > 5000 && (now - lastTelemetryBroadcast_ >= telemetryInterval_)) {
       lastTelemetryBroadcast_ = now;
-      broadcastTelemetry();
+      //broadcastTelemetry();
     }
   } else {
     Serial.print("DEBUG: updateWebServer conditions not met - server_: ");
@@ -385,7 +368,7 @@ bool UITask::initSPIFFS()
 void UITask::connectToWiFi()
 {
   if (ssid_.length() == 0) {
-    Serial.println("No WiFi credentials provided - running in serial mode only");
+    Serial.println("No WiFi credentials provided - running in Serial mode only");
     return;
   }
   
@@ -407,7 +390,7 @@ void UITask::connectToWiFi()
     Serial.println(WiFi.softAPIP());
     Serial.println("Connect your phone/laptop to this network, then go to: http://192.168.4.1");
   } else {
-    Serial.println("Failed to start Access Point. Running in serial mode only.");
+    Serial.println("Failed to start Access Point. Running in Serial mode only.");
   }
 }
 
@@ -524,7 +507,6 @@ String UITask::createTelemetryMessage()
   if (eulerAngles_) euler = eulerAngles_->get();
   if (gyroData_) gyro = gyroData_->get();
   if (accelData_) accel = accelData_->get();
-  
   String json = "{";
   json += "\"type\":\"telemetry\",";
   json += "\"tilt_velocity\":" + String(tilt_vel, 2) + ",";
@@ -544,11 +526,8 @@ String UITask::createTelemetryMessage()
 
 void UITask::broadcastTelemetry()
 {
+  if (!ws_) return;
   
-  if (!ws_) {
-    Serial.println("DEBUG: ws_ is null!");
-    return;
-  }
   String message = createTelemetryMessage();
   ws_->textAll(message);
 }
@@ -556,12 +535,6 @@ void UITask::broadcastTelemetry()
 void UITask::processWebSocketMessage(AsyncWebSocketClient* client, const String& message)
 {
   // Store message for processing in state function (different task context)
-  Serial.print("[UITask] WebSocket message received: ");
-  Serial.println(message);
-  Serial.print("[UITask] Current FSM state: ");
-  Serial.println(instance_->fsm_.get_curstate()->get_id());
-  
-  // Queue the message to be processed by the state function
   pendingMessage_ = message;
   pendingClient_ = client;
 }
@@ -590,6 +563,10 @@ void UITask::handleChooseModeMessage(AsyncWebSocketClient* client, const String&
     Serial.println("[CHOOSE_MODE] Mode: Teleop - setting ui_mode to 2");
     if (instance_->ui_mode_) instance_->ui_mode_->put(2); // 2 = TELEOP
     if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1); // Velocity control
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1); // Velocity control
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_teleop\"}");
   }
   else if (message == "mode:test") {
@@ -600,7 +577,6 @@ void UITask::handleChooseModeMessage(AsyncWebSocketClient* client, const String&
   }
   else if (message == "mode:calibrate") {
     Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
-    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
     if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
@@ -668,12 +644,36 @@ void UITask::handleCalibrateMessage(AsyncWebSocketClient* client, const String& 
   if (message == "mode:idle") {
     Serial.println("[CALIBRATE] Returning to CHOOSE_MODE");
     if (instance_->ui_mode_) instance_->ui_mode_->put(0);
-    if (instance_->dcalibrate_) instance_->dcalibrate_->put(false);
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
-  
+  else if (message == "mode:trackr") {
+    Serial.println("[CHOOSE_MODE] Mode: Tracker - setting ui_mode to 1");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(1); // 1 = TRACKER
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_trackr\"}");
+  }
+  else if (message == "mode:teleop") {
+    Serial.println("[CHOOSE_MODE] Mode: Teleop - setting ui_mode to 2");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(2); // 2 = TELEOP
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1); // Velocity control
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1); // Velocity control
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"mode_teleop\"}");
+  }
+  else if (message == "mode:test") {
+    Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
+  }
   // Calibration-specific commands
   if (message.startsWith("calibrate:")) {
     String calibCmd = message.substring(10); // Remove "calibrate:" prefix
@@ -690,34 +690,24 @@ void UITask::handleCalibrateMessage(AsyncWebSocketClient* client, const String& 
     }
     else if (calibCmd == "pan:home") {
       Serial.println("[CALIBRATE] Setting pan home position");
-      if (instance_->pan_positionShare_) {
-        float currentPos = instance_->pan_positionShare_->get();
-        Serial.printf("[CALIBRATE] Current pan position: %.2f - saving as home\n", currentPos);
-        // Zero the encoder at current position
-        if (instance_->pan_zeroShare_) instance_->pan_zeroShare_->put(true);
-      }
+      if (instance_->pan_zeroShare_) instance_->pan_zeroShare_->put(true);
       sendWebSocketResponse(client, "{\"status\":\"pan_home_set\"}");
     }
     else if (calibCmd == "tilt:zero") {
       Serial.println("[CALIBRATE] Setting tilt zero position");
-      if (instance_->tilt_positionShare_) {
-        float currentPos = instance_->tilt_positionShare_->get();
-        Serial.printf("[CALIBRATE] Current tilt position: %.2f - saving as zero\n", currentPos);
-        // Zero the encoder at current position
-        if (instance_->tilt_zeroShare_) instance_->tilt_zeroShare_->put(true);
-        // TODO: Calculate and store tilt limits from this zero position
-      }
+      if (instance_->tilt_zeroShare_) instance_->tilt_zeroShare_->put(true);
+      // TODO: Calculate and store tilt limits from this zero position
       sendWebSocketResponse(client, "{\"status\":\"tilt_zero_set\"}");
     }
     else if (calibCmd == "motor:save") {
       Serial.println("[CALIBRATE] Saving motor calibration data");
-      // TODO: Save calibration data to SPIFFS/EEPROM
+      if(instance_->dcalibrate_) instance_->dcalibrate_->put(true);
       Serial.println("[CALIBRATE] Motor calibration saved (placeholder)");
       sendWebSocketResponse(client, "{\"status\":\"calibration_saved\"}");
     }
     else if (calibCmd == "done") {
       Serial.println("[CALIBRATE] Exiting calibration mode");
-      if (instance_->dcalibrate_) instance_->dcalibrate_->put(false);
+      if (instance_->dcalibrate_) instance_->dcalibrate_->put(true);
       sendWebSocketResponse(client, "{\"status\":\"calibration_done\"}");
     }
   }
@@ -743,13 +733,36 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
-  
+  else if (message == "mode:trackr") {
+    Serial.println("[CHOOSE_MODE] Mode: Tracker - setting ui_mode to 1");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(1); // 1 = TRACKER
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_trackr\"}");
+  }
+  else if (message == "mode:teleop") {
+    Serial.println("[CHOOSE_MODE] Mode: Teleop - setting ui_mode to 2");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(2); // 2 = TELEOP
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1); // Velocity control
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1); // Velocity control
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"mode_teleop\"}");
+  }
+  else if (message == "mode:calibrate") {
+    Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_calibrate\"}");
+  }
   // Motor test commands - full velocity and position control
   if (message.startsWith("pan:velocity:")) {
     float vel = message.substring(13).toFloat();
     Serial.println("[MOTOR_TEST] Setting pan velocity to " + String(vel));
     if (instance_->pan_vref_) instance_->pan_vref_->put(static_cast<int8_t>(vel));
-    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(1));
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(2));
     sendWebSocketResponse(client, "{\"status\":\"pan_velocity_set\",\"value\":" + String(vel) + "}");
   }
   else if (message.startsWith("pan:position:")) {
@@ -815,8 +828,27 @@ void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& mes
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
   }
-  
-  // D-pad directional commands
+  else if (message == "mode:trackr") {
+    Serial.println("[CHOOSE_MODE] Mode: Tracker - setting ui_mode to 1");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(1); // 1 = TRACKER
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_trackr\"}");
+  }
+  else if (message == "mode:test") {
+    Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
+  }
+  else if (message == "mode:calibrate") {
+    Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_calibrate\"}");
+  }
+  Serial.print(message);
   if (message == "dpad:up") {
     if (instance_->dpad_tilt_) instance_->dpad_tilt_->put(1);
     if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
@@ -863,8 +895,8 @@ void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& mes
     sendWebSocketResponse(client, "{\"status\":\"dpad_stop\"}");
   }
   else if (message == "stop") {
-    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
-    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(0);
+    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(0);
     if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
     if (instance_->pan_vref_) instance_->pan_vref_->put(0);
     if (instance_->dpad_pan_) instance_->dpad_pan_->put(0);
@@ -884,6 +916,30 @@ void UITask::handleTrackerMessage(AsyncWebSocketClient* client, const String& me
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     sendWebSocketResponse(client, "{\"status\":\"mode_idle\"}");
     return;
+  }
+  else if (message == "mode:teleop") {
+    Serial.println("[CHOOSE_MODE] Mode: Teleop - setting ui_mode to 2");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(2); // 2 = TELEOP
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1); // Velocity control
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1); // Velocity control
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
+    sendWebSocketResponse(client, "{\"status\":\"mode_teleop\"}");
+  }
+  else if (message == "mode:test") {
+    Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
+    if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
+    if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
+  }
+  else if (message == "mode:calibrate") {
+    Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
+    if (instance_->imu_mode_) instance_->imu_mode_->put(false);
+    if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
+    sendWebSocketResponse(client, "{\"status\":\"mode_calibrate\"}");
   }
   
   // Tracker mode commands

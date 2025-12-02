@@ -22,29 +22,11 @@ MotorTask::MotorTask(DRV883* motor,
     position_pid_(),
     fsm_(states_, 3)
 {
-  // Don't set instance_ here - it will be set in task function
+  instance_ = this;
   // Initialize PID controllers with gains
   // Kp, Ki, Kd
   velocity_pid_.Init(1.0, 0.0, 0.0);
   position_pid_.Init(0.80, 0.05, 0.0);
-}
-
-/**
- * @brief FreeRTOS task entry; repeatedly calls update() at configured period.
- */
-// ---------------------------------------------------------------------------
-// FreeRTOS task entry
-// This entry repeatedly calls MotorTask::update() at a fixed period.
-  extern "C" void motor_task_func(void* arg) {
-  MotorTask* motorTask = static_cast<MotorTask*>(arg);
-  const TickType_t delayTicks = pdMS_TO_TICKS(50); // 50 ms tick
-  for (;;) {
-    if (motorTask) {
-      MotorTask::instance_ = motorTask;  // Set instance for this task's context
-      motorTask->update();
-    }
-    vTaskDelay(delayTicks);
-  }
 }
 // ---------------- State implementations ----------------
 /**

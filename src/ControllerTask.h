@@ -40,6 +40,7 @@ public:
      */
     ControllerTask(Share<int16_t>* pan_err,
                    Share<int16_t>*  tilt_err,
+                       Share<float_t>*  tiltpos,
                        Share<float_t>*  tiltVelo,
                        Share<float_t>*  panVelo,
                        Share<uint8_t>*  tilt_mode,
@@ -54,6 +55,8 @@ public:
 
     /// Called by FreeRTOS task wrapper
     void update() noexcept { fsm_.run_curstate(); }
+    void ConstrainTiltMotor(Share<float_t>* tiltpos) noexcept;
+    
 
     /// Get update period in milliseconds (for task delay)
     uint32_t getUpdateMs() const noexcept { return updateMs_; }
@@ -65,6 +68,7 @@ private:
     // Shares
     Share<int16_t>* pan_err_;
     Share<int16_t>* tilt_err_;
+    Share<float_t>* tiltpos_;
     Share<float_t>* tiltVelo_;
     Share<float_t>* panVelo_;
     Share<uint8_t>*  tilt_mode_;
@@ -77,7 +81,7 @@ private:
     Share<int8_t>* dpad_tilt_;
 
     //Base Scan Velocities
-    const int16_t SCAN_PAN_VELO = 15;   // degrees/sec
+    const int16_t SCAN_PAN_VELO = 30;   // degrees/sec
 
     // FSM + states
     State state_calibrate_{ CALIBRATE, "CTL_CALIBRATE", &ControllerTask::exec_calibrate };

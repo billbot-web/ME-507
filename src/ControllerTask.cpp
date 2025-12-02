@@ -16,6 +16,7 @@ ControllerTask* ControllerTask::instance_ = nullptr;
  */
 ControllerTask::ControllerTask(Share<int16_t>* pan_err,
                                        Share<int16_t>*  tilt_err,
+                                       Share<float_t>*  tiltpos,
                                        Share<float_t>*  tiltVelo,
                                        Share<float_t>*  panVelo_,
                                        Share<uint8_t>* tilt_mode,
@@ -30,6 +31,7 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
   : updateMs_(updateMs),
     pan_err_(pan_err),
     tilt_err_(tilt_err),
+    tiltpos_(tiltpos),
     tiltVelo_(tiltVelo),
     panVelo_(panVelo_),
     tilt_mode_(tilt_mode),
@@ -40,8 +42,8 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
     dcalibrate_(dcalibrate),
     dpad_pan_(dpad_pan),
     dpad_tilt_(dpad_tilt),
-
-    fsm_(states_, 2)
+    //fsm initialization
+    fsm_(states_, 5)
 {
     instance_ = this;
     // Initialize output to zero effort to both motors
@@ -72,21 +74,21 @@ uint8_t ControllerTask::exec_calibrate()
     if (instance_->panVelo_) instance_->panVelo_->put(0);
     if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
     
-    // //implement calibration routine here later
-    // // Check for dcalibrate command if done calibrating go to wait
-    // if (instance_->dcalibrate_) {
-    //     bool dcalibrate = instance_->dcalibrate_->get();
-    //     if (dcalibrate) {
-    //         return WAIT;
-    //     }
-    // }
-    // return CALIBRATE;
-    // 
-    return WAIT;
+    //implement calibration routine here later
+    // Check for dcalibrate command if done calibrating go to wait
+    if (instance_->dcalibrate_) {
+        bool dcalibrate = instance_->dcalibrate_->get();
+        if (dcalibrate) {
+            return WAIT;
+        }
+    }
+    return CALIBRATE;
 }
 uint8_t ControllerTask::exec_wait()
 {
     if (!instance_) return WAIT;
+
+    //instance_->ConstrainTiltMotor(instance_->tiltpos_);
 
     // Ensure effort is zero in WAIT
     if (instance_->panVelo_) instance_->panVelo_->put(0);
@@ -98,11 +100,20 @@ uint8_t ControllerTask::exec_wait()
         cmd = instance_->UI_mode_->get();
     }
 
+    static uint32_t lastDebug = 0;
+    if (millis() - lastDebug > 1000) {
+        Serial.print("[ControllerTask] WAIT state - UI_mode value: ");
+        Serial.println(cmd);
+        lastDebug = millis();
+    }
+
     switch (cmd) {
         case 2: // run in telop mode
+            Serial.println("Switching to TELEOP mode from wait");
             return TELEOP;
 
         case 1: //run in scan mode
+            Serial.println("Switching to SCAN mode from wait");
             // set scan velocities
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
@@ -115,7 +126,6 @@ uint8_t ControllerTask::exec_wait()
 
     return WAIT;
 }
-
 // ---------------------------------------------------------------------------
 // STATE: exec_scan
 // Scan for target, track when found.
@@ -129,7 +139,22 @@ uint8_t ControllerTask::exec_scan()
     if (instance_->UI_mode_) {
         cmd = instance_->UI_mode_->get();
     }
+    // // Constrain tilt motor position
+    // if (instance_->tiltpos_) {
+    //     float_t position = instance_->tiltpos_->get();
+    //     const float_t TILT_MAX_POS = 30.0; // degrees
+    //     const float_t TILT_MIN_POS = -150.0;  // degrees
 
+    //     if (position < TILT_MIN_POS) {
+    //         // Below minimum position, set to min and stop motor
+    //         instance_->tiltpos_->put(TILT_MIN_POS);
+    //         if (instance_->tiltVelo_) instance_->tiltVelo_->put(-instance_->SCAN_PAN_VELO);
+    //     } else if (position > TILT_MAX_POS) {
+    //         // Above maximum position, set to max and stop motor
+    //         instance_->tiltpos_->put(TILT_MAX_POS);
+    //         if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+    //     }
+    
     switch (cmd) {
         case 0: // stop go back to wait
             //set mototo modes
@@ -141,6 +166,8 @@ uint8_t ControllerTask::exec_scan()
             return WAIT;
 
         case 2: //go to teleop mode
+            Serial.println("Switching to TELEOP mode from SCAN");
+             //set motor modes
             return TELEOP;
     }
     // Check if LED is found to switch to TRACKR
@@ -157,6 +184,8 @@ uint8_t ControllerTask::exec_scan()
 uint8_t ControllerTask::exec_trackr()
 {
     if (!instance_) return WAIT;
+
+    //instance_->ConstrainTiltMotor(instance_->tiltpos_);
 
     // Handle commands while running
     int8_t cmd = 1;
@@ -198,8 +227,10 @@ uint8_t ControllerTask::exec_teleop()
 {
     if (!instance_) return WAIT;
 
+    //instance_->ConstrainTiltMotor(instance_->tiltpos_);
+
     // Handle commands while running
-    int8_t cmd = 1;
+    int8_t cmd = 0;
     if (instance_->UI_mode_) {
         cmd = instance_->UI_mode_->get();
     }
@@ -207,9 +238,10 @@ uint8_t ControllerTask::exec_teleop()
     if (instance_->dpad_pan_ && instance_->dpad_tilt_) {
         int8_t pan_dir = instance_->dpad_pan_->get();
         int8_t tilt_dir = instance_->dpad_tilt_->get();
+
         // Set velocities based on dpad input
         if (instance_->panVelo_) instance_->panVelo_->put(pan_dir * instance_->SCAN_PAN_VELO); 
-        // 15 deg/sec per button press
+        // 30 deg/sec per button press
         if (instance_->tiltVelo_) instance_->tiltVelo_->put(tilt_dir * instance_->SCAN_PAN_VELO);
     }
 
@@ -236,3 +268,20 @@ uint8_t ControllerTask::exec_teleop()
 
     return TELEOP;   // stay in RUN until STOP command
 }
+// void ControllerTask::ConstrainTiltMotor(Share<float_t>* tiltpos) noexcept {
+//     if (!tiltpos) return;
+
+//     float_t position = tiltpos->get();
+//     const float_t TILT_MIN_POS = -30.0; // degrees
+//     const float_t TILT_MAX_POS = 150.0;  // degrees
+
+//     if (position < TILT_MIN_POS) {
+//         // Below minimum position, set to min and stop motor
+//         tiltpos->put(TILT_MIN_POS);
+//         if (tiltVelo_) tiltVelo_->put(0);
+//     } else if (position > TILT_MAX_POS) {
+//         // Above maximum position, set to max and stop motor
+//         tiltpos->put(TILT_MAX_POS);
+//         if (tiltVelo_) tiltVelo_->put(0);
+//     }
+// }

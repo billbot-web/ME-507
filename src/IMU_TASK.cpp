@@ -70,15 +70,18 @@ bool IMUTask::initIMU() {
   
   if (!imu_) {
     Serial.println("Error: IMU pointer is null");
+    imuInitialized_ = false;
     return false;
   }
   
   // Initialize IMU; log but continue even if begin() fails so FSM can run
   if (!imu_->begin(OPERATION_MODE_NDOF)) {
     Serial.println("Warning: BNO055 not detected or failed to initialize.");
+    imuInitialized_ = false;
     return false;
   } else {
     Serial.println("BNO055 initialized.");
+    imuInitialized_ = true;
     return true;
   }
 }
@@ -104,7 +107,7 @@ uint8_t IMUTask::exec_wait() {
 }
 
 uint8_t IMUTask::exec_sendData() {
-  if (!instance_ || !instance_->imu_) return static_cast<uint8_t>(WAIT);
+  if (!instance_ || !instance_->imu_ || !instance_->imuInitialized_) return static_cast<uint8_t>(WAIT);
   
   // Check calibration status before interpreting data
   uint8_t system, gyroCal, accelCal, magCal;
