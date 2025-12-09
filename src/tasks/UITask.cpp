@@ -31,6 +31,10 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
                Share<EulerAngles>* eulerAngles,
                Share<GyroData>* gyroData,
                Share<AccelData>* accelData,
+               Share<bool>*     hasLed,
+               Share<uint16_t>* ledThreshold,
+               Share<int16_t>* pan_err,
+               Share<int16_t>* tilt_err,
                uint32_t        updateMs) noexcept
   : tilt_positionShare_(tilt_positionShare),
     tilt_velocityShare_(tilt_velocityShare),
@@ -53,12 +57,13 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
     eulerAngles_(eulerAngles),
     gyroData_(gyroData),
     accelData_(accelData),
+    hasLed_(hasLed),
+    ledThreshold_(ledThreshold),
+    pan_err_(pan_err),
+    tilt_err_(tilt_err),
     updateMs_(updateMs),
     fsm_(states_, 5)
 {
-  // Set legacy pointers to tilt for backward compatibility
-  positionShare_ = tilt_positionShare;
-  velocityShare_ = tilt_velocityShare;
   vref_ = tilt_vref;
   posref_ = tilt_posref;
   cmdShare_ = tilt_cmdShare;
@@ -71,6 +76,13 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
   pan_cmdShare_->put(0);
   tilt_zeroShare_->put(false);
   pan_zeroShare_->put(false);
+  
+  // Create telemetry queues (length 2 = keep only most recent value)
+  tilt_vel_queue_ = new Queue<float>(2, "TiltVelQ");
+  tilt_pos_queue_ = new Queue<float>(2, "TiltPosQ");
+  pan_vel_queue_ = new Queue<float>(2, "PanVelQ");
+  pan_pos_queue_ = new Queue<float>(2, "PanPosQ");
+  has_led_queue_ = new Queue<bool>(2, "HasLedQ");
 }
 
 // FreeRTOS C-style task entry function. Matches EncoderTask pattern where the
@@ -79,7 +91,7 @@ AsyncWebSocketClient* UITask::pendingClient_ = nullptr;
 extern "C" void ui_task_func(void* pvParameters) {
   UITask* UI_Task = static_cast<UITask*>(pvParameters);
   UITask::set_instance(UI_Task);
-  const TickType_t tick = 200; // UITask default update period
+  const TickType_t tick = 250; // UITask default update period
   for (;;) {
     if (UI_Task) UI_Task->update();
     vTaskDelay(tick);
@@ -89,6 +101,47 @@ extern "C" void ui_task_func(void* pvParameters) {
 // Main update method called by the FreeRTOS task
 void UITask::update() noexcept
 {
+  // Read latest telemetry values from queues (non-blocking)
+  // Encoder tasks push their latest values, we read if available
+  // Queue::get() is blocking, so we just try to read and update cache
+  
+  // Read from queues - these will block briefly if empty but that's okay
+  // since encoder tasks are constantly updating them
+  if (tilt_vel_queue_ && tilt_vel_queue_->any()) {
+    tilt_vel_queue_->get(cached_tilt_vel_);
+  }
+  if (tilt_pos_queue_ && tilt_pos_queue_->any()) {
+    tilt_pos_queue_->get(cached_tilt_pos_);
+  }
+  if (pan_vel_queue_ && pan_vel_queue_->any()) {
+    pan_vel_queue_->get(cached_pan_vel_);
+  }
+  if (pan_pos_queue_ && pan_pos_queue_->any()) {
+    pan_pos_queue_->get(cached_pan_pos_);
+  }
+  if (has_led_queue_ && has_led_queue_->any()) {
+    has_led_queue_->get(cached_has_led_);
+  }
+  
+  // Read IMU data from shares (initialized at startup, so no blocking)
+  if (eulerAngles_) {
+    eulerAngles_->get(cached_euler_);
+  }
+  if (gyroData_) {
+    gyroData_->get(cached_gyro_);
+  }
+  if (accelData_) {
+    accelData_->get(cached_accel_);
+  }
+  
+  // Read camera error data from shares
+  if (pan_err_) {
+    cached_pan_err_ = pan_err_->get();
+  }
+  if (tilt_err_) {
+    cached_tilt_err_ = tilt_err_->get();
+  }
+  
   // Run the finite state machine
   fsm_.run_curstate();
   // Update web server (if initialized)
@@ -340,20 +393,17 @@ void UITask::updateWebServer()
 {
   // This will be called every update cycle, but only do something if web server is initialized
   if (server_ && (WiFi.status() == WL_CONNECTED || WiFi.getMode() == WIFI_AP)) {
-    // Web server handles requests automatically
+    // Clean up disconnected clients periodically
+    if (ws_) {
+      ws_->cleanupClients();
+    }
+    
     // Broadcast telemetry periodically (but wait 5 seconds after startup to let tasks initialize)
     const unsigned long now = millis();
     if (now > 5000 && (now - lastTelemetryBroadcast_ >= telemetryInterval_)) {
       lastTelemetryBroadcast_ = now;
-      //broadcastTelemetry();
+      broadcastTelemetry();
     }
-  } else {
-    Serial.print("DEBUG: updateWebServer conditions not met - server_: ");
-    Serial.print(server_ ? "OK" : "NULL");
-    Serial.print(", WiFi mode: ");
-    Serial.print(WiFi.getMode());
-    Serial.print(", WiFi status: ");
-    Serial.println(WiFi.status());
   }
 }
 
@@ -491,46 +541,54 @@ void UITask::setupAPI()
 
 String UITask::createTelemetryMessage()
 {
-  // Get tilt motor data
-  float tilt_vel = 0.0f, tilt_pos = 0.0f;
-  if (tilt_velocityShare_) tilt_vel = tilt_velocityShare_->get();
-  if (tilt_positionShare_) tilt_pos = tilt_positionShare_->get();
+  // Use static buffer to reduce heap fragmentation
+  static char buffer[512];
   
-  // Get pan motor data
-  float pan_vel = 0.0f, pan_pos = 0.0f;
-  if (pan_velocityShare_) pan_vel = pan_velocityShare_->get();
-  if (pan_positionShare_) pan_pos = pan_positionShare_->get();
+  // Use cached values (updated in update() loop) to avoid mutex blocking
+  // This prevents deadlock when called from WebSocket async context
+  float tilt_vel = cached_tilt_vel_;
+  float tilt_pos = cached_tilt_pos_;
+  float pan_vel = cached_pan_vel_;
+  float pan_pos = cached_pan_pos_;
+  bool has_led = cached_has_led_;
   
-  // Get IMU data
-  EulerAngles euler = {0, 0, 0};
-  GyroData gyro = {0, 0, 0};
-  AccelData accel = {0, 0, 0};
+  // Build JSON using snprintf (more efficient than String concatenation)
+  int len = snprintf(buffer, sizeof(buffer),
+    "{\"type\":\"telemetry\",\"tilt_velocity\":%.2f,\"tilt_position\":%.2f,\"pan_velocity\":%.2f,\"pan_position\":%.2f,\"has_led\":%s,"
+    "\"pan_error\":%d,\"tilt_error\":%d,"
+    "\"euler\":[%.2f,%.2f,%.2f],"
+    "\"gyro\":[%.2f,%.2f,%.2f],"
+    "\"accel\":[%.2f,%.2f,%.2f]}",
+    tilt_vel, tilt_pos, pan_vel, pan_pos, has_led ? "true" : "false",
+    cached_pan_err_, cached_tilt_err_,
+    cached_euler_.x, cached_euler_.y, cached_euler_.z,
+    cached_gyro_.x, cached_gyro_.y, cached_gyro_.z,
+    cached_accel_.x, cached_accel_.y, cached_accel_.z);
   
-  if (eulerAngles_) euler = eulerAngles_->get();
-  if (gyroData_) gyro = gyroData_->get();
-  if (accelData_) accel = accelData_->get();
-  String json = "{";
-  json += "\"type\":\"telemetry\",";
-  json += "\"tilt_velocity\":" + String(tilt_vel, 2) + ",";
-  json += "\"tilt_position\":" + String(tilt_pos, 2) + ",";
-  json += "\"pan_velocity\":" + String(pan_vel, 2) + ",";
-  json += "\"pan_position\":" + String(pan_pos, 2) + ",";
-  json += "\"velocity\":" + String(tilt_vel, 2) + ","; // Legacy
-  json += "\"position\":" + String(tilt_pos, 2) + ","; // Legacy
-  json += "\"euler\":[" + String(euler.x, 1) + "," + String(euler.y, 1) + "," + String(euler.z, 1) + "],";
-  json += "\"gyro\":[" + String(gyro.x, 2) + "," + String(gyro.y, 2) + "," + String(gyro.z, 2) + "],";
-  json += "\"accel\":[" + String(accel.x, 2) + "," + String(accel.y, 2) + "," + String(accel.z, 2) + "],";
-  json += "\"timestamp\":" + String(millis());
-  json += "}";
-  
-  return json;
+  return String(buffer);
 }
 
 void UITask::broadcastTelemetry()
 {
-  if (!ws_) return;
+  if (!ws_) {
+    return;
+  }
   
+  // Safety check: only broadcast if we have clients
+  size_t clientCount = ws_->count();
+  if (clientCount == 0 || clientCount > 5) {
+    return;
+  }
+  
+  // Create message from cached values
   String message = createTelemetryMessage();
+  
+  // Validate message before sending
+  if (message.length() == 0 || message.length() >= 512) {
+    return;
+  }
+  
+  // Broadcast to all clients
   ws_->textAll(message);
 }
 
@@ -769,7 +827,7 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
   }
   else if (message == "mode:calibrate") {
     Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
-    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(false); // Use dcalibrate flag
     if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
@@ -801,19 +859,6 @@ void UITask::handleMotorTestMessage(AsyncWebSocketClient* client, const String& 
     if (instance_->tilt_posref_) instance_->tilt_posref_->put(static_cast<int16_t>(pos));
     if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(2));
     sendWebSocketResponse(client, "{\"status\":\"tilt_position_set\",\"value\":" + String(pos) + "}");
-  }
-  // Legacy single motor commands (control tilt)
-  else if (message.startsWith("velocity:")) {
-    float vel = message.substring(9).toFloat();
-    if (instance_->tilt_vref_) instance_->tilt_vref_->put(static_cast<int8_t>(vel));
-    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(1));
-    sendWebSocketResponse(client, "{\"status\":\"velocity_set\",\"value\":" + String(vel) + "}");
-  }
-  else if (message.startsWith("position:")) {
-    float pos = message.substring(9).toFloat();
-    if (instance_->tilt_posref_) instance_->tilt_posref_->put(static_cast<int16_t>(pos));
-    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(2));
-    sendWebSocketResponse(client, "{\"status\":\"position_set\",\"value\":" + String(pos) + "}");
   }
   else if (message == "stop") {
     if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
@@ -861,11 +906,12 @@ void UITask::handleTeleopMessage(AsyncWebSocketClient* client, const String& mes
     Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
     if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
     if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+
     sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
   }
   else if (message == "mode:calibrate") {
     Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
-    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(false); // Use dcalibrate flag
     if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
@@ -963,11 +1009,15 @@ void UITask::handleTrackerMessage(AsyncWebSocketClient* client, const String& me
     Serial.println("[CHOOSE_MODE] Mode: Motor Test - setting ui_mode to 3");
     if (instance_->ui_mode_) instance_->ui_mode_->put(3); // 3 = MOTOR_TEST
     if (instance_->imu_mode_) instance_->imu_mode_->put(true);
+    if(instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(1); // Velocity control
+    if(instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(1); // Velocity control
+    if(instance_->tilt_vref_) instance_->tilt_vref_->put(0);
+    if(instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"mode_test\"}");
   }
   else if (message == "mode:calibrate") {
     Serial.println("[CHOOSE_MODE] Mode: Calibrate - setting dcalibrate flag");
-    if (instance_->dcalibrate_) instance_->dcalibrate_->put(true); // Use dcalibrate flag
+    if (instance_->dcalibrate_) instance_->dcalibrate_->put(false); // Use dcalibrate flag
     if (instance_->ui_mode_) instance_->ui_mode_->put(0); // Ensure ui_mode is 0
     if (instance_->imu_mode_) instance_->imu_mode_->put(false);
     if (instance_->motortest_mode_) instance_->motortest_mode_->put(false);
@@ -978,21 +1028,23 @@ void UITask::handleTrackerMessage(AsyncWebSocketClient* client, const String& me
   if (message.startsWith("threshold:")) {
     int threshold = message.substring(10).toInt();
     Serial.printf("[TRACKER] LED threshold set to: %d\n", threshold);
+    if (instance_->ledThreshold_) instance_->ledThreshold_->put(static_cast<uint16_t>(threshold));
     sendWebSocketResponse(client, "{\"status\":\"threshold_set\",\"value\":" + String(threshold) + "}");
   }
   else if (message == "track:start") {
     Serial.println("[TRACKER] Tracking started");
+    if(instance_-> ui_mode_) instance_->ui_mode_->put(1);
     sendWebSocketResponse(client, "{\"status\":\"tracking_started\"}");
   }
   else if (message == "track:stop") {
     Serial.println("[TRACKER] Tracking stopped");
+    if (instance_-> ui_mode_) instance_->ui_mode_->put(0);
     if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
     if (instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"tracking_stopped\"}");
   }
   else if (message == "stop") {
-    if (instance_->tilt_cmdShare_) instance_->tilt_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
-    if (instance_->pan_cmdShare_) instance_->pan_cmdShare_->put(static_cast<uint8_t>(StateId::CHOOSE_MODE));
+    if (instance_-> ui_mode_) instance_->ui_mode_->put(0);
     if (instance_->tilt_vref_) instance_->tilt_vref_->put(0);
     if (instance_->pan_vref_) instance_->pan_vref_->put(0);
     sendWebSocketResponse(client, "{\"status\":\"stopped\"}");

@@ -1,6 +1,36 @@
 /**
  * @file ControllerTask.cpp
- * @brief Implementation of ControllerTask: single-axis PID controller for motor effort.
+ * @brief Implementation of top-level FSM controller for LED tracking and manual control
+ * 
+ * This file implements a sophisticated multi-mode controller that coordinates camera-based
+ * LED tracking, manual teleoperation, motor testing, and calibration. The task acts as the
+ * system supervisor, managing state transitions and motor command generation.
+ * 
+ * State Machine Details:
+ * - **CALIBRATE**: Homes motors to known positions using encoder feedback
+ * - **WAIT**: Idle state with motors stopped
+ * - **SCAN**: Sweeping search pattern when LED not detected
+ * - **TRACKR**: Active tracking using camera pixel errors for PID control
+ * - **TELEOP**: Manual D-pad control from web UI
+ * - **MOTOR_TEST**: Open-loop testing for diagnostics
+ * 
+ * Tracking Behavior:
+ * - Uses camera pixel errors (pan_err, tilt_err) from LED detection
+ * - LED loss handled with 5-frame persistence counter before switching to SCAN
+ * - Automatic recovery to TRACKR when LED redetected during SCAN
+ * - Position limits enforced on tilt axis for mechanical safety
+ * 
+ * Motor Command Generation:
+ * - Sets motor modes: 0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA_PRUN
+ * - Updates velocity setpoints for VRUN and TELEOP modes
+ * - Updates camera errors for CAMERA_PRUN tracking mode
+ * 
+ * @author Control Systems Team
+ * @date November 2025
+ * @version 2.1
+ * 
+ * @see ControllerTask.h for class interface and mode descriptions
+ * @see MotorTask.h for motor control implementation details
  */
 
 #include <Arduino.h>
@@ -8,11 +38,30 @@
 #include "taskshare.h"
 #include "PID.h"
 
-// Static instance used by state wrappers
+/// @brief Static instance pointer for FSM callback access
 ControllerTask* ControllerTask::instance_ = nullptr;
 
 /**
- * @brief Construct axis controller task with error/effort shares and command share.
+ * @brief Construct controller task with all necessary data shares
+ * 
+ * Initializes the controller task with pointers to all shared data containers
+ * used for inter-task communication. Sets up FSM with all six states and
+ * initializes LED loss tracking.
+ * 
+ * @param pan_err Camera pan error share (pixels from image center)
+ * @param tilt_err Camera tilt error share (pixels from image center)
+ * @param tiltpos Current tilt position share (degrees from encoder)
+ * @param tiltVelo Tilt velocity command share (-100 to 100)
+ * @param panVelo Pan velocity command share (-100 to 100)
+ * @param tilt_mode Tilt motor mode command (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA_PRUN)
+ * @param pan_mode Pan motor mode command (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA_PRUN)
+ * @param Cam_mode Camera mode control share
+ * @param hasLed LED detection status share (true when LED visible)
+ * @param UI_mode User interface mode selection share
+ * @param dcalibrate Calibration trigger share (true to start calibration)
+ * @param dpad_pan D-pad pan direction (-1=left, 0=none, 1=right)
+ * @param dpad_tilt D-pad tilt direction (-1=down, 0=none, 1=up)
+ * @param updateMs FSM update period in milliseconds (default 100ms = 10Hz)
  */
 ControllerTask::ControllerTask(Share<int16_t>* pan_err,
                                        Share<int16_t>*  tilt_err,
@@ -33,7 +82,7 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
     tilt_err_(tilt_err),
     tiltpos_(tiltpos),
     tiltVelo_(tiltVelo),
-    panVelo_(panVelo_),
+    panVelo_(panVelo),
     tilt_mode_(tilt_mode),
     pan_mode_(pan_mode),
     Cam_mode_(Cam_mode),
@@ -42,6 +91,7 @@ ControllerTask::ControllerTask(Share<int16_t>* pan_err,
     dcalibrate_(dcalibrate),
     dpad_pan_(dpad_pan),
     dpad_tilt_(dpad_tilt),
+    led_loss_counter_(0),
     //fsm initialization
     fsm_(states_, 6)
 {
@@ -121,6 +171,7 @@ uint8_t ControllerTask::exec_wait()
             if (instance_-> tilt_mode_) instance_->tilt_mode_->put(1);
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+            if (instance_ ->Cam_mode_) instance_->Cam_mode_->put(1); //set camera to tracking mode
             return SCAN;
 
         case 0:
@@ -143,21 +194,6 @@ uint8_t ControllerTask::exec_scan()
     if (instance_->UI_mode_) {
         cmd = instance_->UI_mode_->get();
     }
-    // // Constrain tilt motor position
-    // if (instance_->tiltpos_) {
-    //     float_t position = instance_->tiltpos_->get();
-    //     const float_t TILT_MAX_POS = 30.0; // degrees
-    //     const float_t TILT_MIN_POS = -150.0;  // degrees
-
-    //     if (position < TILT_MIN_POS) {
-    //         // Below minimum position, set to min and stop motor
-    //         instance_->tiltpos_->put(TILT_MIN_POS);
-    //         if (instance_->tiltVelo_) instance_->tiltVelo_->put(-instance_->SCAN_PAN_VELO);
-    //     } else if (position > TILT_MAX_POS) {
-    //         // Above maximum position, set to max and stop motor
-    //         instance_->tiltpos_->put(TILT_MAX_POS);
-    //         if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
-    //     }
     
     switch (cmd) {
         case 0: // stop go back to wait
@@ -167,12 +203,14 @@ uint8_t ControllerTask::exec_scan()
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set camera to idle mode
             return WAIT;
 
         case 2: //go to teleop mode
             Serial.println("Switching to TELEOP mode from SCAN");
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set camera to idle mode
             //set motor modes to 0
             if (instance_->pan_mode_) instance_->pan_mode_->put(1);
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
@@ -180,14 +218,30 @@ uint8_t ControllerTask::exec_scan()
             return TELEOP;
         case 3: //go to motor test mode
             Serial.println("Switching to MOTOR_TEST mode from SCAN");
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set camera to idle mode
             return MOTOR_TEST;
+    }
+    // if tilt motor is at limit reverse direction
+    if (instance_->tiltpos_) {
+        float tilt_position = instance_->tiltpos_->get();
+        if (tilt_position >= 10.0f) { // upper limit
+            if (instance_->tiltVelo_) {
+            instance_->tiltVelo_->put(-instance_->SCAN_PAN_VELO);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            }
+        } else if (tilt_position <= -150.0f) { // lower limit
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+        }
     }
     // Check if LED is found to switch to TRACKR
     if (instance_->hasLed_) {
         bool led_found = instance_->hasLed_->get();
         if (led_found) {
-            if (instance_-> pan_mode_) instance_->pan_mode_->put(2);
-            if (instance_-> tilt_mode_) instance_->tilt_mode_->put(2);
+            if (instance_-> pan_mode_) instance_->pan_mode_->put(3);
+            if (instance_-> tilt_mode_) instance_->tilt_mode_->put(3);
             if (instance_->panVelo_) instance_->panVelo_->put(0);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
             return TRACKR;
@@ -201,7 +255,7 @@ uint8_t ControllerTask::exec_trackr()
 {
     if (!instance_) return WAIT;
 
-    //instance_->ConstrainTiltMotor(instance_->tiltpos_);
+
 
     // Handle commands while running
     int8_t cmd = 1;
@@ -217,11 +271,15 @@ uint8_t ControllerTask::exec_trackr()
             //set motor modes to 0
             if (instance_->pan_mode_) instance_->pan_mode_->put(0);
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set camera to idle mode
             return WAIT;
 
         case 3: 
             //go to teleop mode
             Serial.println("Switching to Motor Test mode from TRACKR");
+            if (instance_->panVelo_) instance_->panVelo_->put(0); //set motor modes to 0
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0); //set motor modes to 0
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set cmamera to idle mode
             return MOTOR_TEST;
 
 
@@ -231,6 +289,7 @@ uint8_t ControllerTask::exec_trackr()
             //set motor modes to 0
             if (instance_->pan_mode_) instance_->pan_mode_->put(1);
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(0); //set camera to idle mode
             return TELEOP;
 
         case 1:
@@ -241,11 +300,37 @@ uint8_t ControllerTask::exec_trackr()
     if (instance_->hasLed_) {
         bool led_found = instance_->hasLed_->get();
         if (!led_found) {
-            if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
-            if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
-            return SCAN;
+            instance_->led_loss_counter_++;
+            if (instance_->led_loss_counter_ >= instance_->LED_LOSS_THRESHOLD) {
+                // Lost LED for 5 consecutive cycles, switch to SCAN
+                Serial.println("LED lost for 5 cycles, switching to SCAN");
+                if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
+                if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+                if (instance_-> pan_mode_) instance_->pan_mode_->put(1);
+                if (instance_-> tilt_mode_) instance_->tilt_mode_->put(1);
+                if (instance_-> Cam_mode_) instance_->Cam_mode_->put(1);
+                instance_->led_loss_counter_ = 0;  // Reset counter
+                return SCAN;
+            }
+            // LED lost but not enough cycles yet, stay in TRACKR
+        } else {
+            // LED found, reset counter
+            instance_->led_loss_counter_ = 0;
         }
     }
+    // if tilt motor is at limit stop motors and go to wait
+    if (instance_->tiltpos_) {
+        float tilt_position = instance_->tiltpos_->get();
+        if (tilt_position >= 30.0f || tilt_position <= -180.0f) { // upper/lower limit
+            if (instance_->panVelo_) instance_->panVelo_->put(0);
+            if (instance_->tiltVelo_) instance_->tiltVelo_->put(0);
+            if (instance_->pan_mode_) instance_->pan_mode_->put(0);
+            if (instance_->tilt_mode_) instance_->tilt_mode_->put(0);
+            Serial.println("Object out of range, Tilt motor at limit, returning to WAIT");
+            return WAIT;
+        }
+    }
+    
     // Continue tracking if LED is still in frame
     return TRACKR;  
 }
@@ -254,7 +339,7 @@ uint8_t ControllerTask::exec_teleop()
 {
     if (!instance_) return WAIT;
 
-    //instance_->ConstrainTiltMotor(instance_->tiltpos_);
+    
 
     // Handle commands while running
     int8_t cmd = 0;
@@ -267,9 +352,9 @@ uint8_t ControllerTask::exec_teleop()
         int8_t tilt_dir = instance_->dpad_tilt_->get();
 
         // Set velocities based on dpad input
-        if (instance_->panVelo_) instance_->panVelo_->put(pan_dir * instance_->SCAN_PAN_VELO); 
+        if (instance_->panVelo_) instance_->panVelo_->put(pan_dir * instance_->TELEOP_VELO); 
         // 30 deg/sec per button press
-        if (instance_->tiltVelo_) instance_->tiltVelo_->put(tilt_dir * instance_->SCAN_PAN_VELO);
+        if (instance_->tiltVelo_) instance_->tiltVelo_->put(tilt_dir * instance_->TELEOP_VELO);
     }
 
     switch (cmd) {
@@ -288,6 +373,7 @@ uint8_t ControllerTask::exec_teleop()
             if (instance_->tilt_mode_) instance_->tilt_mode_->put(1);
             if (instance_->panVelo_) instance_->panVelo_->put(instance_->SCAN_PAN_VELO);
             if (instance_->tiltVelo_) instance_->tiltVelo_->put(instance_->SCAN_PAN_VELO);
+            if (instance_-> Cam_mode_) instance_->Cam_mode_->put(1); //set camera to idle mode
             return SCAN;
         case 3: //go to motor test mode
             if (instance_->panVelo_) instance_->panVelo_->put(0);
@@ -349,20 +435,3 @@ uint8_t ControllerTask::exec_motor_test()
     return MOTOR_TEST;
 }
 
-// void ControllerTask::ConstrainTiltMotor(Share<float_t>* tiltpos) noexcept {
-//     if (!tiltpos) return;
-
-//     float_t position = tiltpos->get();
-//     const float_t TILT_MIN_POS = -30.0; // degrees
-//     const float_t TILT_MAX_POS = 150.0;  // degrees
-
-//     if (position < TILT_MIN_POS) {
-//         // Below minimum position, set to min and stop motor
-//         tiltpos->put(TILT_MIN_POS);
-//         if (tiltVelo_) tiltVelo_->put(0);
-//     } else if (position > TILT_MAX_POS) {
-//         // Above maximum position, set to max and stop motor
-//         tiltpos->put(TILT_MAX_POS);
-//         if (tiltVelo_) tiltVelo_->put(0);
-//     }
-// }

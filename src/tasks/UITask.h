@@ -1,20 +1,54 @@
 /**
  * @file UITask.h
- * @brief Comprehensive user interface task with web server, WebSocket, and serial control
+ * @brief Comprehensive web-based UI with WebSocket telemetry and mode management
+ * 
+ * This task provides the primary user interface for the motor control system via
+ * a web browser. It implements a complete web server with real-time WebSocket
+ * communication for telemetry data and command inputs. The task coordinates all
+ * system modes and aggregates data from multiple sensors and subsystems.
+ * 
+ * Key Features:
+ * - **Web Server**: Serves HTML/CSS/JS files from SPIFFS filesystem
+ * - **WebSocket Server**: Real-time bidirectional communication for telemetry and commands
+ * - **REST API**: HTTP endpoints for system status and control
+ * - **Serial Interface**: Debug commands via USB serial (v, p, s, z, h/?)
+ * - **Mode Management**: Coordinates system-wide operating mode transitions
+ * - **Multi-Sensor Telemetry**: Aggregates motor, encoder, IMU, and camera data
+ * 
+ * Telemetry Data (sent via WebSocket):
+ * - Motor positions and velocities (pan and tilt)
+ * - IMU data (euler angles, gyroscope, accelerometer)
+ * - Camera tracking errors (pan_error, tilt_error)
+ * - System state and calibration status
+ * 
+ * Command Interface:
+ * - Mode selection: MOTOR_TEST, TELEOP, TRACKER, CALIBRATE
+ * - Motor velocity/position setpoints
+ * - D-pad control inputs for manual operation
+ * - Calibration triggers
+ * 
+ * FSM States:
+ * - **CHOOSE_MODE**: Waiting for mode selection (UI_mode == 0)
+ * - **CALIBRATE**: Running calibration sequence (dcalibrate == true)
+ * - **MOTOR_TEST**: Motor testing with manual setpoints
+ * - **TELEOP**: Manual control via D-pad inputs
+ * - **TRACKER**: Automatic LED tracking mode
  * 
  * @author User Interface Team
  * @date November 2025
- * @version 3.1
+ * @version 3.2
  * 
+ * @see UITask.cpp for WebSocket message handling and telemetry formatting
+ * @see data/index.html for web interface implementation
  */
 #pragma once
 #include <Arduino.h>
-#include "FSM.h"
-#include "State.h"
+#include "../fsm/FSM.h"
+#include "../fsm/State.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "taskqueue.h"
-#include "State.h"
+#include "../fsm/State.h"
 #include "taskshare.h"  // Share<T>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
@@ -87,6 +121,10 @@ public:
     Share<EulerAngles>* eulerAngles,
     Share<GyroData>* gyroData,
     Share<AccelData>* accelData,
+    Share<bool>*    hasLed,
+    Share<uint16_t>* ledThreshold,
+    Share<int16_t>* pan_err,
+    Share<int16_t>* tilt_err,
     uint32_t        updateMs = 200) noexcept;
 
   /**
@@ -105,6 +143,13 @@ public:
   // Public accessors used by the C-style task entry
   uint32_t get_updateMs() const noexcept { return updateMs_; }
   static void set_instance(UITask* inst) { instance_ = inst; }
+  
+  // Telemetry queue accessors for encoder tasks to push data
+  Queue<float>* getTiltVelQueue() { return tilt_vel_queue_; }
+  Queue<float>* getTiltPosQueue() { return tilt_pos_queue_; }
+  Queue<float>* getPanVelQueue() { return pan_vel_queue_; }
+  Queue<float>* getPanPosQueue() { return pan_pos_queue_; }
+  Queue<bool>* getHasLedQueue() { return has_led_queue_; }
 
   // Web interface accessors
   bool isWiFiConnected() const { return WiFi.status() == WL_CONNECTED; }
@@ -146,6 +191,19 @@ private:
   Share<GyroData>* gyroData_ = nullptr;
   Share<AccelData>* accelData_ = nullptr;
   
+  // Camera/LED tracking shares
+  Share<bool>* hasLed_ = nullptr;
+  Share<uint16_t>* ledThreshold_ = nullptr;
+  Share<int16_t>* pan_err_ = nullptr;
+  Share<int16_t>* tilt_err_ = nullptr;
+  
+  // Telemetry queues for non-blocking data transfer (encoder tasks push, UITask reads)
+  Queue<float>* tilt_vel_queue_ = nullptr;
+  Queue<float>* tilt_pos_queue_ = nullptr;
+  Queue<float>* pan_vel_queue_ = nullptr;
+  Queue<float>* pan_pos_queue_ = nullptr;
+  Queue<bool>* has_led_queue_ = nullptr;
+  
   // Legacy compatibility pointers (point to tilt for backward compatibility)
   Share<float>* positionShare_ = nullptr;
   Share<float>* velocityShare_ = nullptr;
@@ -174,6 +232,19 @@ private:
   unsigned long lastTelemetryBroadcast_ = 0;
   bool connecting_ = false;
   const unsigned long telemetryInterval_ = 200; // 200ms = 5Hz
+  
+  // Cached telemetry values to avoid mutex blocking
+  float cached_tilt_vel_ = 0.0f;
+  float cached_tilt_pos_ = 0.0f;
+  float cached_pan_vel_ = 0.0f;
+  float cached_pan_pos_ = 0.0f;
+  bool cached_has_led_ = false;
+  int16_t cached_pan_err_ = 0;
+  int16_t cached_tilt_err_ = 0;
+  EulerAngles cached_euler_ = {0.0f, 0.0f, 0.0f};
+  GyroData cached_gyro_ = {0.0f, 0.0f, 0.0f};
+  AccelData cached_accel_ = {0.0f, 0.0f, 0.0f};
+  unsigned long lastCacheUpdate_ = 0;
 
   // FSM
     // FSM + states

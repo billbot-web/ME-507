@@ -1,10 +1,33 @@
 /**
  * @file ControllerTask.h
- * @brief FreeRTOS task wrapper for single-axis PID control using camera error.
+ * @brief High-level FSM controller for camera-based tracking and manual control modes
  * 
- * This task reads a centroid error (pixels) from a Share<int16_t> and writes a
- * motor effort in the range [-100, 100] to a Share<int8_t>. It uses a simple
- * WAIT/RUN FSM controlled by a command share.
+ * This task implements the top-level control logic for a pan-tilt camera tracking system.
+ * It coordinates between multiple operating modes including automatic LED tracking, manual
+ * teleoperation, motor testing, and calibration. The task acts as the "brain" of the system,
+ * deciding when to track, when to scan, and how to respond to LED detection loss.
+ * 
+ * Operating Modes (FSM States):
+ * - **CALIBRATE**: Runs encoder calibration sequence (homes motors)
+ * - **WAIT**: System idle, motors stopped
+ * - **SCAN**: Sweeping pattern to locate LED target
+ * - **TRACKR**: Active tracking of detected LED using camera feedback
+ * - **TELEOP**: Manual control via D-pad inputs from UI
+ * - **MOTOR_TEST**: Open-loop motor testing for diagnostics
+ * 
+ * Key Features:
+ * - Camera error-based tracking with LED detection monitoring
+ * - Automatic scan recovery after target loss (5-frame persistence)
+ * - Manual control with D-pad for teleoperation
+ * - Position safety limits for tilt axis
+ * - Mode switching via UI commands
+ * 
+ * @author Control Systems Team
+ * @date November 2025
+ * @version 2.1
+ * 
+ * @see ControllerTask.cpp for FSM state implementations and tracking logic
+ * @see MotorTask.h for motor control modes (VRUN, PRUN, CAMERA_PRUN)
  */
 
 #pragma once
@@ -12,8 +35,8 @@
 #include <cstdint>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "FSM.h"
-#include "State.h"
+#include "../fsm/FSM.h"
+#include "../fsm/State.h"
 #include "taskshare.h"
 #include "taskqueue.h"
 
@@ -51,7 +74,7 @@ public:
                        Share<bool>* dcalibrate,
                        Share<int8_t>* dpad_pan,
                        Share<int8_t>* dpad_tilt,
-                       uint32_t updateMs = 50) noexcept;
+                       uint32_t updateMs = 100) noexcept;
 
     /// Called by FreeRTOS task wrapper
     void update() noexcept { fsm_.run_curstate(); }
@@ -80,8 +103,13 @@ private:
     Share<int8_t>* dpad_pan_;
     Share<int8_t>* dpad_tilt_;
 
+    // LED tracking
+    uint8_t led_loss_counter_ = 0;
+    const uint8_t LED_LOSS_THRESHOLD = 5;  // Consecutive cycles before switching to SCAN
+
     //Base Scan Velocities
-    const int16_t SCAN_PAN_VELO = 30;   // degrees/sec
+    const int16_t SCAN_PAN_VELO = 0;   // effrtfor pan 50 for tilt
+    const int16_t TELEOP_VELO = 17;   // velocity for teleop mode
 
     // FSM + states
     State state_calibrate_{ CALIBRATE, "CTL_CALIBRATE", &ControllerTask::exec_calibrate };
