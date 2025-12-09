@@ -17,7 +17,7 @@ Interface to the DRV8833 dual H-bridge motor driver providing PWM speed control 
 ### Key Features
 - **Dual PWM outputs** with configurable frequency (20kHz default)
 - **Direction control** via IN1/IN2 pins (forward, reverse, brake, coast)
-- <img width="1041" height="297" alt="image" src="https://github.com/user-attachments/assets/bd24d162-a991-4c89-a29a-43fec38e8193" />
+<img width="1041" height="297" alt="image" src="https://github.com/user-attachments/assets/bd24d162-a991-4c89-a29a-43fec38e8193" />
 [1]
 The Disable pin is tied high internally. While the nSleep pin is shared for both motors so it is handled outside of the motor driver.
 - **Current limiting** via hardware (1.5A continuous, 5A peak)
