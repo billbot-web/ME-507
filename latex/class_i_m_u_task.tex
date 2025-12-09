@@ -1,0 +1,429 @@
+\doxysection{IMUTask Class Reference}
+\hypertarget{class_i_m_u_task}{}\label{class_i_m_u_task}\index{IMUTask@{IMUTask}}
+
+
+Continuous IMU sensor data acquisition task with \doxylink{class_f_s_m}{FSM} control.  
+
+
+
+
+{\ttfamily \#include $<$IMU\+\_\+\+TASK.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9ca}{State\+Id}} \+: uint8\+\_\+t \{ \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9caa1e449c519d4e3dcfef62a1346e5d6495}{WAIT}} = 0
+, \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9caadf0b6100763d821f728de9a5a611099d}{SEND\+\_\+\+DATA}} = 1
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_f_s_m}{FSM} state identifiers for IMU task operation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}{IMUTask}} (\mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}} \texorpdfstring{$\ast$}{*}imu, Share$<$ \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}}, Share$<$ \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}} $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}}, Share$<$ \mbox{\hyperlink{struct_accel_data}{Accel\+Data}} $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{struct_accel_data}{Accel\+Data}}, uint32\+\_\+t update\+Ms=500) noexcept
+\begin{DoxyCompactList}\small\item\em Construct a new IMU Task object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_i_m_u_task_a81db980a2c8f7be5174ccd20d39dd751}{init\+IMU}} ()
+\begin{DoxyCompactList}\small\item\em Initialize the BNO055 sensor hardware. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_abfa7658c2d1e6eda10bc332a48667e30}{start}} (uint8\+\_\+t priority=1, int8\+\_\+t core=-\/1)
+\begin{DoxyCompactList}\small\item\em Start the IMU Free\+RTOS task. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a6dd4ce19e4790858f3a9e6a6f349d2ee}{update}} () noexcept
+\begin{DoxyCompactList}\small\item\em Execute one \doxylink{class_f_s_m}{FSM} cycle -\/ read sensor and update shares. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a2445ab1fcc5f513a3b5acfb8a8968888}{print\+Calibration\+Status}} ()
+\begin{DoxyCompactList}\small\item\em Print current calibration status to Serial Displays system, gyro, accel, and mag calibration levels (0-\/3) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_i_m_u_task_adef8c108195c7960ee1b1e6bac093401}{is\+Fully\+Calibrated}} ()
+\begin{DoxyCompactList}\small\item\em Check if sensor is fully calibrated (all subsystems at level 3) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_i_m_u_task_a585d4d1660cb0384d7eda70a58832f1f}{is\+Data\+Reliable}} ()
+\begin{DoxyCompactList}\small\item\em Check if sensor data is reliable (system calibration \texorpdfstring{$>$}{>}= 1) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_ad28cac79ccdfabaf0a303256d5538359}{get\+Calibration\+Offsets}} (\mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \texorpdfstring{$\ast$}{*}offsets)
+\begin{DoxyCompactList}\small\item\em Read current calibration offsets from sensor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a55ce116a01e25836c9f0094e788bd15c}{set\+Calibration\+Offsets}} (const \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \texorpdfstring{$\ast$}{*}offsets)
+\begin{DoxyCompactList}\small\item\em Write calibration offsets to sensor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a8f4d046a615f404983eb9f055771b11d}{print\+Calibration\+Offsets}} ()
+\begin{DoxyCompactList}\small\item\em Print current calibration offsets to Serial Useful for recording offsets to hardcode in firmware. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c}{perform\+Calibration}} (uint32\+\_\+t timeout\+Ms=60000)
+\begin{DoxyCompactList}\small\item\em Perform interactive calibration procedure. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a2c28e6a4d383a13bdda9e748de181530}{load\+Saved\+Calibration}} ()
+\begin{DoxyCompactList}\small\item\em Load hardcoded calibration offsets Apply pre-\/saved calibration data from saved\+Calibration\+Data\+\_\+ array. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{class_i_m_u_task_a5f17e194f522641a58a0ff54ce4a65c6}{get\+\_\+update\+Ms}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get current sample interval. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_i_m_u_task_a09aee3391a75fa643391764a7a7c90b1}{set\+Sample\+Interval}} (uint32\+\_\+t interval\+Ms)
+\begin{DoxyCompactList}\small\item\em Change sample interval at runtime. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_i_m_u_task_adfb9db9321d1d5e15f060e7da3e41a84}{set\+\_\+instance}} (\mbox{\hyperlink{class_i_m_u_task}{IMUTask}} \texorpdfstring{$\ast$}{*}inst)
+\begin{DoxyCompactList}\small\item\em Set static instance pointer for \doxylink{class_f_s_m}{FSM} callbacks. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Continuous IMU sensor data acquisition task with \doxylink{class_f_s_m}{FSM} control. 
+
+Manages the BNO055 IMU sensor in a dedicated Free\+RTOS task, providing continuous streaming of orientation, angular velocity, and acceleration data. The task operates in SEND\+\_\+\+DATA state continuously for real-\/time telemetry updates.
+
+\doxylink{class_f_s_m}{FSM} States\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: Initial state, transitions immediately to SEND\+\_\+\+DATA after first sample
+\item {\bfseries{SEND\+\_\+\+DATA}}\+: Continuous data acquisition and publication (does not return to WAIT)
+\end{DoxyItemize}
+
+Thread Safety\+:
+\begin{DoxyItemize}
+\item All data outputs use Share$<$\+T$>$ for atomic read/write operations
+\item Safe to access from multiple consumer tasks
+\item No mutex required for reading published data
+\end{DoxyItemize}
+
+Calibration\+:
+\begin{DoxyItemize}
+\item Supports runtime calibration status monitoring
+\item Can save/restore calibration offsets for faster startup
+\item Checks for minimum magnetic calibration before trusting data
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+Uses static instance pattern for \doxylink{class_f_s_m}{FSM} callback integration 
+
+Sample rate configurable but limited by I2C bus speed (\texorpdfstring{$\sim$}{\string~}100\+Hz max practical) 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\doxylink{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c}{perform\+Calibration()} for calibration procedure 
+\end{DoxySeeAlso}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_i_m_u_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_i_m_u_task_ab753136579c24435a9358626f45da9ca}\index{IMUTask@{IMUTask}!StateId@{StateId}}
+\index{StateId@{StateId}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{StateId}{StateId}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_ab753136579c24435a9358626f45da9ca} 
+enum \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9ca}{IMUTask\+::\+State\+Id}} \+: uint8\+\_\+t}
+
+
+
+\doxylink{class_f_s_m}{FSM} state identifiers for IMU task operation. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WAIT@{WAIT}!IMUTask@{IMUTask}}\index{IMUTask@{IMUTask}!WAIT@{WAIT}}}\Hypertarget{class_i_m_u_task_ab753136579c24435a9358626f45da9caa1e449c519d4e3dcfef62a1346e5d6495}\label{class_i_m_u_task_ab753136579c24435a9358626f45da9caa1e449c519d4e3dcfef62a1346e5d6495} 
+WAIT&Initial state, waits for first sample interval. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SEND\_DATA@{SEND\_DATA}!IMUTask@{IMUTask}}\index{IMUTask@{IMUTask}!SEND\_DATA@{SEND\_DATA}}}\Hypertarget{class_i_m_u_task_ab753136579c24435a9358626f45da9caadf0b6100763d821f728de9a5a611099d}\label{class_i_m_u_task_ab753136579c24435a9358626f45da9caadf0b6100763d821f728de9a5a611099d} 
+SEND\+\_\+\+DATA&Continuous data acquisition and publishing. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_i_m_u_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}\index{IMUTask@{IMUTask}!IMUTask@{IMUTask}}
+\index{IMUTask@{IMUTask}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{IMUTask()}{IMUTask()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c} 
+IMUTask\+::\+IMUTask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}} \texorpdfstring{$\ast$}{*}}]{imu}{, }\item[{Share$<$ \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} $>$ \texorpdfstring{$\ast$}{*}}]{Euler\+Angles}{, }\item[{Share$<$ \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}} $>$ \texorpdfstring{$\ast$}{*}}]{Gyro\+Data}{, }\item[{Share$<$ \mbox{\hyperlink{struct_accel_data}{Accel\+Data}} $>$ \texorpdfstring{$\ast$}{*}}]{Accel\+Data}{, }\item[{uint32\+\_\+t}]{update\+Ms}{ = {\ttfamily 500}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct a new IMU Task object. 
+
+Construct IMU task with sensor configuration and data shares.
+
+
+\begin{DoxyParams}{Parameters}
+{\em imu} & Pointer to initialized \doxylink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055} sensor object \\
+\hline
+{\em \doxylink{struct_euler_angles}{Euler\+Angles}} & Pointer to shared euler angle data container \\
+\hline
+{\em \doxylink{struct_gyro_data}{Gyro\+Data}} & Pointer to shared gyroscope data container \\
+\hline
+{\em \doxylink{struct_accel_data}{Accel\+Data}} & Pointer to shared accelerometer data container \\
+\hline
+{\em update\+Ms} & Sample interval in milliseconds (default 500ms = 2Hz)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+update\+Ms determines telemetry rate; lower values increase CPU load 
+
+Recommended range\+: 100ms (10Hz) to 1000ms (1Hz)
+\end{DoxyNote}
+Initializes the IMU task with pointers to the BNO055 sensor and shared data containers. Also loads hardcoded calibration offsets for faster startup.
+
+Calibration offsets are specific to the physical sensor and mounting orientation\+:
+\begin{DoxyItemize}
+\item Accel\+: (-\/44, 0, -\/46)
+\item Gyro\+: (-\/1, 0, 1) ~\newline
+
+\item Mag\+: (-\/9, -\/277, -\/288)
+\item Accel Radius\+: 1000, Mag Radius\+: 645
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em imu} & Pointer to initialized \doxylink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055} sensor object \\
+\hline
+{\em \doxylink{struct_euler_angles}{Euler\+Angles}} & Shared container for euler angles (roll, pitch, yaw) \\
+\hline
+{\em \doxylink{struct_gyro_data}{Gyro\+Data}} & Shared container for angular velocities \\
+\hline
+{\em \doxylink{struct_accel_data}{Accel\+Data}} & Shared container for linear accelerations \\
+\hline
+{\em update\+Ms} & Sample interval in milliseconds (default 500ms)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Calibration values must be determined for each specific sensor 
+
+See \doxylink{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c}{perform\+Calibration()} for obtaining calibration offsets 
+\end{DoxyNote}
+
+
+\label{doc-func-members}
+\Hypertarget{class_i_m_u_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_i_m_u_task_a5f17e194f522641a58a0ff54ce4a65c6}\index{IMUTask@{IMUTask}!get\_updateMs@{get\_updateMs}}
+\index{get\_updateMs@{get\_updateMs}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{get\_updateMs()}{get\_updateMs()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a5f17e194f522641a58a0ff54ce4a65c6} 
+uint32\+\_\+t IMUTask\+::get\+\_\+update\+Ms (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get current sample interval. 
+
+\begin{DoxyReturn}{Returns}
+Sample period in milliseconds 
+\end{DoxyReturn}
+\Hypertarget{class_i_m_u_task_ad28cac79ccdfabaf0a303256d5538359}\index{IMUTask@{IMUTask}!getCalibrationOffsets@{getCalibrationOffsets}}
+\index{getCalibrationOffsets@{getCalibrationOffsets}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{getCalibrationOffsets()}{getCalibrationOffsets()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_ad28cac79ccdfabaf0a303256d5538359} 
+void IMUTask\+::get\+Calibration\+Offsets (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{offsets}{}\end{DoxyParamCaption})}
+
+
+
+Read current calibration offsets from sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offsets} & Pointer to structure to receive offset data \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_i_m_u_task_a81db980a2c8f7be5174ccd20d39dd751}\index{IMUTask@{IMUTask}!initIMU@{initIMU}}
+\index{initIMU@{initIMU}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{initIMU()}{initIMU()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a81db980a2c8f7be5174ccd20d39dd751} 
+bool IMUTask\+::init\+IMU (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Initialize the BNO055 sensor hardware. 
+
+Initialize BNO055 IMU sensor hardware and configure operating mode.
+
+Performs I2C communication test, sets NDOF mode, and verifies sensor presence. Must be called before starting the Free\+RTOS task.
+
+\begin{DoxyReturn}{Returns}
+true if sensor initialized successfully 
+
+false if sensor not found or communication failed
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Prints diagnostic messages to Serial 
+
+Sets sensor to NDOF (9-\/DOF fusion) mode automatically
+\end{DoxyNote}
+Performs I2C communication test with the BNO055 sensor and sets it to NDOF (Nine Degrees of Freedom) fusion mode. This mode combines data from all three sensors (accelerometer, gyroscope, magnetometer) for optimal accuracy in absolute orientation tracking.
+
+Initialization Steps\+:
+\begin{DoxyEnumerate}
+\item Verify imu\+\_\+ pointer is valid
+\item Call begin() with NDOF mode parameter
+\item Set imu\+Initialized\+\_\+ flag based on result
+\item Print diagnostic messages to Serial
+\end{DoxyEnumerate}
+
+\begin{DoxyReturn}{Returns}
+true if sensor responded and entered NDOF mode successfully 
+
+false if sensor not found, I2C error, or null pointer
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Must be called before starting Free\+RTOS task 
+
+NDOF mode requires calibration for accurate absolute orientation 
+
+Prints diagnostic output to Serial for debugging 
+\end{DoxyNote}
+\Hypertarget{class_i_m_u_task_a585d4d1660cb0384d7eda70a58832f1f}\index{IMUTask@{IMUTask}!isDataReliable@{isDataReliable}}
+\index{isDataReliable@{isDataReliable}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{isDataReliable()}{isDataReliable()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a585d4d1660cb0384d7eda70a58832f1f} 
+bool IMUTask\+::is\+Data\+Reliable (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Check if sensor data is reliable (system calibration \texorpdfstring{$>$}{>}= 1) 
+
+\begin{DoxyReturn}{Returns}
+true if magnetic north found and data trustworthy 
+\end{DoxyReturn}
+\Hypertarget{class_i_m_u_task_adef8c108195c7960ee1b1e6bac093401}\index{IMUTask@{IMUTask}!isFullyCalibrated@{isFullyCalibrated}}
+\index{isFullyCalibrated@{isFullyCalibrated}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{isFullyCalibrated()}{isFullyCalibrated()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_adef8c108195c7960ee1b1e6bac093401} 
+bool IMUTask\+::is\+Fully\+Calibrated (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Check if sensor is fully calibrated (all subsystems at level 3) 
+
+\begin{DoxyReturn}{Returns}
+true if fully calibrated 
+\end{DoxyReturn}
+\Hypertarget{class_i_m_u_task_a2c28e6a4d383a13bdda9e748de181530}\index{IMUTask@{IMUTask}!loadSavedCalibration@{loadSavedCalibration}}
+\index{loadSavedCalibration@{loadSavedCalibration}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{loadSavedCalibration()}{loadSavedCalibration()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a2c28e6a4d383a13bdda9e748de181530} 
+void IMUTask\+::load\+Saved\+Calibration (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Load hardcoded calibration offsets Apply pre-\/saved calibration data from saved\+Calibration\+Data\+\_\+ array. 
+
+\Hypertarget{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c}\index{IMUTask@{IMUTask}!performCalibration@{performCalibration}}
+\index{performCalibration@{performCalibration}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{performCalibration()}{performCalibration()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c} 
+void IMUTask\+::perform\+Calibration (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{timeout\+Ms}{ = {\ttfamily 60000}}\end{DoxyParamCaption})}
+
+
+
+Perform interactive calibration procedure. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout\+Ms} & Maximum time to wait for full calibration (default 60 seconds) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Blocks until fully calibrated or timeout expires 
+
+Prints instructions to Serial for user 
+\end{DoxyNote}
+\Hypertarget{class_i_m_u_task_a8f4d046a615f404983eb9f055771b11d}\index{IMUTask@{IMUTask}!printCalibrationOffsets@{printCalibrationOffsets}}
+\index{printCalibrationOffsets@{printCalibrationOffsets}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{printCalibrationOffsets()}{printCalibrationOffsets()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a8f4d046a615f404983eb9f055771b11d} 
+void IMUTask\+::print\+Calibration\+Offsets (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Print current calibration offsets to Serial Useful for recording offsets to hardcode in firmware. 
+
+\Hypertarget{class_i_m_u_task_a2445ab1fcc5f513a3b5acfb8a8968888}\index{IMUTask@{IMUTask}!printCalibrationStatus@{printCalibrationStatus}}
+\index{printCalibrationStatus@{printCalibrationStatus}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{printCalibrationStatus()}{printCalibrationStatus()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a2445ab1fcc5f513a3b5acfb8a8968888} 
+void IMUTask\+::print\+Calibration\+Status (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Print current calibration status to Serial Displays system, gyro, accel, and mag calibration levels (0-\/3) 
+
+\Hypertarget{class_i_m_u_task_adfb9db9321d1d5e15f060e7da3e41a84}\index{IMUTask@{IMUTask}!set\_instance@{set\_instance}}
+\index{set\_instance@{set\_instance}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{set\_instance()}{set\_instance()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_adfb9db9321d1d5e15f060e7da3e41a84} 
+void IMUTask\+::set\+\_\+instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_i_m_u_task}{IMUTask}} \texorpdfstring{$\ast$}{*}}]{inst}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Set static instance pointer for \doxylink{class_f_s_m}{FSM} callbacks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em inst} & Pointer to \doxylink{class_i_m_u_task}{IMUTask} instance \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_i_m_u_task_a55ce116a01e25836c9f0094e788bd15c}\index{IMUTask@{IMUTask}!setCalibrationOffsets@{setCalibrationOffsets}}
+\index{setCalibrationOffsets@{setCalibrationOffsets}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{setCalibrationOffsets()}{setCalibrationOffsets()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a55ce116a01e25836c9f0094e788bd15c} 
+void IMUTask\+::set\+Calibration\+Offsets (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{offsets}{}\end{DoxyParamCaption})}
+
+
+
+Write calibration offsets to sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offsets} & Pointer to structure containing offset data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Allows restoring saved calibration for faster startup 
+\end{DoxyNote}
+\Hypertarget{class_i_m_u_task_a09aee3391a75fa643391764a7a7c90b1}\index{IMUTask@{IMUTask}!setSampleInterval@{setSampleInterval}}
+\index{setSampleInterval@{setSampleInterval}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{setSampleInterval()}{setSampleInterval()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a09aee3391a75fa643391764a7a7c90b1} 
+void IMUTask\+::set\+Sample\+Interval (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{interval\+Ms}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Change sample interval at runtime. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em interval\+Ms} & New sample period in milliseconds \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Takes effect on next sample 
+\end{DoxyNote}
+\Hypertarget{class_i_m_u_task_abfa7658c2d1e6eda10bc332a48667e30}\index{IMUTask@{IMUTask}!start@{start}}
+\index{start@{start}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{start()}{start()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_abfa7658c2d1e6eda10bc332a48667e30} 
+void IMUTask\+::start (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{priority}{ = {\ttfamily 1}, }\item[{int8\+\_\+t}]{core}{ = {\ttfamily -\/1}}\end{DoxyParamCaption})}
+
+
+
+Start the IMU Free\+RTOS task. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em priority} & Task priority (1 = low, higher = more important) \\
+\hline
+{\em core} & CPU core to pin task to (-\/1 = no pinning, 0 or 1 for specific core) \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_i_m_u_task_a6dd4ce19e4790858f3a9e6a6f349d2ee}\index{IMUTask@{IMUTask}!update@{update}}
+\index{update@{update}!IMUTask@{IMUTask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_i_m_u_task_a6dd4ce19e4790858f3a9e6a6f349d2ee} 
+void IMUTask\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Execute one \doxylink{class_f_s_m}{FSM} cycle -\/ read sensor and update shares. 
+
+Execute one \doxylink{class_f_s_m}{FSM} cycle for IMU data acquisition.
+
+\begin{DoxyNote}{Note}
+Called repeatedly from Free\+RTOS task loop
+\end{DoxyNote}
+Called repeatedly from the Free\+RTOS task loop. Delegates to the \doxylink{class_f_s_m}{FSM} manager which executes the current state\textquotesingle{}s function (exec\+\_\+wait or exec\+\_\+send\+Data).
+
+\begin{DoxyNote}{Note}
+Called at rate determined by update\+Ms\+\_\+ parameter 
+
+Thread-\/safe -\/ uses Share$<$\+T$>$ for all data outputs 
+\end{DoxyNote}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_i_m_u___t_a_s_k_8h}{IMU\+\_\+\+TASK.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_i_m_u___t_a_s_k_8cpp}{IMU\+\_\+\+TASK.\+cpp}}\end{DoxyCompactItemize}

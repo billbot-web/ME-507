@@ -1,0 +1,93 @@
+\doxysection{src/tasks/\+IMU\+\_\+\+TASK.cpp File Reference}
+\hypertarget{_i_m_u___t_a_s_k_8cpp}{}\label{_i_m_u___t_a_s_k_8cpp}\index{src/tasks/IMU\_TASK.cpp@{src/tasks/IMU\_TASK.cpp}}
+
+
+Implementation of BNO055 IMU sensor data acquisition task.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}IMU\+\_\+\+TASK.\+h"{}}\newline
+{\ttfamily \#include "{}UITask.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_i_m_u___t_a_s_k_8cpp_a97af8df15f3995e740e5c80c578397db}{imu\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for IMU data acquisition. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of BNO055 IMU sensor data acquisition task. 
+
+This file implements continuous IMU sensor data streaming using a two-\/state \doxylink{class_f_s_m}{FSM}. The task runs in SEND\+\_\+\+DATA state continuously, publishing orientation, angular velocity, and acceleration data at a configurable sample rate.
+
+Implementation Details\+:
+\begin{DoxyItemize}
+\item Reads Euler angles, gyroscope, and accelerometer data from BNO055
+\item Operates in NDOF (9-\/DOF fusion) mode for optimal accuracy
+\item Publishes data via Share$<$\+T$>$ objects for thread-\/safe inter-\/task communication
+\item Supports calibration persistence via hardcoded offset values
+\item Checks system calibration status to ensure data reliability
+\end{DoxyItemize}
+
+\doxylink{class_f_s_m}{FSM} Behavior\+:
+\begin{DoxyItemize}
+\item WAIT state\+: Waits for initial sample interval, transitions to SEND\+\_\+\+DATA
+\item SEND\+\_\+\+DATA state\+: Continuously reads and publishes sensor data, never returns to WAIT
+\end{DoxyItemize}
+
+Timing\+:
+\begin{DoxyItemize}
+\item Default sample rate\+: 500ms (2Hz)
+\item Configurable via constructor parameter
+\item Limited by I2C bus speed (\texorpdfstring{$\sim$}{\string~}100\+Hz practical maximum)
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+IMU Integration Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+8
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_i_m_u___t_a_s_k_8h}{IMU\+\_\+\+TASK.\+h} for class interface and configuration options 
+
+\doxylink{_adafruit___b_n_o055_8h}{Adafruit\+\_\+\+BNO055.\+h} for sensor hardware details 
+\end{DoxySeeAlso}
+
+
+\label{doc-func-members}
+\Hypertarget{_i_m_u___t_a_s_k_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_i_m_u___t_a_s_k_8cpp_a97af8df15f3995e740e5c80c578397db}\index{IMU\_TASK.cpp@{IMU\_TASK.cpp}!imu\_task\_func@{imu\_task\_func}}
+\index{imu\_task\_func@{imu\_task\_func}!IMU\_TASK.cpp@{IMU\_TASK.cpp}}
+\doxysubsubsection{\texorpdfstring{imu\_task\_func()}{imu\_task\_func()}}
+{\footnotesize\ttfamily \label{_i_m_u___t_a_s_k_8cpp_a97af8df15f3995e740e5c80c578397db} 
+void imu\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for IMU data acquisition. 
+
+C-\/style function required by x\+Task\+Create(). Creates an infinite loop that periodically calls the IMU task\textquotesingle{}s update() method to execute the \doxylink{class_f_s_m}{FSM}.
+
+Task Loop\+:
+\begin{DoxyEnumerate}
+\item Set static instance pointer for callback access
+\item Call update() to execute current \doxylink{class_f_s_m}{FSM} state
+\item Delay for configured sample interval
+\item Repeat indefinitely
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em pv\+Parameters} & Pointer to \doxylink{class_i_m_u_task}{IMUTask} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Delay duration matches update\+Ms\+\_\+ from \doxylink{class_i_m_u_task}{IMUTask} configuration 
+
+Task never exits -\/ runs for lifetime of system 
+\end{DoxyNote}

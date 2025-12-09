@@ -1,0 +1,87 @@
+\doxysection{Motor\+Task.\+h}
+\hypertarget{_motor_task_8h_source}{}\label{_motor_task_8h_source}\index{src/tasks/MotorTask.h@{src/tasks/MotorTask.h}}
+\mbox{\hyperlink{_motor_task_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_f_s_m_8h}{../fsm/FSM.h}}"{}}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_d_r_v883_8h}{../hardware/DRV883.h}}"{}}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ "{}taskqueue.h"{}}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}\ \ \textcolor{comment}{//\ For\ Share<T>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ "{}PID.h"{}}\ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ PID\ controllers}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}{MotorTask}}\ \{}
+\DoxyCodeLine{00060\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102}{Ids}}\ \{\ }
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a2cdc322f122e4fba4846da11adc4e195}{WAIT}}\ =\ 0,\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a369a2966dc99ee6a6071ed26192120f1}{VRUN}}\ =\ 1,\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a9d0d63960af21ecacd902bd60586c5c3}{PRUN}}\ =\ 2,\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a79166ecd50da34ec11c51ea19c209058}{CAMERA\_PRUN}}\ =\ 3\ \ \ }
+\DoxyCodeLine{00070\ \ \ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00073\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}{MotorTask}}*\ \mbox{\hyperlink{class_motor_task_a801256b4c6d5574469e1cb47f777ba0b}{instance\_}};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}{MotorTask}}(\mbox{\hyperlink{class_d_r_v883}{DRV883}}*\ motor,\ Share<uint8\_t>*\ cmdShare,\ Share<float>*\ veloShare,\ Share<int8\_t>*\ vref,\ }
+\DoxyCodeLine{00090\ \ \ \ \ Share<float>*\ posShare,\ Share<int16\_t>*\ posref,\ PID*\ velocity\_pid,\ PID*\ position\_pid,\ }
+\DoxyCodeLine{00091\ \ \ \ \ Share<int16\_t>*\ cameraErr\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keywordtype}{bool}\ isTiltMotor\ =\ \textcolor{keyword}{false})\ noexcept;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_motor_task_a45171b9883c3f5dd352345059dd453df}{update}}()\ noexcept\ \{\ fsm\_.run\_curstate();\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_motor_task_a6dec16659ceefa138bd3ee9f5e6668cb}{set\_instance}}(\mbox{\hyperlink{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}{MotorTask}}*\ inst)\ \{\ \mbox{\hyperlink{class_motor_task_a801256b4c6d5574469e1cb47f777ba0b}{instance\_}}\ =\ inst;\ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00108\ \ \ \textcolor{comment}{//\ Static\ Wrapper\ Functions\ (FSM\ State\ Executors)}}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00110\ \ \ }
+\DoxyCodeLine{00115\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_wait()\ noexcept;}
+\DoxyCodeLine{00116\ \ \ }
+\DoxyCodeLine{00121\ \ \ static\ uint8\_t\ exec\_velorun()\ noexcept;}
+\DoxyCodeLine{00122\ \ \ }
+\DoxyCodeLine{00127\ \ \ static\ uint8\_t\ exec\_posrun()\ noexcept;}
+\DoxyCodeLine{00128\ \ \ }
+\DoxyCodeLine{00133\ \ \ static\ uint8\_t\ exec\_camera\_posrun()\ noexcept;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00136\ \ \ \textcolor{comment}{//\ Hardware\ and\ Communication\ Interfaces}}
+\DoxyCodeLine{00137\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \mbox{\hyperlink{class_d_r_v883}{DRV883}}*\ motor\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ Share<uint8\_t>*\ cmdShare\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \ \ Share<\textcolor{keywordtype}{float}>*\ veloShare\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ Share<int8\_t>*\ vref\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00143\ \ \ Share<\textcolor{keywordtype}{float}>*\ posShare\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00144\ \ \ Share<int16\_t>*\ posref\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ Share<int16\_t>*\ cameraErr\_\ =\ \textcolor{keywordtype}{nullptr};\ \ \ \ \ \ }
+\DoxyCodeLine{00146\ \ \ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00148\ \ \ \textcolor{comment}{//\ Configuration\ and\ State}}
+\DoxyCodeLine{00149\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00150\ \ \ }
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{bool}\ isTiltMotor\_\ =\ false;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \textcolor{keywordtype}{int}\ state\_\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \textcolor{keywordtype}{int}\ last\_effort\_\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00154\ \ \ uint32\_t\ wait\_until\_ms\_\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ uint32\_t\ run\_until\_ms\_\ \ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00157\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00158\ \ \ \textcolor{comment}{//\ PID\ Controllers\ (Externally\ Managed)}}
+\DoxyCodeLine{00159\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00160\ \ \ }
+\DoxyCodeLine{00161\ \ \ PID*\ velocity\_pid\_;\ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ PID*\ position\_pid\_;\ \ \ \ \ }
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00165\ \ \ \textcolor{comment}{//\ FSM\ State\ Objects}}
+\DoxyCodeLine{00166\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00167\ \ \ }
+\DoxyCodeLine{00168\ \ \ \mbox{\hyperlink{class_state}{State}}\ state\_wait\_\{\mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a2cdc322f122e4fba4846da11adc4e195}{WAIT}},\ \textcolor{stringliteral}{"{}WAIT"{}},\ \&MotorTask::exec\_wait\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00169\ \ \ State\ state\_velorun\_\ \{\mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a369a2966dc99ee6a6071ed26192120f1}{VRUN}},\ \ \textcolor{stringliteral}{"{}VRUN"{}},\ \ \&MotorTask::exec\_velorun\ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ State\ state\_posrun\_\ \{\mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a9d0d63960af21ecacd902bd60586c5c3}{PRUN}},\ \ \textcolor{stringliteral}{"{}PRUN"{}},\ \ \&MotorTask::exec\_posrun\ \};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ State\ state\_camera\_posrun\_\ \{\mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a79166ecd50da34ec11c51ea19c209058}{CAMERA\_PRUN}},\ \textcolor{stringliteral}{"{}CAMERA\_PRUN"{}},\ \&MotorTask::exec\_camera\_posrun\};\ }
+\DoxyCodeLine{00172\ \ \ State*\ states\_[4]\ =\ \{\ \&state\_wait\_,\ \&state\_velorun\_,\ \&state\_posrun\_,\ \&state\_camera\_posrun\_\ \};\ }
+\DoxyCodeLine{00173\ \ \ FSM\ fsm\_;\ \ }
+\DoxyCodeLine{00174\ \};}
+
+\end{DoxyCode}

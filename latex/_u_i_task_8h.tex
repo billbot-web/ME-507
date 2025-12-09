@@ -1,0 +1,80 @@
+\doxysection{src/tasks/\+UITask.h File Reference}
+\hypertarget{_u_i_task_8h}{}\label{_u_i_task_8h}\index{src/tasks/UITask.h@{src/tasks/UITask.h}}
+
+
+Comprehensive web-\/based UI with Web\+Socket telemetry and mode management.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}taskqueue.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+{\ttfamily \#include $<$Wi\+Fi.\+h$>$}\newline
+{\ttfamily \#include $<$ESPAsync\+Web\+Server.\+h$>$}\newline
+{\ttfamily \#include $<$Arduino\+Json.\+h$>$}\newline
+{\ttfamily \#include $<$SPIFFS.\+h$>$}\newline
+{\ttfamily \#include "{}IMU\+\_\+\+TASK.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_u_i_task}{UITask}}
+\begin{DoxyCompactList}\small\item\em UI task with web server, Web\+Socket, and serial interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Comprehensive web-\/based UI with Web\+Socket telemetry and mode management. 
+
+This task provides the primary user interface for the motor control system via a web browser. It implements a complete web server with real-\/time Web\+Socket communication for telemetry data and command inputs. The task coordinates all system modes and aggregates data from multiple sensors and subsystems.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item {\bfseries{Web Server}}\+: Serves HTML/\+CSS/\+JS files from SPIFFS filesystem
+\item {\bfseries{Web\+Socket Server}}\+: Real-\/time bidirectional communication for telemetry and commands
+\item {\bfseries{REST API}}\+: HTTP endpoints for system status and control
+\item {\bfseries{Serial Interface}}\+: Debug commands via USB serial (v, p, s, z, h/?)
+\item {\bfseries{Mode Management}}\+: Coordinates system-\/wide operating mode transitions
+\item {\bfseries{Multi-\/\+Sensor Telemetry}}\+: Aggregates motor, encoder, IMU, and camera data
+\end{DoxyItemize}
+
+Telemetry Data (sent via Web\+Socket)\+:
+\begin{DoxyItemize}
+\item Motor positions and velocities (pan and tilt)
+\item IMU data (euler angles, gyroscope, accelerometer)
+\item Camera tracking errors (pan\+\_\+error, tilt\+\_\+error)
+\item System state and calibration status
+\end{DoxyItemize}
+
+Command Interface\+:
+\begin{DoxyItemize}
+\item Mode selection\+: MOTOR\+\_\+\+TEST, TELEOP, TRACKER, CALIBRATE
+\item Motor velocity/position setpoints
+\item D-\/pad control inputs for manual operation
+\item Calibration triggers
+\end{DoxyItemize}
+
+\doxylink{class_f_s_m}{FSM} States\+:
+\begin{DoxyItemize}
+\item {\bfseries{CHOOSE\+\_\+\+MODE}}\+: Waiting for mode selection (UI\+\_\+mode == 0)
+\item {\bfseries{CALIBRATE}}\+: Running calibration sequence (dcalibrate == true)
+\item {\bfseries{MOTOR\+\_\+\+TEST}}\+: Motor testing with manual setpoints
+\item {\bfseries{TELEOP}}\+: Manual control via D-\/pad inputs
+\item {\bfseries{TRACKER}}\+: Automatic LED tracking mode
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+User Interface Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+3.\+2
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_u_i_task_8cpp}{UITask.\+cpp} for Web\+Socket message handling and telemetry formatting 
+
+data/index.\+html for web interface implementation 
+\end{DoxySeeAlso}

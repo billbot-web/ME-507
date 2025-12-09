@@ -1,0 +1,26 @@
+\doxysection{Motor\+DRV883 Class Reference}
+\hypertarget{class_motor_d_r_v883}{}\label{class_motor_d_r_v883}\index{MotorDRV883@{MotorDRV883}}
+
+
+Simple dual-\/pin PWM motor driver class for \doxylink{class_d_r_v883}{DRV883} series.  
+
+
+
+
+{\ttfamily \#include $<$DRV883.\+h$>$}
+
+
+
+\doxysubsection{Detailed Description}
+Simple dual-\/pin PWM motor driver class for \doxylink{class_d_r_v883}{DRV883} series. 
+
+Controls motor direction using IN1/\+IN2 pins and speed using ESP32 LEDC PWM. Effort range\+: -\/100 to 100 (\%)
+\begin{DoxyItemize}
+\item Positive = forward (PWM on IN1)
+\item Negative = reverse (PWM on IN2)
+\item Zero = motor stopped (both low) 
+\end{DoxyItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/hardware/\mbox{\hyperlink{_d_r_v883_8h}{DRV883.\+h}}\end{DoxyCompactItemize}

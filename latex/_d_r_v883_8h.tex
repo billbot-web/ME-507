@@ -1,0 +1,62 @@
+\doxysection{src/hardware/\+DRV883.h File Reference}
+\hypertarget{_d_r_v883_8h}{}\label{_d_r_v883_8h}\index{src/hardware/DRV883.h@{src/hardware/DRV883.h}}
+
+
+Motor driver class for \doxylink{class_d_r_v883}{DRV883} series dual H-\/bridge motor controllers.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_d_r_v883}{DRV883}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Motor driver class for \doxylink{class_d_r_v883}{DRV883} series dual H-\/bridge motor controllers. 
+
+This file contains the \doxylink{class_d_r_v883}{DRV883} class which provides an interface for controlling DC motors using the Texas Instruments DRV883x series motor driver ICs. The class implements PWM-\/based speed control with direction control using two input pins.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Bidirectional motor control (-\/100\% to +100\% effort)
+\item ESP32 LEDC PWM hardware acceleration
+\item Configurable PWM frequency and resolution
+\item Active braking support
+\item Hardware protection via DRV883x built-\/in features
+\end{DoxyItemize}
+
+Hardware Requirements\+:
+\begin{DoxyItemize}
+\item ESP32 microcontroller
+\item DRV883x motor driver IC (DRV8833, DRV8835, etc.)
+\item Two GPIO pins for motor direction control (IN1, IN2)
+\item External power supply for motor (VM pin on DRV883x)
+\end{DoxyItemize}
+
+Wiring\+:
+\begin{DoxyItemize}
+\item ESP32 GPIO -\/\texorpdfstring{$>$}{>} DRV883x IN1 (direction control pin 1)
+\item ESP32 GPIO -\/\texorpdfstring{$>$}{>} DRV883x IN2 (direction control pin 2)
+\item Motor + terminal -\/\texorpdfstring{$>$}{>} DRV883x OUT1
+\item Motor -\/ terminal -\/\texorpdfstring{$>$}{>} DRV883x OUT2
+\item External V+ -\/\texorpdfstring{$>$}{>} DRV883x VM (motor power supply)
+\item ESP32 3.\+3V -\/\texorpdfstring{$>$}{>} DRV883x VCC (logic power supply)
+\item Common GND between ESP32, DRV883x, and motor supply
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Motor Control Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+2
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\href{https://www.ti.com/lit/ds/symlink/drv8833.pdf}{\texttt{https\+://www.\+ti.\+com/lit/ds/symlink/drv8833.\+pdf}} DRV8833 Datasheet 
+
+\href{https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html}{\texttt{https\+://docs.\+espressif.\+com/projects/esp-\/idf/en/latest/esp32/api-\/reference/peripherals/ledc.\+html}} ESP32 LEDC Documentation 
+\end{DoxySeeAlso}

@@ -1,0 +1,62 @@
+\doxysection{src/tasks/\+Encoder\+Task.cpp File Reference}
+\hypertarget{_encoder_task_8cpp}{}\label{_encoder_task_8cpp}\index{src/tasks/EncoderTask.cpp@{src/tasks/EncoderTask.cpp}}
+
+
+Implementation of high-\/frequency encoder monitoring with velocity calculation.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include "{}Encoder\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}UITask.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/queue.\+h"{}}\newline
+
+
+\doxysubsection{Detailed Description}
+Implementation of high-\/frequency encoder monitoring with velocity calculation. 
+
+This file implements the \doxylink{class_encoder_task}{Encoder\+Task} which provides continuous position and velocity measurement using the ESP32 PCNT peripheral. The task operates at high frequency (default 100Hz) to capture encoder changes with minimal latency and computes velocity using the \doxylink{class_encoder}{Encoder} class\textquotesingle{}s sliding window smoothing algorithm.
+
+Operating Modes\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: \doxylink{class_encoder}{Encoder} monitoring paused, position held constant
+\item {\bfseries{RUN}}\+: Active monitoring with continuous position/velocity updates
+\end{DoxyItemize}
+
+Key Operations\+:
+\begin{DoxyItemize}
+\item Calls encoder\+\_\+-\/\texorpdfstring{$>$}{>}update() each cycle to refresh hardware counter
+\item Reads position and velocity from \doxylink{class_encoder}{Encoder} object
+\item Converts counts to degrees using gear ratio (default 70\+:1 gearbox × 64 CPR)
+\item Publishes data via Share$<$\+T$>$ for thread-\/safe access by control loops
+\item Supports zero/home operation to reset position accumulator
+\end{DoxyItemize}
+
+Data Output\+:
+\begin{DoxyItemize}
+\item Position\+: Accumulated angle in degrees from last zero
+\item Velocity\+: Angular rate in degrees/second (smoothed)
+\end{DoxyItemize}
+
+Performance\+:
+\begin{DoxyItemize}
+\item High update rate (10ms default) minimizes control loop latency
+\item Velocity smoothing reduces measurement noise
+\item Hardware PCNT ensures no missed counts even at high shaft speeds
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+\doxylink{class_encoder}{Encoder} Control Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+6
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_encoder_task_8h}{Encoder\+Task.\+h} for class interface and configuration options 
+
+\doxylink{_encoder_8h}{Encoder.\+h} for PCNT hardware interface details 
+\end{DoxySeeAlso}

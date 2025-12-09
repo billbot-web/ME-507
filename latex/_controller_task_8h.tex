@@ -1,0 +1,60 @@
+\doxysection{src/tasks/\+Controller\+Task.h File Reference}
+\hypertarget{_controller_task_8h}{}\label{_controller_task_8h}\index{src/tasks/ControllerTask.h@{src/tasks/ControllerTask.h}}
+
+
+High-\/level \doxylink{class_f_s_m}{FSM} controller for camera-\/based tracking and manual control modes.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+{\ttfamily \#include "{}taskqueue.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_controller_task}{Controller\+Task}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+High-\/level \doxylink{class_f_s_m}{FSM} controller for camera-\/based tracking and manual control modes. 
+
+This task implements the top-\/level control logic for a pan-\/tilt camera tracking system. It coordinates between multiple operating modes including automatic LED tracking, manual teleoperation, motor testing, and calibration. The task acts as the "{}brain"{} of the system, deciding when to track, when to scan, and how to respond to LED detection loss.
+
+Operating Modes (\doxylink{class_f_s_m}{FSM} States)\+:
+\begin{DoxyItemize}
+\item {\bfseries{CALIBRATE}}\+: Runs encoder calibration sequence (homes motors)
+\item {\bfseries{WAIT}}\+: System idle, motors stopped
+\item {\bfseries{SCAN}}\+: Sweeping pattern to locate LED target
+\item {\bfseries{TRACKR}}\+: Active tracking of detected LED using camera feedback
+\item {\bfseries{TELEOP}}\+: Manual control via D-\/pad inputs from UI
+\item {\bfseries{MOTOR\+\_\+\+TEST}}\+: Open-\/loop motor testing for diagnostics
+\end{DoxyItemize}
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Camera error-\/based tracking with LED detection monitoring
+\item Automatic scan recovery after target loss (5-\/frame persistence)
+\item Manual control with D-\/pad for teleoperation
+\item Position safety limits for tilt axis
+\item Mode switching via UI commands
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Control Systems Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+1
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_controller_task_8cpp}{Controller\+Task.\+cpp} for \doxylink{class_f_s_m}{FSM} state implementations and tracking logic 
+
+\doxylink{_motor_task_8h}{Motor\+Task.\+h} for motor control modes (VRUN, PRUN, CAMERA\+\_\+\+PRUN) 
+\end{DoxySeeAlso}

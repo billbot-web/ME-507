@@ -1,0 +1,76 @@
+\doxysection{src/tasks/\+Camera\+Task.h File Reference}
+\hypertarget{_camera_task_8h}{}\label{_camera_task_8h}\index{src/tasks/CameraTask.h@{src/tasks/CameraTask.h}}
+
+
+Computer vision task for LED detection and tracking error computation.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}../hardware/\+OV5640\+\_\+camera.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}taskqueue.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_camera_task}{Camera\+Task}}
+\begin{DoxyCompactList}\small\item\em Real-\/time LED detection and visual servoing error computation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Computer vision task for LED detection and tracking error computation. 
+
+This task implements real-\/time LED detection and centroid tracking using the OV5640 camera module. It captures frames, processes them to find bright LED targets, and computes pixel errors (pan and tilt) from the image center for use in visual servoing.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item OV5640 camera frame capture and processing
+\item Brightness-\/based LED detection with configurable threshold
+\item Centroid calculation for precise target localization
+\item Pixel error computation for visual servoing control
+\item Frame streaming capability for web UI display
+\item FSM-\/based operation modes for power management
+\end{DoxyItemize}
+
+Operating Modes\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: Camera idle, no capture
+\item {\bfseries{CAP\+\_\+\+SEND\+\_\+\+ERR}}\+: Capture frame, detect LED, compute and publish errors only
+\item {\bfseries{CAP\+\_\+\+SEND\+\_\+\+RETURN}}\+: Full mode -\/ capture, detect, compute errors, stream frame to UI
+\end{DoxyItemize}
+
+Computer Vision Pipeline\+:
+\begin{DoxyEnumerate}
+\item Capture frame from OV5640 camera
+\item Scan pixels for brightness above threshold
+\item Calculate centroid (center of mass) of bright pixels
+\item Compute pixel errors\+: (centroid\+\_\+x -\/ image\+\_\+center\+\_\+x), (centroid\+\_\+y -\/ image\+\_\+center\+\_\+y)
+\item Publish errors and detection flag via Share$<$\+T$>$ objects
+\item Optionally stream frame to web UI
+\end{DoxyEnumerate}
+
+Data Output\+:
+\begin{DoxyItemize}
+\item pan\+\_\+err\+: Horizontal pixel error (negative = LED left of center)
+\item tilt\+\_\+err\+: Vertical pixel error (negative = LED above center)
+\item has\+Led\+: Boolean flag indicating LED detected in current frame
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Computer Vision Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+1
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_camera_task_8cpp}{Camera\+Task.\+cpp} for LED detection algorithm implementation 
+
+\doxylink{_o_v5640__camera_8h}{OV5640\+\_\+camera.\+h} for \doxylink{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}{camera} hardware interface 
+\end{DoxySeeAlso}

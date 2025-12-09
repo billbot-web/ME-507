@@ -1,0 +1,56 @@
+\doxysection{FSM.\+h}
+\hypertarget{_f_s_m_8h_source}{}\label{_f_s_m_8h_source}\index{src/fsm/FSM.h@{src/fsm/FSM.h}}
+\mbox{\hyperlink{_f_s_m_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{State.h}}"{}}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629}{FSM}}\ \{}
+\DoxyCodeLine{00027\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ \ \ \mbox{\hyperlink{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629}{FSM}}(\mbox{\hyperlink{class_state}{State}}**\ states,\ std::size\_t\ count)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{comment}{//\ set\_states()\ removed:\ provide\ states\ via\ constructor\ instead.}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00053\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_f_s_m_a593d3fc27483578741d0e07a341b2383}{run\_curstate}}()\ noexcept\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//\ Ensure\ we\ have\ a\ current\ state;\ if\ none,\ initialize\ to\ first\ state\ if\ available}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (!curState\_)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!states\_\ ||\ count\_\ ==\ 0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ curState\_\ =\ states\_[0];}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ curIdx\_\ =\ 0;}
+\DoxyCodeLine{00059\ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ Execute\ the\ current\ state's\ behavior\ and\ obtain\ a\ next-\/state\ id.}}
+\DoxyCodeLine{00062\ \ \ \ \ uint8\_t\ nextId\ =\ curState\_-\/>\ execute();}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ If\ the\ execute\ returned\ a\ non-\/negative\ value,\ treat\ it\ as\ the}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ index\ into\ the\ states\_\ array\ (IDs\ ==\ indices).\ Switch\ current}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ state\ to\ states\_[nextId]\ if\ it\ is\ a\ valid\ index\ and\ different.}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{if}\ (nextId\ >=\ 0\ \&\&\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nextId)\ <\ count\_\ \&\&\ nextId\ !=\ curIdx\_)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \mbox{\hyperlink{class_state}{State}}*\ target\ =\ states\_[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(nextId)];}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (target)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ curState\_\ =\ target;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ curIdx\_\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(nextId);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \}}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00077\ \ \ \mbox{\hyperlink{class_state}{State}}*\ \mbox{\hyperlink{class_f_s_m_a7cd920df6a0e5d7c1d19d8d5fe98d2da}{get\_curstate}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ curState\_;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_f_s_m_aa30c2273589c42c1fe69ff33db1d0f2e}{set\_curstate}}(\mbox{\hyperlink{class_state}{State}}*\ new\_curState)\ \{curState\_\ =\ new\_curState;\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_f_s_m_a6cb75cbac9dca77310cfd28587f94caf}{get\_curstateidx}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ curIdx\_;\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_f_s_m_a643eaa9a406aada77c0207e7b4c30036}{set\_curstateidx}}(uint8\_t\ stateidx)\ \{curIdx\_=\ stateidx;\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00087\ \ \ std::size\_t\ \mbox{\hyperlink{class_f_s_m_a99d6700ac84e5e0afa2b2da7a0efa8af}{get\_count}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ count\_;\ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00090\ \ \ \mbox{\hyperlink{class_state}{State}}**\ \ \ \ \ \ \ states\_\ \ \ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00091\ \ \ std::size\_t\ \ \ count\_\ \ \ \ \ \ \ \ \ =\ 0;}
+\DoxyCodeLine{00092\ \ \ \mbox{\hyperlink{class_state}{State}}*\ \ \ \ \ \ \ \ curState\_\ \ \ \ \ \ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{int}\ \ \ \ \ \ \ \ \ \ \ curIdx\_\ \ \ \ \ \ \ \ =\ -\/1;}
+\DoxyCodeLine{00094\ \};}
+
+\end{DoxyCode}

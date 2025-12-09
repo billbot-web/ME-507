@@ -1,0 +1,139 @@
+\doxysection{src/hardware/\+OV5640\+\_\+camera.cpp File Reference}
+\hypertarget{_o_v5640__camera_8cpp}{}\label{_o_v5640__camera_8cpp}\index{src/hardware/OV5640\_camera.cpp@{src/hardware/OV5640\_camera.cpp}}
+{\ttfamily \#include "{}OV5640\+\_\+camera.\+h"{}}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_ac6ba9797866eb0bbd34cad17bbec8963}{CAM\+\_\+\+PIN\+\_\+\+PWDN}}~-\/1
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a01cfe37e742860a4bab27f413cac6256}{CAM\+\_\+\+PIN\+\_\+\+RESET}}~-\/1
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_ab033bfe6acb2e8489842d0c676a24829}{CAM\+\_\+\+PIN\+\_\+\+XCLK}}~-\/1
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a6e46f989d8f47018d786943849e3038b}{CAM\+\_\+\+PIN\+\_\+\+SDA}}~21
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a4f460ca8194bb73185baa560817991cc}{CAM\+\_\+\+PIN\+\_\+\+SCL}}~22
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a9aec71a20c44607df81a5d4b102d5706}{CAM\+\_\+\+PIN\+\_\+\+D9}}~17
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a7b4f4863d65220581473f5c5abcfff20}{CAM\+\_\+\+PIN\+\_\+\+D8}}~35
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a140a48794b1b871f93b54892756f702c}{CAM\+\_\+\+PIN\+\_\+\+D7}}~27
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_ae793722813bdf0cccb00c5a61ab6ca7d}{CAM\+\_\+\+PIN\+\_\+\+D6}}~34
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a33c5b0b4213744780dcad7a4eaa44d55}{CAM\+\_\+\+PIN\+\_\+\+D5}}~26
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_aa83b50b2abe56aaef676545fd72e6d65}{CAM\+\_\+\+PIN\+\_\+\+D4}}~39
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_af9fde698eafdf2f7d9054a8219340144}{CAM\+\_\+\+PIN\+\_\+\+D3}}~25
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_af714c463efd883394ce3f3c3349f2cdd}{CAM\+\_\+\+PIN\+\_\+\+D2}}~36
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a2445a99da2723c741f7fc8836394814d}{CAM\+\_\+\+PIN\+\_\+\+VSYNC}}~4
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_aa8c4bb79121b6f1648c3eccbd18ecb9d}{CAM\+\_\+\+PIN\+\_\+\+HREF}}~15
+\item 
+\#define \mbox{\hyperlink{_o_v5640__camera_8cpp_a5ae9bde4afbaad90e5ccd1cf7f7891c8}{CAM\+\_\+\+PIN\+\_\+\+PCLK}}~16
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_o_v5640__camera_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_o_v5640__camera_8cpp_af714c463efd883394ce3f3c3349f2cdd}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D2@{CAM\_PIN\_D2}}
+\index{CAM\_PIN\_D2@{CAM\_PIN\_D2}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D2}{CAM\_PIN\_D2}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_af714c463efd883394ce3f3c3349f2cdd} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D2~36}
+
+\Hypertarget{_o_v5640__camera_8cpp_af9fde698eafdf2f7d9054a8219340144}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D3@{CAM\_PIN\_D3}}
+\index{CAM\_PIN\_D3@{CAM\_PIN\_D3}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D3}{CAM\_PIN\_D3}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_af9fde698eafdf2f7d9054a8219340144} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D3~25}
+
+\Hypertarget{_o_v5640__camera_8cpp_aa83b50b2abe56aaef676545fd72e6d65}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D4@{CAM\_PIN\_D4}}
+\index{CAM\_PIN\_D4@{CAM\_PIN\_D4}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D4}{CAM\_PIN\_D4}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_aa83b50b2abe56aaef676545fd72e6d65} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D4~39}
+
+\Hypertarget{_o_v5640__camera_8cpp_a33c5b0b4213744780dcad7a4eaa44d55}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D5@{CAM\_PIN\_D5}}
+\index{CAM\_PIN\_D5@{CAM\_PIN\_D5}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D5}{CAM\_PIN\_D5}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a33c5b0b4213744780dcad7a4eaa44d55} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D5~26}
+
+\Hypertarget{_o_v5640__camera_8cpp_ae793722813bdf0cccb00c5a61ab6ca7d}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D6@{CAM\_PIN\_D6}}
+\index{CAM\_PIN\_D6@{CAM\_PIN\_D6}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D6}{CAM\_PIN\_D6}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_ae793722813bdf0cccb00c5a61ab6ca7d} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D6~34}
+
+\Hypertarget{_o_v5640__camera_8cpp_a140a48794b1b871f93b54892756f702c}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D7@{CAM\_PIN\_D7}}
+\index{CAM\_PIN\_D7@{CAM\_PIN\_D7}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D7}{CAM\_PIN\_D7}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a140a48794b1b871f93b54892756f702c} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D7~27}
+
+\Hypertarget{_o_v5640__camera_8cpp_a7b4f4863d65220581473f5c5abcfff20}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D8@{CAM\_PIN\_D8}}
+\index{CAM\_PIN\_D8@{CAM\_PIN\_D8}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D8}{CAM\_PIN\_D8}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a7b4f4863d65220581473f5c5abcfff20} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D8~35}
+
+\Hypertarget{_o_v5640__camera_8cpp_a9aec71a20c44607df81a5d4b102d5706}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_D9@{CAM\_PIN\_D9}}
+\index{CAM\_PIN\_D9@{CAM\_PIN\_D9}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_D9}{CAM\_PIN\_D9}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a9aec71a20c44607df81a5d4b102d5706} 
+\#define CAM\+\_\+\+PIN\+\_\+\+D9~17}
+
+\Hypertarget{_o_v5640__camera_8cpp_aa8c4bb79121b6f1648c3eccbd18ecb9d}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_HREF@{CAM\_PIN\_HREF}}
+\index{CAM\_PIN\_HREF@{CAM\_PIN\_HREF}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_HREF}{CAM\_PIN\_HREF}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_aa8c4bb79121b6f1648c3eccbd18ecb9d} 
+\#define CAM\+\_\+\+PIN\+\_\+\+HREF~15}
+
+\Hypertarget{_o_v5640__camera_8cpp_a5ae9bde4afbaad90e5ccd1cf7f7891c8}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_PCLK@{CAM\_PIN\_PCLK}}
+\index{CAM\_PIN\_PCLK@{CAM\_PIN\_PCLK}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_PCLK}{CAM\_PIN\_PCLK}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a5ae9bde4afbaad90e5ccd1cf7f7891c8} 
+\#define CAM\+\_\+\+PIN\+\_\+\+PCLK~16}
+
+\Hypertarget{_o_v5640__camera_8cpp_ac6ba9797866eb0bbd34cad17bbec8963}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_PWDN@{CAM\_PIN\_PWDN}}
+\index{CAM\_PIN\_PWDN@{CAM\_PIN\_PWDN}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_PWDN}{CAM\_PIN\_PWDN}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_ac6ba9797866eb0bbd34cad17bbec8963} 
+\#define CAM\+\_\+\+PIN\+\_\+\+PWDN~-\/1}
+
+\Hypertarget{_o_v5640__camera_8cpp_a01cfe37e742860a4bab27f413cac6256}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_RESET@{CAM\_PIN\_RESET}}
+\index{CAM\_PIN\_RESET@{CAM\_PIN\_RESET}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_RESET}{CAM\_PIN\_RESET}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a01cfe37e742860a4bab27f413cac6256} 
+\#define CAM\+\_\+\+PIN\+\_\+\+RESET~-\/1}
+
+\Hypertarget{_o_v5640__camera_8cpp_a4f460ca8194bb73185baa560817991cc}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_SCL@{CAM\_PIN\_SCL}}
+\index{CAM\_PIN\_SCL@{CAM\_PIN\_SCL}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_SCL}{CAM\_PIN\_SCL}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a4f460ca8194bb73185baa560817991cc} 
+\#define CAM\+\_\+\+PIN\+\_\+\+SCL~22}
+
+\Hypertarget{_o_v5640__camera_8cpp_a6e46f989d8f47018d786943849e3038b}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_SDA@{CAM\_PIN\_SDA}}
+\index{CAM\_PIN\_SDA@{CAM\_PIN\_SDA}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_SDA}{CAM\_PIN\_SDA}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a6e46f989d8f47018d786943849e3038b} 
+\#define CAM\+\_\+\+PIN\+\_\+\+SDA~21}
+
+\Hypertarget{_o_v5640__camera_8cpp_a2445a99da2723c741f7fc8836394814d}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_VSYNC@{CAM\_PIN\_VSYNC}}
+\index{CAM\_PIN\_VSYNC@{CAM\_PIN\_VSYNC}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_VSYNC}{CAM\_PIN\_VSYNC}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_a2445a99da2723c741f7fc8836394814d} 
+\#define CAM\+\_\+\+PIN\+\_\+\+VSYNC~4}
+
+\Hypertarget{_o_v5640__camera_8cpp_ab033bfe6acb2e8489842d0c676a24829}\index{OV5640\_camera.cpp@{OV5640\_camera.cpp}!CAM\_PIN\_XCLK@{CAM\_PIN\_XCLK}}
+\index{CAM\_PIN\_XCLK@{CAM\_PIN\_XCLK}!OV5640\_camera.cpp@{OV5640\_camera.cpp}}
+\doxysubsubsection{\texorpdfstring{CAM\_PIN\_XCLK}{CAM\_PIN\_XCLK}}
+{\footnotesize\ttfamily \label{_o_v5640__camera_8cpp_ab033bfe6acb2e8489842d0c676a24829} 
+\#define CAM\+\_\+\+PIN\+\_\+\+XCLK~-\/1}
+

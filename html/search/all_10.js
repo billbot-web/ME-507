@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['teleop_0',['TELEOP',['../class_controller_task.html#a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe',1,'ControllerTask::TELEOP'],['../class_u_i_task.html#a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d',1,'UITask::TELEOP']]],
+  ['tilt_5fcmd_1',['tilt_Cmd',['../main_8cpp.html#a9a053dffceaa3d3bbddb421847244cd4',1,'main.cpp']]],
+  ['tilt_5fencoder_5ftask_5ffunc_2',['tilt_encoder_task_func',['../main_8cpp.html#a772e97ad5fae7403b411a5522fed540c',1,'main.cpp']]],
+  ['tilt_5fencposition_3',['tilt_encPosition',['../main_8cpp.html#a5d636c57d472db8f6188090ac3b20f79',1,'main.cpp']]],
+  ['tilt_5fencvelocity_4',['tilt_encVelocity',['../main_8cpp.html#ad6e508aaf5760993011a095c6fe4bb5c',1,'main.cpp']]],
+  ['tilt_5fenczero_5',['tilt_encZero',['../main_8cpp.html#a0c7f093b10e321a361eb12f2bbc5092c',1,'main.cpp']]],
+  ['tilt_5ferr_6',['tilt_err',['../main_8cpp.html#a1f089d0053c4e4c30975796ecede8618',1,'main.cpp']]],
+  ['tilt_5fmotor_5ftask_5ffunc_7',['tilt_motor_task_func',['../main_8cpp.html#afc9c2cf42049d569d15d14db75a3e661',1,'main.cpp']]],
+  ['tilt_5fposition_5fpid_8',['tilt_position_pid',['../main_8cpp.html#a8b499b7c99aaca60891b650d6bd0c809',1,'main.cpp']]],
+  ['tilt_5fposref_9',['tilt_posref',['../main_8cpp.html#a2c11930701703706b683072d5f5b7f34',1,'main.cpp']]],
+  ['tilt_5fvelocity_5fpid_10',['tilt_velocity_pid',['../main_8cpp.html#ab5a6f98a1d4dbdc85049552816acaa4e',1,'main.cpp']]],
+  ['tilt_5fvref_11',['tilt_vref',['../main_8cpp.html#a96b1d304ef59f992b9c7f26d345bd3bd',1,'main.cpp']]],
+  ['tiltencoder_12',['tiltencoder',['../main_8cpp.html#ab54cdca66fa3cc7eb57b1edd9e77a716',1,'main.cpp']]],
+  ['tiltencoder_5fa_5fgpio_13',['TiltENCODER_A_GPIO',['../main_8cpp.html#a807a9e87c5be79125356eef1028e785d',1,'main.cpp']]],
+  ['tiltencoder_5fb_5fgpio_14',['TiltENCODER_B_GPIO',['../main_8cpp.html#ada9b39849b57a988ff22ec9550a1769d',1,'main.cpp']]],
+  ['tiltencoder_5funit_15',['TiltENCODER_UNIT',['../main_8cpp.html#a1f1ad57f1c6023f908eb9446b759205a',1,'main.cpp']]],
+  ['tiltin1_16',['TiltIN1',['../main_8cpp.html#a8e5bb8b9c5447a5a1636521c1eee0247',1,'main.cpp']]],
+  ['tiltin2_17',['TiltIN2',['../main_8cpp.html#ad6a84ed2a08e70da7d9adda71470ead4',1,'main.cpp']]],
+  ['tiltmotor_18',['tiltmotor',['../main_8cpp.html#ae8dcde356db462b2a7c48185714cf52c',1,'main.cpp']]],
+  ['tracker_19',['TRACKER',['../class_u_i_task.html#a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089',1,'UITask']]],
+  ['trackr_20',['TRACKR',['../class_controller_task.html#a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0',1,'ControllerTask']]],
+  ['transitions_21',['State Transitions',['../md_src_2fsm_2_f_s_m.html#autotoc_md6',1,'']]],
+  ['tuning_20guide_3a_22',['PID Tuning Guide:',['../main_8cpp.html#autotoc_md12',1,'']]]
+];

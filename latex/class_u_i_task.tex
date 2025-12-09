@@ -1,0 +1,254 @@
+\doxysection{UITask Class Reference}
+\hypertarget{class_u_i_task}{}\label{class_u_i_task}\index{UITask@{UITask}}
+
+
+UI task with web server, Web\+Socket, and serial interface.  
+
+
+
+
+{\ttfamily \#include $<$UITask.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67}{State\+Id}} \+: uint8\+\_\+t \{ \newline
+\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67abc20a95e3774ce0813538460fb48edea}{CHOOSE\+\_\+\+MODE}} = 0
+, \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a04627c82d1da6e7529234aacfa633904}{CALIBRATE}} = 4
+, \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5b7a6ae91330b934ea963c652a57e3f0}{MOTOR\+\_\+\+TEST}} = 3
+, \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d}{TELEOP}} = 2
+, \newline
+\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089}{TRACKER}} = 1
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}{UITask}} (Share$<$ float $>$ \texorpdfstring{$\ast$}{*}tilt\+\_\+position\+Share, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}tilt\+\_\+velocity\+Share, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a96b1d304ef59f992b9c7f26d345bd3bd}{tilt\+\_\+vref}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a2c11930701703706b683072d5f5b7f34}{tilt\+\_\+posref}}, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}tilt\+\_\+cmd\+Share, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}tilt\+\_\+zero\+Share, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}pan\+\_\+position\+Share, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}pan\+\_\+velocity\+Share, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a22f65a631b2d8634743b796fe8177a85}{pan\+\_\+vref}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a7ed3ad0733ad4ecedf22eb04235e7505}{pan\+\_\+posref}}, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}pan\+\_\+cmd\+Share, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}pan\+\_\+zero\+Share, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}{dpad\+\_\+pan}}, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}{dpad\+\_\+tilt}}, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ab1874b468c8f4403be5bde3cc31d1c2d}{imu\+\_\+mode}}, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}ui\+\_\+mode, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a937afed701c3b444b9fbe0355529bbd7}{motortest\+\_\+mode}}, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}{dcalibrate}}, Share$<$ \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} $>$ \texorpdfstring{$\ast$}{*}euler\+Angles, Share$<$ \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}} $>$ \texorpdfstring{$\ast$}{*}gyro\+Data, Share$<$ \mbox{\hyperlink{struct_accel_data}{Accel\+Data}} $>$ \texorpdfstring{$\ast$}{*}accel\+Data, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{has\+Led}}, Share$<$ uint16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{led\+Threshold}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\+\_\+err}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\+\_\+err}}, uint32\+\_\+t update\+Ms=200) noexcept
+\begin{DoxyCompactList}\small\item\em Construct UI task. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_u_i_task_a368fa1a565749cbfce4a09ed65ff71dd}{init\+Web\+Server}} (const String \&ssid="{}"{}, const String \&password="{}"{})
+\begin{DoxyCompactList}\small\item\em Initialize web server and Wi\+Fi. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_u_i_task_a7a90f8b51ac15868dd748e07f9c88dcc}{start}} (uint8\+\_\+t priority=1, int8\+\_\+t core=1)
+\item 
+void \mbox{\hyperlink{class_u_i_task_a6091a8e1e2054d34571bda7ad95efb80}{update}} () noexcept
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_u_i_task_a4ed43fe41fd5c4ae8ec9830ac17ce4cd}{get\+\_\+update\+Ms}} () const noexcept
+\item 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_u_i_task_aa6d747376ee266e9e574d76965ad9885}{get\+Tilt\+Vel\+Queue}} ()
+\item 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_u_i_task_a5656e03ff16c39d0af686baa386a246a}{get\+Tilt\+Pos\+Queue}} ()
+\item 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_u_i_task_a7fb6917f8e8956626c577787b89290dc}{get\+Pan\+Vel\+Queue}} ()
+\item 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_u_i_task_a12bb7256916fd031e89d1afc078c62bd}{get\+Pan\+Pos\+Queue}} ()
+\item 
+Queue$<$ bool $>$ \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_u_i_task_a8cd4813feca206ef3404f4461019a49c}{get\+Has\+Led\+Queue}} ()
+\item 
+bool \mbox{\hyperlink{class_u_i_task_a639849e1bcdd2eebe0823598e96c4ccf}{is\+Wi\+Fi\+Connected}} () const
+\item 
+String \mbox{\hyperlink{class_u_i_task_a26c40c7771ea8cd44b09151b9be70313}{get\+IPAddress}} () const
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_u_i_task_a8b32c94bd5849a197960d35d400fb6bf}{get\+Web\+Socket\+Client\+Count}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_u_i_task_a1cd263dba60a2170fc4d429623ce29be}{set\+\_\+instance}} (\mbox{\hyperlink{class_u_i_task}{UITask}} \texorpdfstring{$\ast$}{*}inst)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+UI task with web server, Web\+Socket, and serial interface. 
+
+Features\+:
+\begin{DoxyItemize}
+\item Serial commands\+: v, p, s, z, h/?
+\item Web server\+: serves static files from SPIFFS
+\item Web\+Socket\+: real-\/time bidirectional communication
+\item REST API\+: HTTP endpoints for status/commands 
+\end{DoxyItemize}
+
+\label{doc-enum-members}
+\Hypertarget{class_u_i_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67}\index{UITask@{UITask}!StateId@{StateId}}
+\index{StateId@{StateId}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{StateId}{StateId}}
+{\footnotesize\ttfamily \label{class_u_i_task_a63462dae225a76e2127916f011180d67} 
+enum \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67}{UITask\+::\+State\+Id}} \+: uint8\+\_\+t}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CHOOSE\_MODE@{CHOOSE\_MODE}!UITask@{UITask}}\index{UITask@{UITask}!CHOOSE\_MODE@{CHOOSE\_MODE}}}\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67abc20a95e3774ce0813538460fb48edea}\label{class_u_i_task_a63462dae225a76e2127916f011180d67abc20a95e3774ce0813538460fb48edea} 
+CHOOSE\+\_\+\+MODE&Waiting for mode selection (UI\+\_\+mode == 0) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CALIBRATE@{CALIBRATE}!UITask@{UITask}}\index{UITask@{UITask}!CALIBRATE@{CALIBRATE}}}\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67a04627c82d1da6e7529234aacfa633904}\label{class_u_i_task_a63462dae225a76e2127916f011180d67a04627c82d1da6e7529234aacfa633904} 
+CALIBRATE&Calibration mode (dcalibrate == true) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MOTOR\_TEST@{MOTOR\_TEST}!UITask@{UITask}}\index{UITask@{UITask}!MOTOR\_TEST@{MOTOR\_TEST}}}\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67a5b7a6ae91330b934ea963c652a57e3f0}\label{class_u_i_task_a63462dae225a76e2127916f011180d67a5b7a6ae91330b934ea963c652a57e3f0} 
+MOTOR\+\_\+\+TEST&Motor testing with velocity/position control. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TELEOP@{TELEOP}!UITask@{UITask}}\index{UITask@{UITask}!TELEOP@{TELEOP}}}\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d}\label{class_u_i_task_a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d} 
+TELEOP&Teleop mode (UI\+\_\+mode == 2) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TRACKER@{TRACKER}!UITask@{UITask}}\index{UITask@{UITask}!TRACKER@{TRACKER}}}\Hypertarget{class_u_i_task_a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089}\label{class_u_i_task_a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089} 
+TRACKER&Tracker mode (UI\+\_\+mode == 1) \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_u_i_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}\index{UITask@{UITask}!UITask@{UITask}}
+\index{UITask@{UITask}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{UITask()}{UITask()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554} 
+UITask\+::\+UITask (\begin{DoxyParamCaption}\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+position\+Share}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+velocity\+Share}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+vref}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+posref}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+cmd\+Share}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+zero\+Share}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+position\+Share}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+velocity\+Share}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+vref}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+posref}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+cmd\+Share}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+zero\+Share}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{dpad\+\_\+pan}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{dpad\+\_\+tilt}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{imu\+\_\+mode}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{ui\+\_\+mode}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{motortest\+\_\+mode}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{dcalibrate}{, }\item[{Share$<$ \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} $>$ \texorpdfstring{$\ast$}{*}}]{euler\+Angles}{, }\item[{Share$<$ \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}} $>$ \texorpdfstring{$\ast$}{*}}]{gyro\+Data}{, }\item[{Share$<$ \mbox{\hyperlink{struct_accel_data}{Accel\+Data}} $>$ \texorpdfstring{$\ast$}{*}}]{accel\+Data}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{has\+Led}{, }\item[{Share$<$ uint16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{led\+Threshold}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+err}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+err}{, }\item[{uint32\+\_\+t}]{update\+Ms}{ = {\ttfamily 200}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct UI task. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tilt\+\_\+position\+Share} & Tilt encoder position share \\
+\hline
+{\em tilt\+\_\+velocity\+Share} & Tilt encoder velocity share \\
+\hline
+{\em tilt\+\_\+vref} & Tilt motor velocity reference share \\
+\hline
+{\em tilt\+\_\+posref} & Tilt motor position reference share \\
+\hline
+{\em tilt\+\_\+cmd\+Share} & Tilt encoder command share \\
+\hline
+{\em tilt\+\_\+zero\+Share} & Tilt encoder zero share \\
+\hline
+{\em pan\+\_\+position\+Share} & Pan encoder position share \\
+\hline
+{\em pan\+\_\+velocity\+Share} & Pan encoder velocity share \\
+\hline
+{\em pan\+\_\+vref} & Pan motor velocity reference share \\
+\hline
+{\em pan\+\_\+posref} & Pan motor position reference share \\
+\hline
+{\em pan\+\_\+cmd\+Share} & Pan encoder command share \\
+\hline
+{\em pan\+\_\+zero\+Share} & Pan encoder zero share \\
+\hline
+{\em euler\+Angles} & IMU euler angles share \\
+\hline
+{\em gyro\+Data} & IMU gyro data share \\
+\hline
+{\em accel\+Data} & IMU accel data share \\
+\hline
+{\em update\+Ms} & UI update/scan period in ms \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_u_i_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_u_i_task_a4ed43fe41fd5c4ae8ec9830ac17ce4cd}\index{UITask@{UITask}!get\_updateMs@{get\_updateMs}}
+\index{get\_updateMs@{get\_updateMs}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{get\_updateMs()}{get\_updateMs()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a4ed43fe41fd5c4ae8ec9830ac17ce4cd} 
+uint32\+\_\+t UITask\+::get\+\_\+update\+Ms (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_u_i_task_a8cd4813feca206ef3404f4461019a49c}\index{UITask@{UITask}!getHasLedQueue@{getHasLedQueue}}
+\index{getHasLedQueue@{getHasLedQueue}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getHasLedQueue()}{getHasLedQueue()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a8cd4813feca206ef3404f4461019a49c} 
+Queue$<$ bool $>$ \texorpdfstring{$\ast$}{*} UITask\+::get\+Has\+Led\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a26c40c7771ea8cd44b09151b9be70313}\index{UITask@{UITask}!getIPAddress@{getIPAddress}}
+\index{getIPAddress@{getIPAddress}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getIPAddress()}{getIPAddress()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a26c40c7771ea8cd44b09151b9be70313} 
+String UITask\+::get\+IPAddress (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a12bb7256916fd031e89d1afc078c62bd}\index{UITask@{UITask}!getPanPosQueue@{getPanPosQueue}}
+\index{getPanPosQueue@{getPanPosQueue}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getPanPosQueue()}{getPanPosQueue()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a12bb7256916fd031e89d1afc078c62bd} 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} UITask\+::get\+Pan\+Pos\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a7fb6917f8e8956626c577787b89290dc}\index{UITask@{UITask}!getPanVelQueue@{getPanVelQueue}}
+\index{getPanVelQueue@{getPanVelQueue}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getPanVelQueue()}{getPanVelQueue()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a7fb6917f8e8956626c577787b89290dc} 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} UITask\+::get\+Pan\+Vel\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a5656e03ff16c39d0af686baa386a246a}\index{UITask@{UITask}!getTiltPosQueue@{getTiltPosQueue}}
+\index{getTiltPosQueue@{getTiltPosQueue}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getTiltPosQueue()}{getTiltPosQueue()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a5656e03ff16c39d0af686baa386a246a} 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} UITask\+::get\+Tilt\+Pos\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_aa6d747376ee266e9e574d76965ad9885}\index{UITask@{UITask}!getTiltVelQueue@{getTiltVelQueue}}
+\index{getTiltVelQueue@{getTiltVelQueue}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getTiltVelQueue()}{getTiltVelQueue()}}
+{\footnotesize\ttfamily \label{class_u_i_task_aa6d747376ee266e9e574d76965ad9885} 
+Queue$<$ float $>$ \texorpdfstring{$\ast$}{*} UITask\+::get\+Tilt\+Vel\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a8b32c94bd5849a197960d35d400fb6bf}\index{UITask@{UITask}!getWebSocketClientCount@{getWebSocketClientCount}}
+\index{getWebSocketClientCount@{getWebSocketClientCount}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{getWebSocketClientCount()}{getWebSocketClientCount()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a8b32c94bd5849a197960d35d400fb6bf} 
+uint32\+\_\+t UITask\+::get\+Web\+Socket\+Client\+Count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_u_i_task_a368fa1a565749cbfce4a09ed65ff71dd}\index{UITask@{UITask}!initWebServer@{initWebServer}}
+\index{initWebServer@{initWebServer}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{initWebServer()}{initWebServer()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a368fa1a565749cbfce4a09ed65ff71dd} 
+bool UITask\+::init\+Web\+Server (\begin{DoxyParamCaption}\item[{const String \&}]{ssid}{ = {\ttfamily "{}"{}}, }\item[{const String \&}]{password}{ = {\ttfamily "{}"{}}}\end{DoxyParamCaption})}
+
+
+
+Initialize web server and Wi\+Fi. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ssid} & Wi\+Fi network name \\
+\hline
+{\em password} & Wi\+Fi password \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successful 
+\end{DoxyReturn}
+\Hypertarget{class_u_i_task_a639849e1bcdd2eebe0823598e96c4ccf}\index{UITask@{UITask}!isWiFiConnected@{isWiFiConnected}}
+\index{isWiFiConnected@{isWiFiConnected}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{isWiFiConnected()}{isWiFiConnected()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a639849e1bcdd2eebe0823598e96c4ccf} 
+bool UITask\+::is\+Wi\+Fi\+Connected (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_u_i_task_a1cd263dba60a2170fc4d429623ce29be}\index{UITask@{UITask}!set\_instance@{set\_instance}}
+\index{set\_instance@{set\_instance}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{set\_instance()}{set\_instance()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a1cd263dba60a2170fc4d429623ce29be} 
+void UITask\+::set\+\_\+instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_u_i_task}{UITask}} \texorpdfstring{$\ast$}{*}}]{inst}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{class_u_i_task_a7a90f8b51ac15868dd748e07f9c88dcc}\index{UITask@{UITask}!start@{start}}
+\index{start@{start}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{start()}{start()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a7a90f8b51ac15868dd748e07f9c88dcc} 
+void UITask\+::start (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{priority}{ = {\ttfamily 1}, }\item[{int8\+\_\+t}]{core}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\Hypertarget{class_u_i_task_a6091a8e1e2054d34571bda7ad95efb80}\index{UITask@{UITask}!update@{update}}
+\index{update@{update}!UITask@{UITask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_u_i_task_a6091a8e1e2054d34571bda7ad95efb80} 
+void UITask\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_u_i_task_8h}{UITask.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_u_i_task_8cpp}{UITask.\+cpp}}\end{DoxyCompactItemize}

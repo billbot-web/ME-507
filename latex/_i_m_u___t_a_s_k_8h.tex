@@ -1,0 +1,64 @@
+\doxysection{src/tasks/\+IMU\+\_\+\+TASK.h File Reference}
+\hypertarget{_i_m_u___t_a_s_k_8h}{}\label{_i_m_u___t_a_s_k_8h}\index{src/tasks/IMU\_TASK.h@{src/tasks/IMU\_TASK.h}}
+
+
+Free\+RTOS task for BNO055 9-\/DOF IMU sensor data acquisition and distribution.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}../hardware/\+Adafruit\+\_\+\+BNO055.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}}
+\begin{DoxyCompactList}\small\item\em Container for absolute orientation in 3D space. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}}
+\begin{DoxyCompactList}\small\item\em Container for angular velocity measurements. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_accel_data}{Accel\+Data}}
+\begin{DoxyCompactList}\small\item\em Container for linear acceleration measurements. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_i_m_u_task}{IMUTask}}
+\begin{DoxyCompactList}\small\item\em Continuous IMU sensor data acquisition task with \doxylink{class_f_s_m}{FSM} control. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Free\+RTOS task for BNO055 9-\/DOF IMU sensor data acquisition and distribution. 
+
+This header defines a high-\/performance IMU task that continuously reads orientation, angular velocity, and acceleration data from the Adafruit BNO055 sensor. The task operates in NDOF (Nine Degrees of Freedom) fusion mode, providing pre-\/filtered and calibrated sensor data to the rest of the system via thread-\/safe Share$<$\+T$>$ objects.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Continuous data streaming mode for real-\/time telemetry
+\item NDOF sensor fusion (accelerometer + gyroscope + magnetometer)
+\item Configurable sampling rate with millisecond precision
+\item Built-\/in calibration status monitoring and persistence
+\item FSM-\/based architecture for clean state management
+\item Thread-\/safe data distribution to multiple consumers
+\end{DoxyItemize}
+
+Data Outputs\+:
+\begin{DoxyItemize}
+\item Euler Angles\+: Roll, pitch, yaw in degrees (absolute orientation)
+\item Gyroscope\+: Angular velocity in degrees/second
+\item Accelerometer\+: Linear acceleration in m/s²
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+IMU Integration Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+8
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_i_m_u___t_a_s_k_8cpp}{IMU\+\_\+\+TASK.\+cpp} for implementation details and timing configuration 
+
+\doxylink{_adafruit___b_n_o055_8h}{Adafruit\+\_\+\+BNO055.\+h} for sensor hardware interface 
+\end{DoxySeeAlso}

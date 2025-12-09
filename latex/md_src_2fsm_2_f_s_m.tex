@@ -1,0 +1,129 @@
+\chapter{Finite State Machine (FSM) Implementation }
+\hypertarget{md_src_2fsm_2_f_s_m}{}\label{md_src_2fsm_2_f_s_m}\index{Finite State Machine (FSM) Implementation@{Finite State Machine (FSM) Implementation}}
+\label{md_src_2fsm_2_f_s_m_autotoc_md0}%
+\Hypertarget{md_src_2fsm_2_f_s_m_autotoc_md0}%
+
+
+A lightweight, table-\/driven \doxylink{class_f_s_m}{FSM} implementation designed for embedded systems. This implementation uses execute-\/driven state transitions with minimal memory overhead.\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md1}{}\doxysection{\texorpdfstring{Core Components}{Core Components}}\label{md_src_2fsm_2_f_s_m_autotoc_md1}
+\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md2}{}\doxysubsection{\texorpdfstring{State Class}{State Class}}\label{md_src_2fsm_2_f_s_m_autotoc_md2}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{class\ }\mbox{\hyperlink{class_state}{State}}\ \{}
+\DoxyCodeLine{\ \ \ \ \mbox{\hyperlink{class_state_a377971e81b97b341ce67629cd5010cb1}{State}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name,\ \mbox{\hyperlink{class_state_a248ace1c9841451d49082e6560bf31f0}{Execute}}\ exec);}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+The {\ttfamily \doxylink{class_state}{State}} class represents individual states in the \doxylink{class_f_s_m}{FSM}\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Properties}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily id}\+: Unique identifier for the state
+\item {\ttfamily name}\+: Human-\/readable state name (for debugging)
+\item {\ttfamily exec}\+: Function pointer to state behavior
+\end{DoxyItemize}
+\item {\bfseries{Key Methods}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily execute()}\+: Runs the state\textquotesingle{}s behavior
+\item {\ttfamily get\+\_\+id()}\+: Returns state ID
+\item {\ttfamily get\+\_\+name()}\+: Returns state name
+\end{DoxyItemize}
+\item {\bfseries{\doxylink{class_state}{State} Execution}}\+:
+\begin{DoxyItemize}
+\item Returns next state ID (it can either return itself or move to a new state)
+\item Null exec function defaults to no transition (-\/1)
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md3}{}\doxysubsection{\texorpdfstring{FSM Class}{FSM Class}}\label{md_src_2fsm_2_f_s_m_autotoc_md3}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{class\ }\mbox{\hyperlink{class_f_s_m}{FSM}}\ \{}
+\DoxyCodeLine{\ \ \ \ \mbox{\hyperlink{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629}{FSM}}(State**\ states,\ std::size\_t\ count);}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+The {\ttfamily \doxylink{class_f_s_m}{FSM}} class manages state transitions and execution\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Construction}}\+:
+\begin{DoxyItemize}
+\item Takes array of \doxylink{class_state}{State} pointers
+\item States array is not owned by \doxylink{class_f_s_m}{FSM}
+\item First state in array is initial state
+\end{DoxyItemize}
+\item {\bfseries{Key Methods}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily run\+\_\+curstate()}\+: Execute current state
+\item {\ttfamily get\+\_\+curstate()}\+: Get active state
+\item {\ttfamily get\+\_\+curstateidx()}\+: Get active state index
+\item {\ttfamily get\+\_\+count()}\+: Get total states
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md4}{}\doxysection{\texorpdfstring{Usage Example}{Usage Example}}\label{md_src_2fsm_2_f_s_m_autotoc_md4}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Define\ state\ behaviors}}
+\DoxyCodeLine{\textcolor{keywordtype}{int}\ state0\_execute()\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Do\ something}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \ \textcolor{comment}{//\ Stay\ in\ this\ state}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{int}\ state1\_execute()\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Do\ something\ else}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \ \ \textcolor{comment}{//\ Transition\ to\ state[0]}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Create\ states}}
+\DoxyCodeLine{\mbox{\hyperlink{class_state}{State}}\ state0(0,\ \textcolor{stringliteral}{"{}STATE0"{}},\ state0\_execute);}
+\DoxyCodeLine{\mbox{\hyperlink{class_state}{State}}\ state1(1,\ \textcolor{stringliteral}{"{}STATE1"{}},\ state1\_execute);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Setup\ state\ table}}
+\DoxyCodeLine{\mbox{\hyperlink{class_state}{State}}*\ states[]\ =\ \{\&state0,\ \&state1\};}
+\DoxyCodeLine{\mbox{\hyperlink{class_f_s_m}{FSM}}\ fsm(states,\ 2);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Run\ FSM}}
+\DoxyCodeLine{\textcolor{keywordflow}{while}(1)\ \{}
+\DoxyCodeLine{\ \ \ \ fsm.run\_curstate();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md5}{}\doxysection{\texorpdfstring{Implementation Details}{Implementation Details}}\label{md_src_2fsm_2_f_s_m_autotoc_md5}
+\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md6}{}\doxysubsection{\texorpdfstring{State Transitions}{State Transitions}}\label{md_src_2fsm_2_f_s_m_autotoc_md6}
+
+\begin{DoxyEnumerate}
+\item Current state\textquotesingle{}s {\ttfamily execute()} is called
+\item If execute returns a new id we change the state
+\item Transition occurs if index valid and different from current
+\item Negative return values maintain current state
+\end{DoxyEnumerate}\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md7}{}\doxysubsection{\texorpdfstring{Memory Management}{Memory Management}}\label{md_src_2fsm_2_f_s_m_autotoc_md7}
+
+\begin{DoxyItemize}
+\item \doxylink{class_f_s_m}{FSM} does not own state objects
+\item States must outlive the \doxylink{class_f_s_m}{FSM}
+\item Minimal dynamic allocation (none required)
+\end{DoxyItemize}\hypertarget{md_src_2fsm_2_f_s_m_autotoc_md8}{}\doxysection{\texorpdfstring{Best Practices}{Best Practices}}\label{md_src_2fsm_2_f_s_m_autotoc_md8}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{\doxylink{class_state}{State} Design}}\+:
+\begin{DoxyItemize}
+\item Keep state behavior functions small
+\item Use const member functions where possible
+\item Document transition conditions
+\end{DoxyItemize}
+\item {\bfseries{\doxylink{class_f_s_m}{FSM} Usage}}\+:
+\begin{DoxyItemize}
+\item Initialize all states before \doxylink{class_f_s_m}{FSM} creation
+\item Ensure states outlive the \doxylink{class_f_s_m}{FSM}
+\item Check state validity in debug builds
+\end{DoxyItemize}
+\item {\bfseries{Error Handling}}\+:
+\begin{DoxyItemize}
+\item Invalid state IDs are ignored
+\item Null state pointers are handled
+\item First update initializes to state 0 
+\end{DoxyItemize}
+\end{DoxyEnumerate}

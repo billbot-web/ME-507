@@ -1,0 +1,105 @@
+\doxysection{src/tasks/\+Camera\+Task.cpp File Reference}
+\hypertarget{_camera_task_8cpp}{}\label{_camera_task_8cpp}\index{src/tasks/CameraTask.cpp@{src/tasks/CameraTask.cpp}}
+
+
+Implementation of LED detection and visual servoing error computation.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include "{}Camera\+Task.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_camera_task_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd}{camera\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for camera vision processing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of LED detection and visual servoing error computation. 
+
+This file implements real-\/time computer vision processing for LED target tracking. It captures frames from the OV5640 camera, detects bright LED targets using brightness thresholding, calculates centroid positions, and computes pixel errors for visual servoing control.
+
+Computer Vision Algorithm\+:
+\begin{DoxyEnumerate}
+\item Capture frame from OV5640 camera (QVGA or configured resolution)
+\item Scan all pixels for brightness above threshold
+\item Calculate weighted centroid (center of mass) of bright pixels
+\item Compute pixel errors from image center\+: (centroid -\/ center)
+\item Publish errors and detection status via Share$<$\+T$>$ objects
+\item Optionally stream frame to UI for visualization
+\end{DoxyEnumerate}
+
+Operating Modes\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: Camera idle, no capture (power saving)
+\item {\bfseries{CAP\+\_\+\+SEND\+\_\+\+ERR}}\+: Capture and compute errors only (fast, no streaming)
+\item {\bfseries{CAP\+\_\+\+SEND\+\_\+\+RETURN}}\+: Full mode with frame streaming to UI (slower)
+\end{DoxyItemize}
+
+Performance Optimization\+:
+\begin{DoxyItemize}
+\item CAP\+\_\+\+SEND\+\_\+\+ERR mode skips frame transmission for maximum frame rate
+\item Brightness threshold configurable via led\+Threshold share
+\item Centroid weighted by pixel intensity for sub-\/pixel accuracy
+\end{DoxyItemize}
+
+Data Output\+:
+\begin{DoxyItemize}
+\item pan\+\_\+err\+: Horizontal pixel error (negative = LED left of center)
+\item tilt\+\_\+err\+: Vertical pixel error (negative = LED above center) ~\newline
+
+\item has\+Led\+: Boolean detection flag (true when LED found in frame)
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Computer Vision Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+2
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_camera_task_8h}{Camera\+Task.\+h} for class interface and mode descriptions 
+
+\doxylink{_o_v5640__camera_8h}{OV5640\+\_\+camera.\+h} for \doxylink{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}{camera} hardware interface 
+\end{DoxySeeAlso}
+
+
+\label{doc-func-members}
+\Hypertarget{_camera_task_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_camera_task_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd}\index{CameraTask.cpp@{CameraTask.cpp}!camera\_task\_func@{camera\_task\_func}}
+\index{camera\_task\_func@{camera\_task\_func}!CameraTask.cpp@{CameraTask.cpp}}
+\doxysubsubsection{\texorpdfstring{camera\_task\_func()}{camera\_task\_func()}}
+{\footnotesize\ttfamily \label{_camera_task_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd} 
+void camera\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for camera vision processing. 
+
+C-\/style function required by x\+Task\+Create(). Creates an infinite loop that periodically calls the camera task\textquotesingle{}s update() method to execute the \doxylink{class_f_s_m}{FSM}.
+
+Task Loop\+:
+\begin{DoxyEnumerate}
+\item Call update() to execute current \doxylink{class_f_s_m}{FSM} state
+\item Delay for 10ms (100Hz maximum frame rate)
+\item Repeat indefinitely
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to \doxylink{class_camera_task}{Camera\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Fixed 10ms delay provides \texorpdfstring{$\sim$}{\string~}100\+Hz maximum frame rate 
+
+Actual frame rate depends on camera capture time and processing 
+
+Task never exits -\/ runs for lifetime of system 
+\end{DoxyNote}

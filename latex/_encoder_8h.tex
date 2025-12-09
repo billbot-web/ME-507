@@ -1,0 +1,58 @@
+\doxysection{src/hardware/\+Encoder.h File Reference}
+\hypertarget{_encoder_8h}{}\label{_encoder_8h}\index{src/hardware/Encoder.h@{src/hardware/Encoder.h}}
+
+
+ESP32 PCNT-\/based quadrature encoder interface with velocity smoothing.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}driver/pcnt.\+h"{}}\newline
+{\ttfamily \#include $<$array$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_encoder}{Encoder}}
+\begin{DoxyCompactList}\small\item\em ESP32 PCNT-\/based quadrature encoder reader (X4), matching a Micro\+Python-\/style API. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+ESP32 PCNT-\/based quadrature encoder interface with velocity smoothing. 
+
+This file implements a high-\/performance quadrature encoder reader using the ESP32\textquotesingle{}s built-\/in Pulse Counter (PCNT) peripheral. The implementation provides X4 decoding (counting all edges of both phases) and includes advanced velocity smoothing using a sliding window algorithm.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Hardware-\/accelerated quadrature decoding via ESP32 PCNT peripheral
+\item X4 encoding support (4 counts per encoder cycle for maximum resolution)
+\item Real-\/time velocity calculation with 5-\/sample smoothing window
+\item Automatic overflow/underflow handling for continuous operation
+\item Micro\+Python-\/compatible API for easy migration
+\item Microsecond-\/precision timing for accurate velocity measurements
+\end{DoxyItemize}
+
+Technical Implementation\+:
+\begin{DoxyItemize}
+\item Uses one PCNT unit with both channels for true X4 decoding\+:
+\begin{DoxyItemize}
+\item Channel 0\+: Phase A as pulse input, Phase B as control
+\item Channel 1\+: Phase B as pulse input, Phase A as control ~\newline
+
+\end{DoxyItemize}
+\item 16-\/bit signed counter range\+: \mbox{[}-\/32,768 to +32,767\mbox{]}
+\item Automatic wrap-\/around detection and compensation
+\item Sliding window velocity smoothing reduces noise and jitter
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+\doxylink{class_encoder}{Encoder} Control Team ~\newline
+ 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+1
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\href{https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/pcnt.html}{\texttt{https\+://docs.\+espressif.\+com/projects/esp-\/idf/en/latest/esp32/api-\/reference/peripherals/pcnt.\+html}} ESP32 PCNT Documentation 
+\end{DoxySeeAlso}

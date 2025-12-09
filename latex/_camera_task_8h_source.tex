@@ -1,0 +1,70 @@
+\doxysection{Camera\+Task.\+h}
+\hypertarget{_camera_task_8h_source}{}\label{_camera_task_8h_source}\index{src/tasks/CameraTask.h@{src/tasks/CameraTask.h}}
+\mbox{\hyperlink{_camera_task_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_o_v5640__camera_8h}{../hardware/OV5640\_camera.h}}"{}}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}freertos/FreeRTOS.h"{}}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#include\ "{}freertos/task.h"{}}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#include\ "{}taskqueue.h"{}}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}\ \ \textcolor{comment}{//\ For\ Share<T>}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_f_s_m_8h}{../fsm/FSM.h}}"{}}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00077\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_camera_task_a1440912b9d5bd83058189b7c35e3f515}{CameraTask}}\ \{}
+\DoxyCodeLine{00078\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51a}{StateId}}\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aace26a78a653c3e18e1c5223eac7273ca}{WAIT}}\ =\ 0,\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aa2e1926f5a5078cc5477d31f1b1f0bdc1}{CAP\_SEND\_ERR}}\ =\ 1,\ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aab591b51d30b28a1aec4595510cb685dc}{CAP\_SEND\_RETURN}}\ =\ 2\ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00096\ \ \ \ \ \mbox{\hyperlink{class_camera_task_a1440912b9d5bd83058189b7c35e3f515}{CameraTask}}(\mbox{\hyperlink{class_o_v5640_camera}{OV5640Camera}}*\ \mbox{\hyperlink{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}{camera}},}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int16\_t>*\ \mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\_err}},}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int16\_t>*\ \mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\_err}},}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<bool>*\ \ \ \ \mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{hasLed}},}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint16\_t>*\ \mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{ledThreshold}},}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ \mbox{\hyperlink{main_8cpp_a721f332798069cf7abda5b39364ba45a}{cam\_Mode}},}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ updateMs\ =\ 100)\ noexcept;}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_camera_task_aa4456b8b08e1716282e3ad0fb2f0dc9e}{update}}()\ noexcept\ \{\ fsm\_.run\_curstate();\ \}}
+\DoxyCodeLine{00106\ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ Set\ telemetry\ queue\ for\ pushing\ LED\ detection\ status\ to\ UITask}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_camera_task_a5b00c58adabb33c2091737bb86fe2593}{setTelemetryQueue}}(Queue<bool>*\ has\_led\_q)\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ has\_led\_queue\_\ =\ has\_led\_q;}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00113\ \ \ \ \ \mbox{\hyperlink{class_o_v5640_camera}{OV5640Camera}}*\ \ \ camera\_;}
+\DoxyCodeLine{00114\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ updateMs\_;}
+\DoxyCodeLine{00115\ \ \ \ \ Share<int16\_t>*\ pan\_err\_;}
+\DoxyCodeLine{00116\ \ \ \ \ Share<int16\_t>*\ tilt\_err\_;}
+\DoxyCodeLine{00117\ \ \ \ \ Share<bool>*\ \ \ \ hasLed\_;}
+\DoxyCodeLine{00118\ \ \ \ \ Share<uint16\_t>*\ ledThreshold\_;}
+\DoxyCodeLine{00119\ \ \ \ \ Share<uint8\_t>*\ cam\_Mode\_;}
+\DoxyCodeLine{00120\ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{//\ Telemetry\ queue\ for\ pushing\ to\ UITask\ (non-\/blocking)}}
+\DoxyCodeLine{00122\ \ \ \ \ Queue<bool>*\ has\_led\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{comment}{//\ FSM\ +\ states}}
+\DoxyCodeLine{00125\ \ \ \ \ \mbox{\hyperlink{class_state}{State}}\ state\_wait\_\ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aace26a78a653c3e18e1c5223eac7273ca}{WAIT}},\ \textcolor{stringliteral}{"{}WAIT"{}},\ \&CameraTask::exec\_wait\};}
+\DoxyCodeLine{00126\ \ \ \ \ State\ state\_cap\_send\_err\_\ \ \ \{\mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aa2e1926f5a5078cc5477d31f1b1f0bdc1}{CAP\_SEND\_ERR}},\ \textcolor{stringliteral}{"{}CAP\_SEND\_ERR"{}},\ \&CameraTask::exec\_capture\_send\_err\};}
+\DoxyCodeLine{00127\ \ \ \ \ State\ state\_cap\_send\_return\_\{\mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aab591b51d30b28a1aec4595510cb685dc}{CAP\_SEND\_RETURN}},\ \textcolor{stringliteral}{"{}CAP\_SEND\_RETURN"{}},\ \&CameraTask::exec\_capture\_send\_return\};}
+\DoxyCodeLine{00128\ \ \ \ \ State*\ states\_[3]\ =\ \{\ \&state\_wait\_,\ \&state\_cap\_send\_err\_,\ \&state\_cap\_send\_return\_\ \};}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ FSM\ fsm\_;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/\ State\ function\ prototypes\ -\/-\/-\/}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_wait();}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_capture\_send\_err();}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_capture\_send\_return();}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_camera_task_a1440912b9d5bd83058189b7c35e3f515}{CameraTask}}*\ instance\_;}
+\DoxyCodeLine{00139\ \};}
+\DoxyCodeLine{00140\ }
+
+\end{DoxyCode}

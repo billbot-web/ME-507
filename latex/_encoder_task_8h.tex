@@ -1,0 +1,69 @@
+\doxysection{src/tasks/\+Encoder\+Task.h File Reference}
+\hypertarget{_encoder_task_8h}{}\label{_encoder_task_8h}\index{src/tasks/EncoderTask.h@{src/tasks/EncoderTask.h}}
+
+
+High-\/frequency encoder reading task with velocity calculation and telemetry.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}../hardware/\+Encoder.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}../fsm/\+State.\+h"{}}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}taskqueue.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_encoder_task}{Encoder\+Task}}
+\begin{DoxyCompactList}\small\item\em High-\/frequency encoder monitoring with \doxylink{class_f_s_m}{FSM} control and velocity estimation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+High-\/frequency encoder reading task with velocity calculation and telemetry. 
+
+This task implements continuous encoder position monitoring using the ESP32\textquotesingle{}s PCNT (Pulse Counter) peripheral. It reads quadrature encoder signals at high frequency, calculates angular velocity via numerical differentiation, and publishes both position and velocity data to shared memory for use by control loops.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Hardware-\/accelerated quadrature decoding via PCNT peripheral
+\item High-\/rate position updates (default 10ms = 100Hz)
+\item Velocity calculation using first-\/order finite difference
+\item Zero/home position support for calibration
+\item FSM-\/based control for clean start/stop behavior
+\item Thread-\/safe data publication via Share$<$\+T$>$ containers
+\end{DoxyItemize}
+
+Operating Modes\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: \doxylink{class_encoder}{Encoder} monitoring paused, awaiting command
+\item {\bfseries{RUN}}\+: Continuous position and velocity measurement
+\end{DoxyItemize}
+
+Data Output\+:
+\begin{DoxyItemize}
+\item Position\+: Accumulated angle in degrees from last zero operation
+\item Velocity\+: Angular rate in degrees/second (calculated from position delta)
+\end{DoxyItemize}
+
+Commands\+:
+\begin{DoxyItemize}
+\item cmd\+Share\+: 0=WAIT (pause), 1=RUN (active)
+\item zero\+Share\+: true=reset position to zero (home/calibrate)
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+\doxylink{class_encoder}{Encoder} Control Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+1.\+6
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_encoder_task_8cpp}{Encoder\+Task.\+cpp} for velocity calculation implementation 
+
+\doxylink{_encoder_8h}{Encoder.\+h} for PCNT hardware interface details 
+\end{DoxySeeAlso}

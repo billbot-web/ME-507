@@ -1,0 +1,224 @@
+\doxysection{Motor\+Task Class Reference}
+\hypertarget{class_motor_task}{}\label{class_motor_task}\index{MotorTask@{MotorTask}}
+
+
+Multi-\/mode motor control task with velocity, position, and camera-\/based servoing.  
+
+
+
+
+{\ttfamily \#include $<$Motor\+Task.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102}{Ids}} \{ \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a2cdc322f122e4fba4846da11adc4e195}{WAIT}} = 0
+, \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a369a2966dc99ee6a6071ed26192120f1}{VRUN}} = 1
+, \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a9d0d63960af21ecacd902bd60586c5c3}{PRUN}} = 2
+, \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a79166ecd50da34ec11c51ea19c209058}{CAMERA\+\_\+\+PRUN}} = 3
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_f_s_m}{FSM} state identifiers for motor control modes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}{Motor\+Task}} (\mbox{\hyperlink{class_d_r_v883}{DRV883}} \texorpdfstring{$\ast$}{*}motor, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}cmd\+Share, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}velo\+Share, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}vref, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}pos\+Share, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}posref, PID \texorpdfstring{$\ast$}{*}velocity\+\_\+pid, PID \texorpdfstring{$\ast$}{*}position\+\_\+pid, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}camera\+Err=nullptr, bool is\+Tilt\+Motor=false) noexcept
+\begin{DoxyCompactList}\small\item\em Construct a new Motor Task object with full control capabilities. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_motor_task_a45171b9883c3f5dd352345059dd453df}{update}} () noexcept
+\begin{DoxyCompactList}\small\item\em Execute one \doxylink{class_f_s_m}{FSM} tick -\/ run current state\textquotesingle{}s behavior and check for transitions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_motor_task_a6dec16659ceefa138bd3ee9f5e6668cb}{set\+\_\+instance}} (\mbox{\hyperlink{class_motor_task}{Motor\+Task}} \texorpdfstring{$\ast$}{*}inst)
+\begin{DoxyCompactList}\small\item\em Set the static instance pointer for wrapper function access. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{class_motor_task}{Motor\+Task}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_motor_task_a801256b4c6d5574469e1cb47f777ba0b}{instance\+\_\+}} = nullptr
+\begin{DoxyCompactList}\small\item\em Single instance pointer for static wrapper functions to access member data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Multi-\/mode motor control task with velocity, position, and camera-\/based servoing. 
+
+This class encapsulates sophisticated motor control logic using a finite state machine architecture. It supports four distinct operating modes with seamless transitions between them based on command inputs.
+
+Operating Modes\+:
+\begin{DoxyItemize}
+\item {\bfseries{WAIT}}\+: Motors stopped, awaiting command
+\item {\bfseries{VRUN}}\+: Open-\/loop velocity control with stiction compensation
+\item {\bfseries{PRUN}}\+: Closed-\/loop position control using encoder feedback and PID
+\item {\bfseries{CAMERA\+\_\+\+PRUN}}\+: Visual servoing using camera pixel error as control signal
+\end{DoxyItemize}
+
+Architecture Details\+:
+\begin{DoxyItemize}
+\item Uses static wrapper pattern to bridge C-\/style \doxylink{class_f_s_m}{FSM} callbacks to instance methods
+\item PID controllers are externally managed (pointers) for independent gain tuning
+\item Thread-\/safe communication via Share$<$\+T$>$ objects for inter-\/task coordination
+\item Position safety limits prevent mechanical damage (tilt motor only)
+\item Stiction compensation improves low-\/speed tracking performance
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+\doxylink{class_state}{State} expects plain C function pointers, so static wrappers and instance\+\_\+ pointer provide the bridge to access member data and methods 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_motor_task_8cpp}{Motor\+Task.\+cpp} for PID tuning values and stiction compensation parameters 
+
+\doxylink{_d_r_v883_8h}{DRV883.\+h} for motor driver hardware interface 
+\end{DoxySeeAlso}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_motor_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_motor_task_a0d12035de0c2d1e3503d668beb24c102}\index{MotorTask@{MotorTask}!Ids@{Ids}}
+\index{Ids@{Ids}!MotorTask@{MotorTask}}
+\doxysubsubsection{\texorpdfstring{Ids}{Ids}}
+{\footnotesize\ttfamily \label{class_motor_task_a0d12035de0c2d1e3503d668beb24c102} 
+enum \mbox{\hyperlink{class_motor_task_a0d12035de0c2d1e3503d668beb24c102}{Motor\+Task\+::\+Ids}}}
+
+
+
+\doxylink{class_f_s_m}{FSM} state identifiers for motor control modes. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WAIT@{WAIT}!MotorTask@{MotorTask}}\index{MotorTask@{MotorTask}!WAIT@{WAIT}}}\Hypertarget{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a2cdc322f122e4fba4846da11adc4e195}\label{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a2cdc322f122e4fba4846da11adc4e195} 
+WAIT&Motors stopped, idle state. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VRUN@{VRUN}!MotorTask@{MotorTask}}\index{MotorTask@{MotorTask}!VRUN@{VRUN}}}\Hypertarget{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a369a2966dc99ee6a6071ed26192120f1}\label{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a369a2966dc99ee6a6071ed26192120f1} 
+VRUN&Velocity control mode. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PRUN@{PRUN}!MotorTask@{MotorTask}}\index{MotorTask@{MotorTask}!PRUN@{PRUN}}}\Hypertarget{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a9d0d63960af21ecacd902bd60586c5c3}\label{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a9d0d63960af21ecacd902bd60586c5c3} 
+PRUN&Position control mode. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAMERA\_PRUN@{CAMERA\_PRUN}!MotorTask@{MotorTask}}\index{MotorTask@{MotorTask}!CAMERA\_PRUN@{CAMERA\_PRUN}}}\Hypertarget{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a79166ecd50da34ec11c51ea19c209058}\label{class_motor_task_a0d12035de0c2d1e3503d668beb24c102a79166ecd50da34ec11c51ea19c209058} 
+CAMERA\+\_\+\+PRUN&Camera-\/based position control mode. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_motor_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d}\index{MotorTask@{MotorTask}!MotorTask@{MotorTask}}
+\index{MotorTask@{MotorTask}!MotorTask@{MotorTask}}
+\doxysubsubsection{\texorpdfstring{MotorTask()}{MotorTask()}}
+{\footnotesize\ttfamily \label{class_motor_task_a667d660f10c62e98131bbf40b8b0ea2d} 
+Motor\+Task\+::\+Motor\+Task (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_r_v883}{DRV883}} \texorpdfstring{$\ast$}{*}}]{motor}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{cmd\+Share}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{velo\+Share}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{vref}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{pos\+Share}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{posref}{, }\item[{PID \texorpdfstring{$\ast$}{*}}]{velocity\+\_\+pid}{, }\item[{PID \texorpdfstring{$\ast$}{*}}]{position\+\_\+pid}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{camera\+Err}{ = {\ttfamily nullptr}, }\item[{bool}]{is\+Tilt\+Motor}{ = {\ttfamily false}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct a new Motor Task object with full control capabilities. 
+
+Constructor for \doxylink{class_motor_task}{Motor\+Task}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em motor} & Pointer to \doxylink{class_d_r_v883}{DRV883} motor driver (caller retains ownership) \\
+\hline
+{\em cmd\+Share} & Command share for mode selection (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA\+\_\+\+PRUN) \\
+\hline
+{\em velo\+Share} & Velocity setpoint share for VRUN mode (degrees/sec) \\
+\hline
+{\em vref} & Velocity reference share for open-\/loop effort (-\/100 to 100) \\
+\hline
+{\em pos\+Share} & Current position share from encoder (degrees) \\
+\hline
+{\em posref} & Position setpoint share for PRUN mode (degrees) \\
+\hline
+{\em velocity\+\_\+pid} & Pointer to externally managed velocity PID controller \\
+\hline
+{\em position\+\_\+pid} & Pointer to externally managed position PID controller \\
+\hline
+{\em camera\+Err} & Optional camera pixel error share for CAMERA\+\_\+\+PRUN mode (pixels) \\
+\hline
+{\em is\+Tilt\+Motor} & True if this is tilt axis (enables position limits), false for pan\\
+\hline
+\end{DoxyParams}
+Initializes motor control task with all necessary shares and PID controllers. PID controllers are externally managed to allow independent tuning per motor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em motor} & Pointer to \doxylink{class_d_r_v883}{DRV883} motor driver object \\
+\hline
+{\em cmd\+Share} & Command share (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA\+\_\+\+PRUN) \\
+\hline
+{\em velo\+Share} & Current velocity feedback share (deg/s) \\
+\hline
+{\em vref} & Velocity reference share (desired velocity, deg/s) \\
+\hline
+{\em pos\+Share} & Current position feedback share (degrees) \\
+\hline
+{\em posref} & Position reference share (desired position, degrees) \\
+\hline
+{\em velocity\+\_\+pid} & Pointer to velocity PID controller (externally managed) \\
+\hline
+{\em position\+\_\+pid} & Pointer to position PID controller (externally managed) \\
+\hline
+{\em camera\+Err} & Camera pixel error share for CAMERA\+\_\+\+PRUN mode \\
+\hline
+{\em is\+Tilt\+Motor} & True if this is the tilt motor (enables position clamping) \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_motor_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_motor_task_a6dec16659ceefa138bd3ee9f5e6668cb}\index{MotorTask@{MotorTask}!set\_instance@{set\_instance}}
+\index{set\_instance@{set\_instance}!MotorTask@{MotorTask}}
+\doxysubsubsection{\texorpdfstring{set\_instance()}{set\_instance()}}
+{\footnotesize\ttfamily \label{class_motor_task_a6dec16659ceefa138bd3ee9f5e6668cb} 
+void Motor\+Task\+::set\+\_\+instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_motor_task}{Motor\+Task}} \texorpdfstring{$\ast$}{*}}]{inst}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Set the static instance pointer for wrapper function access. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em inst} & Pointer to \doxylink{class_motor_task}{Motor\+Task} instance \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Must be called before each \doxylink{class_motor_task_a45171b9883c3f5dd352345059dd453df}{update()} to ensure correct instance context 
+\end{DoxyNote}
+\Hypertarget{class_motor_task_a45171b9883c3f5dd352345059dd453df}\index{MotorTask@{MotorTask}!update@{update}}
+\index{update@{update}!MotorTask@{MotorTask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_motor_task_a45171b9883c3f5dd352345059dd453df} 
+void Motor\+Task\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Execute one \doxylink{class_f_s_m}{FSM} tick -\/ run current state\textquotesingle{}s behavior and check for transitions. 
+
+\begin{DoxyNote}{Note}
+Should be called periodically from Free\+RTOS task function 
+\end{DoxyNote}
+
+
+\label{doc-variable-members}
+\Hypertarget{class_motor_task_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_motor_task_a801256b4c6d5574469e1cb47f777ba0b}\index{MotorTask@{MotorTask}!instance\_@{instance\_}}
+\index{instance\_@{instance\_}!MotorTask@{MotorTask}}
+\doxysubsubsection{\texorpdfstring{instance\_}{instance\_}}
+{\footnotesize\ttfamily \label{class_motor_task_a801256b4c6d5574469e1cb47f777ba0b} 
+\mbox{\hyperlink{class_motor_task}{Motor\+Task}} \texorpdfstring{$\ast$}{*} Motor\+Task\+::instance\+\_\+ = nullptr\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Single instance pointer for static wrapper functions to access member data. 
+
+Static instance pointer for C-\/style callback functions. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_motor_task_8h}{Motor\+Task.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_motor_task_8cpp}{Motor\+Task.\+cpp}}\end{DoxyCompactItemize}

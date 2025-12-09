@@ -1,0 +1,26 @@
+\doxysection{src/fsm/\+State.h File Reference}
+\hypertarget{_state_8h}{}\label{_state_8h}\index{src/fsm/State.h@{src/fsm/State.h}}
+
+
+Table-\/driven state descriptor with execution behavior.  
+
+
+{\ttfamily \#include $<$cstdint$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_state}{State}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Table-\/driven state descriptor with execution behavior. 
+
+A \doxylink{class_state}{State} is defined by\+:
+\begin{DoxyItemize}
+\item a small integer ID
+\item a const char\texorpdfstring{$\ast$}{*} name (for debugging)
+\item an execute function that implements the state\textquotesingle{}s behavior and may return the next state ID to transition to
+\end{DoxyItemize}
+
+The \doxylink{class_f_s_m}{FSM} is execute-\/driven\+: it calls the current state\textquotesingle{}s execute() and honors any returned next-\/state ID to perform forced transitions. 

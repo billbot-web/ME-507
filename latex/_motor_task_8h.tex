@@ -1,0 +1,48 @@
+\doxysection{src/tasks/\+Motor\+Task.h File Reference}
+\hypertarget{_motor_task_8h}{}\label{_motor_task_8h}\index{src/tasks/MotorTask.h@{src/tasks/MotorTask.h}}
+
+
+Free\+RTOS task for comprehensive motor control with PID velocity and position control.  
+
+
+{\ttfamily \#include "{}../fsm/\+FSM.\+h"{}}\newline
+{\ttfamily \#include "{}../hardware/\+DRV883.\+h"{}}\newline
+{\ttfamily \#include "{}taskqueue.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+{\ttfamily \#include "{}PID.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_motor_task}{Motor\+Task}}
+\begin{DoxyCompactList}\small\item\em Multi-\/mode motor control task with velocity, position, and camera-\/based servoing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Free\+RTOS task for comprehensive motor control with PID velocity and position control. 
+
+This file implements a sophisticated motor control task that provides both velocity and position control modes using PID controllers. The task operates within a finite state machine framework, allowing for clean state transitions and command-\/based operation from other system components.
+
+Key Features\+:
+\begin{DoxyItemize}
+\item Dual-\/mode operation\+: velocity control and position control
+\item PID controllers for precise motion control
+\item FSM-\/based state management (WAIT/\+VELOCITY\+\_\+\+RUN/\+POSITION\+\_\+\+RUN)
+\item Thread-\/safe communication via Share$<$\+T$>$ objects
+\item \doxylink{class_d_r_v883}{DRV883} motor driver integration
+\item Real-\/time encoder feedback processing
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Motor Control Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+3
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_motor_task_8cpp}{Motor\+Task.\+cpp} Implementation details and PID tuning parameters 
+
+\doxylink{_d_r_v883_8h}{DRV883.\+h} Motor driver hardware interface 
+\end{DoxySeeAlso}

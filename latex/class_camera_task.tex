@@ -1,0 +1,170 @@
+\doxysection{Camera\+Task Class Reference}
+\hypertarget{class_camera_task}{}\label{class_camera_task}\index{CameraTask@{CameraTask}}
+
+
+Real-\/time LED detection and visual servoing error computation.  
+
+
+
+
+{\ttfamily \#include $<$Camera\+Task.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51a}{State\+Id}} \{ \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aace26a78a653c3e18e1c5223eac7273ca}{WAIT}} = 0
+, \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aa2e1926f5a5078cc5477d31f1b1f0bdc1}{CAP\+\_\+\+SEND\+\_\+\+ERR}} = 1
+, \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aab591b51d30b28a1aec4595510cb685dc}{CAP\+\_\+\+SEND\+\_\+\+RETURN}} = 2
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_state}{State} IDs (index into state table) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_camera_task_a1440912b9d5bd83058189b7c35e3f515}{Camera\+Task}} (\mbox{\hyperlink{class_o_v5640_camera}{OV5640\+Camera}} \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}{camera}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\+\_\+err}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\+\_\+err}}, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{has\+Led}}, Share$<$ uint16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{led\+Threshold}}, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a721f332798069cf7abda5b39364ba45a}{cam\+\_\+\+Mode}}, uint32\+\_\+t update\+Ms=100) noexcept
+\begin{DoxyCompactList}\small\item\em Construct camera task with shares and queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_camera_task_aa4456b8b08e1716282e3ad0fb2f0dc9e}{update}} () noexcept
+\begin{DoxyCompactList}\small\item\em Run one \doxylink{class_f_s_m}{FSM} cycle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_camera_task_a5b00c58adabb33c2091737bb86fe2593}{set\+Telemetry\+Queue}} (Queue$<$ bool $>$ \texorpdfstring{$\ast$}{*}has\+\_\+led\+\_\+q)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Real-\/time LED detection and visual servoing error computation. 
+
+Manages OV5640 camera for LED tracking applications. Processes each frame to detect bright LED targets and compute pixel errors for closed-\/loop visual servoing. Operates in multiple modes for power efficiency and feature selection.
+
+Typical Usage\+:
+\begin{DoxyEnumerate}
+\item Construct with \doxylink{class_o_v5640_camera}{OV5640\+Camera} object and data shares
+\item Configure LED detection threshold (higher = more selective)
+\item Set cam\+\_\+\+Mode share to select operating mode
+\item Read pan\+\_\+err/tilt\+\_\+err shares for visual servoing control
+\item Check has\+Led share to verify target detection
+\end{DoxyEnumerate}
+
+Performance\+:
+\begin{DoxyItemize}
+\item Frame rate depends on camera resolution and mode
+\item CAP\+\_\+\+SEND\+\_\+\+ERR mode faster (no frame transmission overhead)
+\item CAP\+\_\+\+SEND\+\_\+\+RETURN mode includes web streaming (slower)
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+LED detection uses simple brightness thresholding (fast but sensitive to ambient light) 
+
+Centroid calculation weighted by pixel brightness for sub-\/pixel accuracy 
+\end{DoxyNote}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_camera_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51a}\index{CameraTask@{CameraTask}!StateId@{StateId}}
+\index{StateId@{StateId}!CameraTask@{CameraTask}}
+\doxysubsubsection{\texorpdfstring{StateId}{StateId}}
+{\footnotesize\ttfamily \label{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51a} 
+enum \mbox{\hyperlink{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51a}{Camera\+Task\+::\+State\+Id}}}
+
+
+
+\doxylink{class_state}{State} IDs (index into state table) 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WAIT@{WAIT}!CameraTask@{CameraTask}}\index{CameraTask@{CameraTask}!WAIT@{WAIT}}}\Hypertarget{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aace26a78a653c3e18e1c5223eac7273ca}\label{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aace26a78a653c3e18e1c5223eac7273ca} 
+WAIT&Waiting for command. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAP\_SEND\_ERR@{CAP\_SEND\_ERR}!CameraTask@{CameraTask}}\index{CameraTask@{CameraTask}!CAP\_SEND\_ERR@{CAP\_SEND\_ERR}}}\Hypertarget{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aa2e1926f5a5078cc5477d31f1b1f0bdc1}\label{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aa2e1926f5a5078cc5477d31f1b1f0bdc1} 
+CAP\+\_\+\+SEND\+\_\+\+ERR&Capture, compute error only. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAP\_SEND\_RETURN@{CAP\_SEND\_RETURN}!CameraTask@{CameraTask}}\index{CameraTask@{CameraTask}!CAP\_SEND\_RETURN@{CAP\_SEND\_RETURN}}}\Hypertarget{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aab591b51d30b28a1aec4595510cb685dc}\label{class_camera_task_aa8a6d1b5e26e104c7c559e962c1fa51aab591b51d30b28a1aec4595510cb685dc} 
+CAP\+\_\+\+SEND\+\_\+\+RETURN&Capture, compute error, send frame, return buffer. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_camera_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_camera_task_a1440912b9d5bd83058189b7c35e3f515}\index{CameraTask@{CameraTask}!CameraTask@{CameraTask}}
+\index{CameraTask@{CameraTask}!CameraTask@{CameraTask}}
+\doxysubsubsection{\texorpdfstring{CameraTask()}{CameraTask()}}
+{\footnotesize\ttfamily \label{class_camera_task_a1440912b9d5bd83058189b7c35e3f515} 
+Camera\+Task\+::\+Camera\+Task (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_o_v5640_camera}{OV5640\+Camera}} \texorpdfstring{$\ast$}{*}}]{camera}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+err}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+err}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{has\+Led}{, }\item[{Share$<$ uint16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{led\+Threshold}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{cam\+\_\+\+Mode}{, }\item[{uint32\+\_\+t}]{update\+Ms}{ = {\ttfamily 100}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct camera task with shares and queue. 
+
+Construct camera task with OV5640 camera and data shares.
+
+
+\begin{DoxyParams}{Parameters}
+{\em camera} & Pointer to \doxylink{class_o_v5640_camera}{OV5640\+Camera} object \\
+\hline
+{\em x\+\_\+err} & Share for X error \\
+\hline
+{\em y\+\_\+err} & Share for Y error \\
+\hline
+{\em has\+Led} & Share for LED found flag \\
+\hline
+{\em led\+Threshold} & Share for LED detection threshold \\
+\hline
+{\em cam\+Mode} & Share for camera mode (0=WAIT, 1=CAP\+\_\+\+SEND\+\_\+\+ERR, 2=CAP\+\_\+\+SEND\+\_\+\+RETURN) \\
+\hline
+{\em update\+Ms} & Update period in milliseconds\\
+\hline
+\end{DoxyParams}
+Initializes the camera task with pointers to the camera hardware interface and shared memory containers for error publication. The camera should already be initialized before constructing this task.
+
+
+\begin{DoxyParams}{Parameters}
+{\em camera} & Pointer to initialized \doxylink{class_o_v5640_camera}{OV5640\+Camera} object \\
+\hline
+{\em pan\+\_\+err} & Share for horizontal pixel error publication \\
+\hline
+{\em tilt\+\_\+err} & Share for vertical pixel error publication \\
+\hline
+{\em has\+Led} & Share for LED detection status (true when LED visible) \\
+\hline
+{\em led\+Threshold} & Share for brightness threshold configuration \\
+\hline
+{\em cam\+\_\+\+Mode} & Share for operating mode selection (0=WAIT, 1=ERR, 2=RETURN) \\
+\hline
+{\em update\+Ms} & Task update period in milliseconds (default 10ms)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Camera must be initialized before task creation 
+
+Null camera pointer will be logged as error 
+\end{DoxyNote}
+
+
+\label{doc-func-members}
+\Hypertarget{class_camera_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_camera_task_a5b00c58adabb33c2091737bb86fe2593}\index{CameraTask@{CameraTask}!setTelemetryQueue@{setTelemetryQueue}}
+\index{setTelemetryQueue@{setTelemetryQueue}!CameraTask@{CameraTask}}
+\doxysubsubsection{\texorpdfstring{setTelemetryQueue()}{setTelemetryQueue()}}
+{\footnotesize\ttfamily \label{class_camera_task_a5b00c58adabb33c2091737bb86fe2593} 
+void Camera\+Task\+::set\+Telemetry\+Queue (\begin{DoxyParamCaption}\item[{Queue$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{has\+\_\+led\+\_\+q}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_camera_task_aa4456b8b08e1716282e3ad0fb2f0dc9e}\index{CameraTask@{CameraTask}!update@{update}}
+\index{update@{update}!CameraTask@{CameraTask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_camera_task_aa4456b8b08e1716282e3ad0fb2f0dc9e} 
+void Camera\+Task\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Run one \doxylink{class_f_s_m}{FSM} cycle. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_camera_task_8h}{Camera\+Task.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_camera_task_8cpp}{Camera\+Task.\+cpp}}\end{DoxyCompactItemize}

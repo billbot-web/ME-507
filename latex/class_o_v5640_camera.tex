@@ -1,0 +1,97 @@
+\doxysection{OV5640\+Camera Class Reference}
+\hypertarget{class_o_v5640_camera}{}\label{class_o_v5640_camera}\index{OV5640Camera@{OV5640Camera}}
+
+
+{\ttfamily \#include $<$OV5640\+\_\+camera.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_o_v5640_camera_ab973e1e4426203c6f2f5d2ffdc320c94}{OV5640\+Camera}} (uint16\+\_\+t \mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{led\+Threshold}}=760)
+\item 
+bool \mbox{\hyperlink{class_o_v5640_camera_ac87dd5dee641456216b51c8028d264df}{begin}} ()
+\item 
+bool \mbox{\hyperlink{class_o_v5640_camera_a7e99b45e156cd19be394ae60d3e7bad9}{capture\+And\+Find\+Error}} (camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}\&fb\+\_\+out, int16\+\_\+t \&x\+\_\+err, int16\+\_\+t \&y\+\_\+err, bool \&has\+\_\+led)
+\item 
+bool \mbox{\hyperlink{class_o_v5640_camera_a4dfc87f1ea8798dc711540c941b29c33}{send\+Frame\+With\+Error}} (Stream \&out, const camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}fb, bool has\+\_\+led, int16\+\_\+t x\+\_\+err, int16\+\_\+t y\+\_\+err)
+\item 
+void \mbox{\hyperlink{class_o_v5640_camera_adeed08e9a61d4ff00c594eec0c8a8143}{return\+Frame}} (camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}fb)
+\item 
+bool \mbox{\hyperlink{class_o_v5640_camera_ad7d44e77c4800d4f0a59576004b52cce}{find\+Led\+Error}} (const camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}fb, int16\+\_\+t \&x\+\_\+err, int16\+\_\+t \&y\+\_\+err)
+\item 
+bool \mbox{\hyperlink{class_o_v5640_camera_aec609a03450ca5428e17142087cc5080}{capture\+Led\+Frame}} (Stream \&out)
+\item 
+void \mbox{\hyperlink{class_o_v5640_camera_a2766050b9915f10a65814e6eede4dfa5}{set\+Led\+Threshold}} (uint16\+\_\+t thr)
+\item 
+uint16\+\_\+t \mbox{\hyperlink{class_o_v5640_camera_aa4ef452b65e7185028a72b501d138c3c}{get\+Led\+Threshold}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_o_v5640_camera_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_o_v5640_camera_ab973e1e4426203c6f2f5d2ffdc320c94}\index{OV5640Camera@{OV5640Camera}!OV5640Camera@{OV5640Camera}}
+\index{OV5640Camera@{OV5640Camera}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{OV5640Camera()}{OV5640Camera()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_ab973e1e4426203c6f2f5d2ffdc320c94} 
+OV5640\+Camera\+::\+OV5640\+Camera (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{led\+Threshold}{ = {\ttfamily 760}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_o_v5640_camera_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_o_v5640_camera_ac87dd5dee641456216b51c8028d264df}\index{OV5640Camera@{OV5640Camera}!begin@{begin}}
+\index{begin@{begin}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_ac87dd5dee641456216b51c8028d264df} 
+bool OV5640\+Camera\+::begin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_a7e99b45e156cd19be394ae60d3e7bad9}\index{OV5640Camera@{OV5640Camera}!captureAndFindError@{captureAndFindError}}
+\index{captureAndFindError@{captureAndFindError}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{captureAndFindError()}{captureAndFindError()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_a7e99b45e156cd19be394ae60d3e7bad9} 
+bool OV5640\+Camera\+::capture\+And\+Find\+Error (\begin{DoxyParamCaption}\item[{camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}\&}]{fb\+\_\+out}{, }\item[{int16\+\_\+t \&}]{x\+\_\+err}{, }\item[{int16\+\_\+t \&}]{y\+\_\+err}{, }\item[{bool \&}]{has\+\_\+led}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_aec609a03450ca5428e17142087cc5080}\index{OV5640Camera@{OV5640Camera}!captureLedFrame@{captureLedFrame}}
+\index{captureLedFrame@{captureLedFrame}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{captureLedFrame()}{captureLedFrame()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_aec609a03450ca5428e17142087cc5080} 
+bool OV5640\+Camera\+::capture\+Led\+Frame (\begin{DoxyParamCaption}\item[{Stream \&}]{out}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_ad7d44e77c4800d4f0a59576004b52cce}\index{OV5640Camera@{OV5640Camera}!findLedError@{findLedError}}
+\index{findLedError@{findLedError}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{findLedError()}{findLedError()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_ad7d44e77c4800d4f0a59576004b52cce} 
+bool OV5640\+Camera\+::find\+Led\+Error (\begin{DoxyParamCaption}\item[{const camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}}]{fb}{, }\item[{int16\+\_\+t \&}]{x\+\_\+err}{, }\item[{int16\+\_\+t \&}]{y\+\_\+err}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_aa4ef452b65e7185028a72b501d138c3c}\index{OV5640Camera@{OV5640Camera}!getLedThreshold@{getLedThreshold}}
+\index{getLedThreshold@{getLedThreshold}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{getLedThreshold()}{getLedThreshold()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_aa4ef452b65e7185028a72b501d138c3c} 
+uint16\+\_\+t OV5640\+Camera\+::get\+Led\+Threshold (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_o_v5640_camera_adeed08e9a61d4ff00c594eec0c8a8143}\index{OV5640Camera@{OV5640Camera}!returnFrame@{returnFrame}}
+\index{returnFrame@{returnFrame}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{returnFrame()}{returnFrame()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_adeed08e9a61d4ff00c594eec0c8a8143} 
+void OV5640\+Camera\+::return\+Frame (\begin{DoxyParamCaption}\item[{camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}}]{fb}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_a4dfc87f1ea8798dc711540c941b29c33}\index{OV5640Camera@{OV5640Camera}!sendFrameWithError@{sendFrameWithError}}
+\index{sendFrameWithError@{sendFrameWithError}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{sendFrameWithError()}{sendFrameWithError()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_a4dfc87f1ea8798dc711540c941b29c33} 
+bool OV5640\+Camera\+::send\+Frame\+With\+Error (\begin{DoxyParamCaption}\item[{Stream \&}]{out}{, }\item[{const camera\+\_\+fb\+\_\+t \texorpdfstring{$\ast$}{*}}]{fb}{, }\item[{bool}]{has\+\_\+led}{, }\item[{int16\+\_\+t}]{x\+\_\+err}{, }\item[{int16\+\_\+t}]{y\+\_\+err}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_o_v5640_camera_a2766050b9915f10a65814e6eede4dfa5}\index{OV5640Camera@{OV5640Camera}!setLedThreshold@{setLedThreshold}}
+\index{setLedThreshold@{setLedThreshold}!OV5640Camera@{OV5640Camera}}
+\doxysubsubsection{\texorpdfstring{setLedThreshold()}{setLedThreshold()}}
+{\footnotesize\ttfamily \label{class_o_v5640_camera_a2766050b9915f10a65814e6eede4dfa5} 
+void OV5640\+Camera\+::set\+Led\+Threshold (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{thr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/hardware/\mbox{\hyperlink{_o_v5640__camera_8h}{OV5640\+\_\+camera.\+h}}\item 
+src/hardware/\mbox{\hyperlink{_o_v5640__camera_8cpp}{OV5640\+\_\+camera.\+cpp}}\end{DoxyCompactItemize}

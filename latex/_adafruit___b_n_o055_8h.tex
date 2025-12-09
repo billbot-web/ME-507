@@ -1,0 +1,157 @@
+\doxysection{src/hardware/\+Adafruit\+\_\+\+BNO055.h File Reference}
+\hypertarget{_adafruit___b_n_o055_8h}{}\label{_adafruit___b_n_o055_8h}\index{src/hardware/Adafruit\_BNO055.h@{src/hardware/Adafruit\_BNO055.h}}
+{\ttfamily \#include "{}Arduino.\+h"{}}\newline
+{\ttfamily \#include "{}utility/imumaths.\+h"{}}\newline
+{\ttfamily \#include $<$Adafruit\+\_\+\+I2\+CDevice.\+h$>$}\newline
+{\ttfamily \#include $<$Adafruit\+\_\+\+Sensor.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}}
+\item 
+class \mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}}
+\begin{DoxyCompactList}\small\item\em Class that stores state and functions for interacting with BNO055 Sensor. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_adafruit___b_n_o055_1_1adafruit__bno055__rev__info__t}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+bno055\+\_\+rev\+\_\+info\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_adafruit___b_n_o055_8h_ac3cdd930d950b35e2041e394d5f44693}{BNO055\+\_\+\+ADDRESS\+\_\+A}}~(0x28)
+\item 
+\#define \mbox{\hyperlink{_adafruit___b_n_o055_8h_aa141fc6fa09b855e6bda7e792bf54e21}{BNO055\+\_\+\+ADDRESS\+\_\+B}}~(0x29)
+\item 
+\#define \mbox{\hyperlink{_adafruit___b_n_o055_8h_a5d61e3776e3b3017ed5e2d84ed9ec578}{BNO055\+\_\+\+ID}}~(0x\+A0)
+\item 
+\#define \mbox{\hyperlink{_adafruit___b_n_o055_8h_a419d749dedf96924ff95aad0c457eb0e}{NUM\+\_\+\+BNO055\+\_\+\+OFFSET\+\_\+\+REGISTERS}}~(22)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}} \{ \newline
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5aa31c8eb1dcc62e7dc3e6499eaf8944b8}{OPERATION\+\_\+\+MODE\+\_\+\+CONFIG}} = 0X00
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a53a4602c31de70810f22b5e4eba4f072}{OPERATION\+\_\+\+MODE\+\_\+\+ACCONLY}} = 0X01
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a36d673166e0c9d451c9d715a56668260}{OPERATION\+\_\+\+MODE\+\_\+\+MAGONLY}} = 0X02
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a395bb3b2689101581ca369ac2eaebb41}{OPERATION\+\_\+\+MODE\+\_\+\+GYRONLY}} = 0X03
+, \newline
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a2b2be0aa89dc17e0403db5fc02f64ca3}{OPERATION\+\_\+\+MODE\+\_\+\+ACCMAG}} = 0X04
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5ea69ff995bc9161fb7a7b2fc6c746c8}{OPERATION\+\_\+\+MODE\+\_\+\+ACCGYRO}} = 0X05
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a4012fbf9aae4670c00e6a6314d9ce474}{OPERATION\+\_\+\+MODE\+\_\+\+MAGGYRO}} = 0X06
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a93920e184bae7532db922c6713ffda4e}{OPERATION\+\_\+\+MODE\+\_\+\+AMG}} = 0X07
+, \newline
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5abc588dfc0c9cf6c7939618d10b3891e7}{OPERATION\+\_\+\+MODE\+\_\+\+IMUPLUS}} = 0X08
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5ad4441b53cd291468803579ae85334e2e}{OPERATION\+\_\+\+MODE\+\_\+\+COMPASS}} = 0X09
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5a15b75b6a35eff39a0163042901bccb}{OPERATION\+\_\+\+MODE\+\_\+\+M4G}} = 0X0A
+, \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a01202040d4fe809e7764b80abd1e41e1}{OPERATION\+\_\+\+MODE\+\_\+\+NDOF\+\_\+\+FMC\+\_\+\+OFF}} = 0X0B
+, \newline
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a7aff545bcd830cb1c07c238464cc205d}{OPERATION\+\_\+\+MODE\+\_\+\+NDOF}} = 0X0C
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This is a library for the BNO055 orientation sensor
+
+Designed specifically to work with the Adafruit BNO055 Breakout.
+
+Pick one up today in the adafruit shop! -\/-\/-\/-\/-\/-\/\texorpdfstring{$>$}{>} \href{https://www.adafruit.com/product/2472}{\texttt{https\+://www.\+adafruit.\+com/product/2472}}
+
+These sensors use I2C to communicate, 2 pins are required to interface.
+
+Adafruit invests time and resources providing this open source code, please support Adafruit andopen-\/source hardware by purchasing products from Adafruit!
+
+K.\+Townsend (Adafruit Industries)
+
+MIT license, all text above must be included in any redistribution 
+
+\label{doc-define-members}
+\Hypertarget{_adafruit___b_n_o055_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_adafruit___b_n_o055_8h_ac3cdd930d950b35e2041e394d5f44693}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!BNO055\_ADDRESS\_A@{BNO055\_ADDRESS\_A}}
+\index{BNO055\_ADDRESS\_A@{BNO055\_ADDRESS\_A}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}
+\doxysubsubsection{\texorpdfstring{BNO055\_ADDRESS\_A}{BNO055\_ADDRESS\_A}}
+{\footnotesize\ttfamily \label{_adafruit___b_n_o055_8h_ac3cdd930d950b35e2041e394d5f44693} 
+\#define BNO055\+\_\+\+ADDRESS\+\_\+A~(0x28)}
+
+BNO055 Address A \Hypertarget{_adafruit___b_n_o055_8h_aa141fc6fa09b855e6bda7e792bf54e21}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!BNO055\_ADDRESS\_B@{BNO055\_ADDRESS\_B}}
+\index{BNO055\_ADDRESS\_B@{BNO055\_ADDRESS\_B}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}
+\doxysubsubsection{\texorpdfstring{BNO055\_ADDRESS\_B}{BNO055\_ADDRESS\_B}}
+{\footnotesize\ttfamily \label{_adafruit___b_n_o055_8h_aa141fc6fa09b855e6bda7e792bf54e21} 
+\#define BNO055\+\_\+\+ADDRESS\+\_\+B~(0x29)}
+
+BNO055 Address B \Hypertarget{_adafruit___b_n_o055_8h_a5d61e3776e3b3017ed5e2d84ed9ec578}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!BNO055\_ID@{BNO055\_ID}}
+\index{BNO055\_ID@{BNO055\_ID}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}
+\doxysubsubsection{\texorpdfstring{BNO055\_ID}{BNO055\_ID}}
+{\footnotesize\ttfamily \label{_adafruit___b_n_o055_8h_a5d61e3776e3b3017ed5e2d84ed9ec578} 
+\#define BNO055\+\_\+\+ID~(0x\+A0)}
+
+BNO055 ID \Hypertarget{_adafruit___b_n_o055_8h_a419d749dedf96924ff95aad0c457eb0e}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!NUM\_BNO055\_OFFSET\_REGISTERS@{NUM\_BNO055\_OFFSET\_REGISTERS}}
+\index{NUM\_BNO055\_OFFSET\_REGISTERS@{NUM\_BNO055\_OFFSET\_REGISTERS}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}
+\doxysubsubsection{\texorpdfstring{NUM\_BNO055\_OFFSET\_REGISTERS}{NUM\_BNO055\_OFFSET\_REGISTERS}}
+{\footnotesize\ttfamily \label{_adafruit___b_n_o055_8h_a419d749dedf96924ff95aad0c457eb0e} 
+\#define NUM\+\_\+\+BNO055\+\_\+\+OFFSET\+\_\+\+REGISTERS~(22)}
+
+Offsets registers 
+
+\label{doc-enum-members}
+\Hypertarget{_adafruit___b_n_o055_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!adafruit\_bno055\_opmode\_t@{adafruit\_bno055\_opmode\_t}}
+\index{adafruit\_bno055\_opmode\_t@{adafruit\_bno055\_opmode\_t}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}
+\doxysubsubsection{\texorpdfstring{adafruit\_bno055\_opmode\_t}{adafruit\_bno055\_opmode\_t}}
+{\footnotesize\ttfamily \label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5} 
+enum \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}}}
+
+Operation mode settings \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_CONFIG@{OPERATION\_MODE\_CONFIG}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_CONFIG@{OPERATION\_MODE\_CONFIG}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5aa31c8eb1dcc62e7dc3e6499eaf8944b8}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5aa31c8eb1dcc62e7dc3e6499eaf8944b8} 
+OPERATION\+\_\+\+MODE\+\_\+\+CONFIG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_ACCONLY@{OPERATION\_MODE\_ACCONLY}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_ACCONLY@{OPERATION\_MODE\_ACCONLY}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a53a4602c31de70810f22b5e4eba4f072}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a53a4602c31de70810f22b5e4eba4f072} 
+OPERATION\+\_\+\+MODE\+\_\+\+ACCONLY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_MAGONLY@{OPERATION\_MODE\_MAGONLY}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_MAGONLY@{OPERATION\_MODE\_MAGONLY}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a36d673166e0c9d451c9d715a56668260}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a36d673166e0c9d451c9d715a56668260} 
+OPERATION\+\_\+\+MODE\+\_\+\+MAGONLY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_GYRONLY@{OPERATION\_MODE\_GYRONLY}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_GYRONLY@{OPERATION\_MODE\_GYRONLY}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a395bb3b2689101581ca369ac2eaebb41}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a395bb3b2689101581ca369ac2eaebb41} 
+OPERATION\+\_\+\+MODE\+\_\+\+GYRONLY&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_ACCMAG@{OPERATION\_MODE\_ACCMAG}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_ACCMAG@{OPERATION\_MODE\_ACCMAG}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a2b2be0aa89dc17e0403db5fc02f64ca3}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a2b2be0aa89dc17e0403db5fc02f64ca3} 
+OPERATION\+\_\+\+MODE\+\_\+\+ACCMAG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_ACCGYRO@{OPERATION\_MODE\_ACCGYRO}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_ACCGYRO@{OPERATION\_MODE\_ACCGYRO}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5ea69ff995bc9161fb7a7b2fc6c746c8}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5ea69ff995bc9161fb7a7b2fc6c746c8} 
+OPERATION\+\_\+\+MODE\+\_\+\+ACCGYRO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_MAGGYRO@{OPERATION\_MODE\_MAGGYRO}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_MAGGYRO@{OPERATION\_MODE\_MAGGYRO}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a4012fbf9aae4670c00e6a6314d9ce474}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a4012fbf9aae4670c00e6a6314d9ce474} 
+OPERATION\+\_\+\+MODE\+\_\+\+MAGGYRO&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_AMG@{OPERATION\_MODE\_AMG}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_AMG@{OPERATION\_MODE\_AMG}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a93920e184bae7532db922c6713ffda4e}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a93920e184bae7532db922c6713ffda4e} 
+OPERATION\+\_\+\+MODE\+\_\+\+AMG&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_IMUPLUS@{OPERATION\_MODE\_IMUPLUS}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_IMUPLUS@{OPERATION\_MODE\_IMUPLUS}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5abc588dfc0c9cf6c7939618d10b3891e7}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5abc588dfc0c9cf6c7939618d10b3891e7} 
+OPERATION\+\_\+\+MODE\+\_\+\+IMUPLUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_COMPASS@{OPERATION\_MODE\_COMPASS}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_COMPASS@{OPERATION\_MODE\_COMPASS}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5ad4441b53cd291468803579ae85334e2e}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5ad4441b53cd291468803579ae85334e2e} 
+OPERATION\+\_\+\+MODE\+\_\+\+COMPASS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_M4G@{OPERATION\_MODE\_M4G}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_M4G@{OPERATION\_MODE\_M4G}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5a15b75b6a35eff39a0163042901bccb}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a5a15b75b6a35eff39a0163042901bccb} 
+OPERATION\+\_\+\+MODE\+\_\+\+M4G&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_NDOF\_FMC\_OFF@{OPERATION\_MODE\_NDOF\_FMC\_OFF}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_NDOF\_FMC\_OFF@{OPERATION\_MODE\_NDOF\_FMC\_OFF}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a01202040d4fe809e7764b80abd1e41e1}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a01202040d4fe809e7764b80abd1e41e1} 
+OPERATION\+\_\+\+MODE\+\_\+\+NDOF\+\_\+\+FMC\+\_\+\+OFF&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPERATION\_MODE\_NDOF@{OPERATION\_MODE\_NDOF}!Adafruit\_BNO055.h@{Adafruit\_BNO055.h}}\index{Adafruit\_BNO055.h@{Adafruit\_BNO055.h}!OPERATION\_MODE\_NDOF@{OPERATION\_MODE\_NDOF}}}\Hypertarget{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a7aff545bcd830cb1c07c238464cc205d}\label{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a7aff545bcd830cb1c07c238464cc205d} 
+OPERATION\+\_\+\+MODE\+\_\+\+NDOF&\\
+\hline
+
+\end{DoxyEnumFields}

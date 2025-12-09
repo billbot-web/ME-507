@@ -1,0 +1,27 @@
+\doxysection{State.\+h}
+\hypertarget{_state_8h_source}{}\label{_state_8h_source}\index{src/fsm/State.h@{src/fsm/State.h}}
+\mbox{\hyperlink{_state_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_state_a377971e81b97b341ce67629cd5010cb1}{State}}\ \{}
+\DoxyCodeLine{00018\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{class_state_a248ace1c9841451d49082e6560bf31f0}{Execute}}\ =\ uint8\_t\ (*)();}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00024\ \ \ \textcolor{keyword}{constexpr}\ \mbox{\hyperlink{class_state_a377971e81b97b341ce67629cd5010cb1}{State}}(uint8\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name,\ \mbox{\hyperlink{class_state_a248ace1c9841451d49082e6560bf31f0}{Execute}}\ exec)\ noexcept}
+\DoxyCodeLine{00025\ \ \ \ \ :\ id\_(\textcolor{keywordtype}{id}),\ name\_(name),\ exec\_(exec)\ \{\}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00028\ \ \ \textcolor{keyword}{constexpr}\ uint8\_t\ \mbox{\hyperlink{class_state_a3aa77cdbc987515e9533debbb760e3c7}{get\_id}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ id\_;\ \}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ \mbox{\hyperlink{class_state_aa73eeb5f7e6d227da1b92ff9877e7942}{get\_name}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ name\_;\ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{inline}\ uint8\_t\ \mbox{\hyperlink{class_state_acc162f1a3720b2a1f74d7893ee913faa}{execute}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ exec\_\ ?\ exec\_()\ :\ -\/1;\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00038\ \ \ uint8\_t\ \ \ \ \ \ \ \ \ id\_;}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ name\_;}
+\DoxyCodeLine{00040\ \ \ \mbox{\hyperlink{class_state_a248ace1c9841451d49082e6560bf31f0}{Execute}}\ \ \ \ \ exec\_;}
+\DoxyCodeLine{00041\ \};}
+
+\end{DoxyCode}

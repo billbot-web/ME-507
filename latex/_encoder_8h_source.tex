@@ -1,0 +1,58 @@
+\doxysection{Encoder.\+h}
+\hypertarget{_encoder_8h_source}{}\label{_encoder_8h_source}\index{src/hardware/Encoder.h@{src/hardware/Encoder.h}}
+\mbox{\hyperlink{_encoder_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}driver/pcnt.h"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_encoder_afcebffdb47ff31b7023bfc820a487fe7}{Encoder}}\ \{}
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00068\ \ \ \mbox{\hyperlink{class_encoder_afcebffdb47ff31b7023bfc820a487fe7}{Encoder}}(gpio\_num\_t\ pinA,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ gpio\_num\_t\ pinB,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ pcnt\_unit\_t\ unit);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin}}();}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update}}();}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_encoder_ab734ff97e6a6a615e42d7679af438ff5}{get\_position}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_encoder_a28a42bd2463b9cdfefc05929532f6657}{get\_velocity}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef}{zero}}();}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00107\ \ \ \textcolor{comment}{//\ -\/-\/-\/\ Configuration\ /\ hardware\ binding\ -\/-\/-\/}}
+\DoxyCodeLine{00108\ \ \ gpio\_num\_t\ \ a\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ gpio\_num\_t\ \ b\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ pcnt\_unit\_t\ unit\_;\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \textcolor{comment}{//\ -\/-\/-\/\ State\ variables\ -\/-\/-\/}}
+\DoxyCodeLine{00113\ \ \ \textcolor{keywordtype}{float}\ \ position\_\ \ \ =\ 0;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ int32\_t\ \ prev\_count\_\ =\ 0;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00115\ \ \ int32\_t\ \ delta\_\ \ \ \ \ \ =\ 0;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ uint32\_t\ prev\_time\_\ \ =\ 0;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ uint32\_t\ dt\_us\_\ \ \ \ \ \ =\ 0;\ \ \ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ uint16\_t\ GR\_\ \ \ \ \ \ \ \ \ =\ 70*32;\ \ \ }
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ WIN\ =\ 5;\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ std::array<int32\_t,\ WIN>\ \ pos\_list\_\{\};\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ std::array<uint32\_t,\ WIN>\ t\_list\_\{\};\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00127\ \ \ \textcolor{keywordtype}{bool}\ configChannel(pcnt\_channel\_t\ ch,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_num\_t\ pulse\_gpio,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_num\_t\ ctrl\_gpio,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcnt\_count\_mode\_t\ pos\_mode,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcnt\_count\_mode\_t\ neg\_mode,}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcnt\_ctrl\_mode\_t\ lctrl\_mode,}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pcnt\_ctrl\_mode\_t\ hctrl\_mode);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00139\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ slide\_and\_push(std::array<T,\ WIN>\&\ arr,\ T\ value);}
+\DoxyCodeLine{00140\ \};}
+
+\end{DoxyCode}

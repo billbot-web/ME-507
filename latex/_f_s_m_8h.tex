@@ -1,0 +1,42 @@
+\doxysection{src/fsm/\+FSM.h File Reference}
+\hypertarget{_f_s_m_8h}{}\label{_f_s_m_8h}\index{src/fsm/FSM.h@{src/fsm/FSM.h}}
+
+
+Table-\/driven Finite \doxylink{class_state}{State} Machine framework with execute-\/driven state transitions.  
+
+
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include "{}State.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_f_s_m}{FSM}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Table-\/driven Finite \doxylink{class_state}{State} Machine framework with execute-\/driven state transitions. 
+
+Table-\/driven \doxylink{class_f_s_m}{FSM} with automatic state execution.
+
+\begin{DoxyAuthor}{Author}
+\doxylink{class_f_s_m}{FSM} Framework Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+0
+\end{DoxyVersion}
+Design\+:
+\begin{DoxyItemize}
+\item The \doxylink{class_f_s_m}{FSM} manages state transitions and execution
+\item On update(), it calls the current state\textquotesingle{}s execute() function
+\item The execute() function may return a next-\/state ID to force a transition
+\item \doxylink{class_state}{State} behavior is encapsulated in the execute() function
+\end{DoxyItemize}
+
+Priority\+:
+\begin{DoxyItemize}
+\item Higher index = higher priority (because we scan in descending order) 
+\end{DoxyItemize}

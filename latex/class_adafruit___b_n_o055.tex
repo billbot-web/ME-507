@@ -1,0 +1,1199 @@
+\doxysection{Adafruit\+\_\+\+BNO055 Class Reference}
+\hypertarget{class_adafruit___b_n_o055}{}\label{class_adafruit___b_n_o055}\index{Adafruit\_BNO055@{Adafruit\_BNO055}}
+
+
+Class that stores state and functions for interacting with BNO055 Sensor.  
+
+
+
+
+{\ttfamily \#include $<$Adafruit\+\_\+\+BNO055.\+h$>$}
+
+Inheritance diagram for Adafruit\+\_\+\+BNO055\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_adafruit___b_n_o055}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_adafruit___b_n_o055_1_1adafruit__bno055__rev__info__t}{adafruit\+\_\+bno055\+\_\+rev\+\_\+info\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485}{adafruit\+\_\+bno055\+\_\+reg\+\_\+t}} \{ \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4335c5a431c79bdbaa90285529c55ad9}{BNO055\+\_\+\+PAGE\+\_\+\+ID\+\_\+\+ADDR}} = 0X07
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa275fa7224eeaf5dee18716a4131e851}{BNO055\+\_\+\+CHIP\+\_\+\+ID\+\_\+\+ADDR}} = 0x00
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a149f2f8fc3fce4cfb0aefb815ef00a48}{BNO055\+\_\+\+ACCEL\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR}} = 0x01
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a746e1fc48d00c95444cc6842871e1799}{BNO055\+\_\+\+MAG\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR}} = 0x02
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac3e24f4d9b0856d5adf453d48d212229}{BNO055\+\_\+\+GYRO\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR}} = 0x03
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6daa86f588765df194d98edcc3507442}{BNO055\+\_\+\+SW\+\_\+\+REV\+\_\+\+ID\+\_\+\+LSB\+\_\+\+ADDR}} = 0x04
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acdf7f4b1082a3fcbc8d56f59e58ca4cc}{BNO055\+\_\+\+SW\+\_\+\+REV\+\_\+\+ID\+\_\+\+MSB\+\_\+\+ADDR}} = 0x05
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a099f530e4e69326e7c56b9516bc58ab8}{BNO055\+\_\+\+BL\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR}} = 0X06
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3eec9ae5c1e3ac26884285a04463b5a0}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X08
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aed5c07c001912e9747475a3ae7f757f6}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X09
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a0f230da78da7741f7d084d1ff11c85}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X0A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a96740da9d72fcc66629ec06b231e7155}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X0B
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01bbeb7c8748bc8c8d2fd74d728c441e}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X0C
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c1b7b62c2c0ed23a66b7150ba7303d0}{BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X0D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a340110cfdfa8cee2198101d33b77f}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X0E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abee55ac5b6d232f8f272cbad3418a49d}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X0F
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad8b1f59d70f8288977b10ab1cf3f271f}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X10
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a327baecdadb03ffa6791ff1798a85353}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X11
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aba0df390c763b57de543b3eab89538d6}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X12
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8f59e5deeb4839086fc16624c977e934}{BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X13
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a270a56500cd5214287b0e95a38f906e1}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X14
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01f2b6b240d948436fa94a1ce2edf240}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X15
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afc196b018194442a9b2bb96732a07f10}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X16
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abe31685ab8e47f6b6a1f27455b681b79}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X17
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3b30fae627e7e46a14087af83dfd8d4a}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X18
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2e9e8d7a657624f0239b1fced09a2307}{BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X19
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad64633c61f1ba8929e2f65b1bda2254c}{BNO055\+\_\+\+EULER\+\_\+\+H\+\_\+\+LSB\+\_\+\+ADDR}} = 0X1A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a37f7984d8007213bc172480e674da53d}{BNO055\+\_\+\+EULER\+\_\+\+H\+\_\+\+MSB\+\_\+\+ADDR}} = 0X1B
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6332dca143b57920f16829ab9753a450}{BNO055\+\_\+\+EULER\+\_\+\+R\+\_\+\+LSB\+\_\+\+ADDR}} = 0X1C
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a756121c54605abc500d6dc81c6177150}{BNO055\+\_\+\+EULER\+\_\+\+R\+\_\+\+MSB\+\_\+\+ADDR}} = 0X1D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a376bfd46c3ed49686bffdb20f8854d29}{BNO055\+\_\+\+EULER\+\_\+\+P\+\_\+\+LSB\+\_\+\+ADDR}} = 0X1E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af249fb4963281dd06646ab18b5e7d51f}{BNO055\+\_\+\+EULER\+\_\+\+P\+\_\+\+MSB\+\_\+\+ADDR}} = 0X1F
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aaa7d9546054fa74cc8d84028da2de91e}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+W\+\_\+\+LSB\+\_\+\+ADDR}} = 0X20
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6ebf09724371184d474998af32690bfc}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+W\+\_\+\+MSB\+\_\+\+ADDR}} = 0X21
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a21f3ca8391c91c4f94bc225e8e93590a}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X22
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7eb2f9da483f396cdaf5997d04024de3}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X23
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac91d16d51ddf754e82674c7cd05c7961}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X24
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a545e6a5c14f42691eb94c3a170fe0e58}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X25
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b0fbf37d2875ebe75d02cd381088dd0}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X26
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aeaca752822de2be682e2d3aa90719ccf}{BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X27
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a401cdc550521e75a125b9c458a1130e9}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X28
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af5f860463f4de5846934cf9ef0eff786}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X29
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a0688bf1398a3a8b31e9248a93b282}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X2A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad0217760f661fabfaf3c20b0beded597}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X2B
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a61b8e1ec9855716f71be554ede008f2c}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X2C
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab5094d798297a383266d52c957af640c}{BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X2D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2b026fccd14b8bd074bbac936fc62051}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X2E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3ae6282a5d52d11691a28b52da82c61c}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X2F
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7c3324352963727f23166ceafdcb01e8}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X30
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485adb200404230c7b63a9ae0048882d10c0}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X31
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aec7ea2d6e3c15e440f1cdb12692517d7}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X32
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aff6c1ab944302edba37689e06a22e424}{BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X33
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4a72b5554806edfc051b59a387d3bd57}{BNO055\+\_\+\+TEMP\+\_\+\+ADDR}} = 0X34
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a48c8b7d04d47aedf7dbcb0bc34d1adea}{BNO055\+\_\+\+CALIB\+\_\+\+STAT\+\_\+\+ADDR}} = 0X35
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab136291bff48f7d6ac0b594da19ca66b}{BNO055\+\_\+\+SELFTEST\+\_\+\+RESULT\+\_\+\+ADDR}} = 0X36
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8175047d1963d83affff3a32ea40ee23}{BNO055\+\_\+\+INTR\+\_\+\+STAT\+\_\+\+ADDR}} = 0X37
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a02cb584cb6378481ca9c25ffb3821f18}{BNO055\+\_\+\+SYS\+\_\+\+CLK\+\_\+\+STAT\+\_\+\+ADDR}} = 0X38
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad48a64ee8f956b33f1b75b9dbb6a8512}{BNO055\+\_\+\+SYS\+\_\+\+STAT\+\_\+\+ADDR}} = 0X39
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a97b93ee49ef0ea754c1e0a92ee5cf9ab}{BNO055\+\_\+\+SYS\+\_\+\+ERR\+\_\+\+ADDR}} = 0X3A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a20338b0135c683192b19c5977c433c74}{BNO055\+\_\+\+UNIT\+\_\+\+SEL\+\_\+\+ADDR}} = 0X3B
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac04456f6b816356de9c9ffc7d0f328b1}{BNO055\+\_\+\+OPR\+\_\+\+MODE\+\_\+\+ADDR}} = 0X3D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8796ceaf4ce33b9bd553c0bd77ec6cfa}{BNO055\+\_\+\+PWR\+\_\+\+MODE\+\_\+\+ADDR}} = 0X3E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acce68cf3512455d31a574820832f7d21}{BNO055\+\_\+\+SYS\+\_\+\+TRIGGER\+\_\+\+ADDR}} = 0X3F
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae808e91f7177a54d939d334dd7744cf1}{BNO055\+\_\+\+TEMP\+\_\+\+SOURCE\+\_\+\+ADDR}} = 0X40
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3049c470d3a481198488cf2f663a6074}{BNO055\+\_\+\+AXIS\+\_\+\+MAP\+\_\+\+CONFIG\+\_\+\+ADDR}} = 0X41
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a13c8e7798197d4a92ee1fe5c54c5f62e}{BNO055\+\_\+\+AXIS\+\_\+\+MAP\+\_\+\+SIGN\+\_\+\+ADDR}} = 0X42
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a277c5f87b88608f0d67156902e8e4c49}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+0\+\_\+\+LSB\+\_\+\+ADDR}} = 0X43
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8de4bd54412e0c83a69afdc133f2b67c}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+0\+\_\+\+MSB\+\_\+\+ADDR}} = 0X44
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c14a9bc4b62fdd6f5a04e2f62f67450}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+1\+\_\+\+LSB\+\_\+\+ADDR}} = 0X45
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2c8c6710f3a9c3886e2d08f35349294a}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+1\+\_\+\+MSB\+\_\+\+ADDR}} = 0X46
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a269a0d34a06b7c50fa18b36de61139ff}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+2\+\_\+\+LSB\+\_\+\+ADDR}} = 0X47
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae4e393f0e82ca0b5ef78956b2fd472f4}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+2\+\_\+\+MSB\+\_\+\+ADDR}} = 0X48
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a45e8f4cab9f41d41d595da04a41f646c}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+3\+\_\+\+LSB\+\_\+\+ADDR}} = 0X49
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a429768195916acbb17d564b42f75a378}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+3\+\_\+\+MSB\+\_\+\+ADDR}} = 0X4A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd90c3ff1db748a26e063e1dddfa31e6}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+4\+\_\+\+LSB\+\_\+\+ADDR}} = 0X4B
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa13d2f6f97aa439c20c10da8ecbb939a}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+4\+\_\+\+MSB\+\_\+\+ADDR}} = 0X4C
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a68888cdf8631ef9a5730e440d22ccdf8}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+5\+\_\+\+LSB\+\_\+\+ADDR}} = 0X4D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af4bbb8c54001f70f042c2b177d5105c0}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+5\+\_\+\+MSB\+\_\+\+ADDR}} = 0X4E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3f724412df24569625bae17d7a306108}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+6\+\_\+\+LSB\+\_\+\+ADDR}} = 0X4F
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a2a7c04e1bf22d8217c04c39dd628b5}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+6\+\_\+\+MSB\+\_\+\+ADDR}} = 0X50
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa381f9bc320ce3d4c08f4dad9d50abe2}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+7\+\_\+\+LSB\+\_\+\+ADDR}} = 0X51
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a40ae97b7686a7f3b0d3dfae1befa0b9d}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+7\+\_\+\+MSB\+\_\+\+ADDR}} = 0X52
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a16984212653726337ffef8dc676fecfc}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+8\+\_\+\+LSB\+\_\+\+ADDR}} = 0X53
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd02e469aecce234f301c2dfd4da2ed6}{BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+8\+\_\+\+MSB\+\_\+\+ADDR}} = 0X54
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a355e8ebc21269e6622a39796d60dbad5}{ACCEL\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X55
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab879121437e4fa4ddc2860cdd7bf3adf}{ACCEL\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X56
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a06f50b821ad2520459e8092054a8b73a}{ACCEL\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X57
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af68acdeca7fdd2f62b82d269f7337975}{ACCEL\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X58
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afe669b51b1a24ec855cade38dd90c14f}{ACCEL\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X59
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3e83f024a1cd15203011c9fb6ff82c20}{ACCEL\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X5A
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a5f08403caae91da3c1400663d0a699d9}{MAG\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X5B
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a821605b292b685e8a1adaa8c47e51f82}{MAG\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X5C
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a70945d5d295324d9d51e72de2a53627b}{MAG\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X5D
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4d1a875e3f6d2cf79bb54d5ac0ac2f33}{MAG\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X5E
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acbd993f302ad780c35962b82627f4354}{MAG\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X5F
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7d306e69d9028202556b60ec7aac5495}{MAG\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X60
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a27cee1097050facde2ff2a8cbfa97208}{GYRO\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR}} = 0X61
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4c76d89b177bd0f11545e11236c8639b}{GYRO\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR}} = 0X62
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3df1fb42f0a6124038a9363d730c05d8}{GYRO\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR}} = 0X63
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7fd08ded7a83052ab3c4a52ca9bcfa35}{GYRO\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR}} = 0X64
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a81c2b9e5ecc14b329c0a21d6e363c8c7}{GYRO\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR}} = 0X65
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8927bab6ef05496739e3f54e866df55b}{GYRO\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR}} = 0X66
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a367bdee20e01c777c2e6c760523b800e}{ACCEL\+\_\+\+RADIUS\+\_\+\+LSB\+\_\+\+ADDR}} = 0X67
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4bce0759850a331000a48cdd0490403f}{ACCEL\+\_\+\+RADIUS\+\_\+\+MSB\+\_\+\+ADDR}} = 0X68
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aadc1cd6166e834e0e58c496b21260e56}{MAG\+\_\+\+RADIUS\+\_\+\+LSB\+\_\+\+ADDR}} = 0X69
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b021b2977145e0c7fd1c006983380d3}{MAG\+\_\+\+RADIUS\+\_\+\+MSB\+\_\+\+ADDR}} = 0X6A
+ \}
+\item 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4a}{adafruit\+\_\+bno055\+\_\+powermode\+\_\+t}} \{ \mbox{\hyperlink{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa460773e8dd4c41a8328260ebdd0911d6}{POWER\+\_\+\+MODE\+\_\+\+NORMAL}} = 0X00
+, \mbox{\hyperlink{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa3793d3ac7ca6a2935624bbaba817eacf}{POWER\+\_\+\+MODE\+\_\+\+LOWPOWER}} = 0X01
+, \mbox{\hyperlink{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aae81c9f7bed51e3d51440a7c9b0c1c279}{POWER\+\_\+\+MODE\+\_\+\+SUSPEND}} = 0X02
+ \}
+\item 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+config\+\_\+t}} \{ \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8e817092a5d22121af7f86bf93180747}{REMAP\+\_\+\+CONFIG\+\_\+\+P0}} = 0x21
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a0c30da353c8ed59f5a1cf075a8e8ceba}{REMAP\+\_\+\+CONFIG\+\_\+\+P1}} = 0x24
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2af3ef7ad245f765374601269b41991382}{REMAP\+\_\+\+CONFIG\+\_\+\+P2}} = 0x24
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a6486a669c1c0804a91f71c20061199b7}{REMAP\+\_\+\+CONFIG\+\_\+\+P3}} = 0x21
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2aa588d28a9820c0245711cde409b23b45}{REMAP\+\_\+\+CONFIG\+\_\+\+P4}} = 0x24
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a1b4d622113e09fdae9c1bb26f382da93}{REMAP\+\_\+\+CONFIG\+\_\+\+P5}} = 0x21
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8a40b7bb1ac85d97f6aa5c2992d9508b}{REMAP\+\_\+\+CONFIG\+\_\+\+P6}} = 0x21
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a2c855fbe9e915b8f846d2fb76595fee9}{REMAP\+\_\+\+CONFIG\+\_\+\+P7}} = 0x24
+ \}
+\item 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+sign\+\_\+t}} \{ \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa5404965af5a7b32681f3bb1027e68353}{REMAP\+\_\+\+SIGN\+\_\+\+P0}} = 0x04
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faced743dfcd5f5bf5e9a41be47eb8cb67}{REMAP\+\_\+\+SIGN\+\_\+\+P1}} = 0x00
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa8da49877f98a9ee4edde173216cce8e3}{REMAP\+\_\+\+SIGN\+\_\+\+P2}} = 0x06
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa9028255038e953d91171b3840c5191c9}{REMAP\+\_\+\+SIGN\+\_\+\+P3}} = 0x02
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa05d7712bc1c8d3b3e1aac382e5d21eb3}{REMAP\+\_\+\+SIGN\+\_\+\+P4}} = 0x03
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fad1bbfd659ea8e2dbdf957a26381ec771}{REMAP\+\_\+\+SIGN\+\_\+\+P5}} = 0x01
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fab725b0e2dc1b7d7feabb20dc8e4376c3}{REMAP\+\_\+\+SIGN\+\_\+\+P6}} = 0x07
+, \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faff37eaad5a9abf43dee7059b22ab9c38}{REMAP\+\_\+\+SIGN\+\_\+\+P7}} = 0x05
+ \}
+\item 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{adafruit\+\_\+vector\+\_\+type\+\_\+t}} \{ \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a7683862660e6744c7b986635b8a1c275}{VECTOR\+\_\+\+ACCELEROMETER}} = BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR
+, \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a1c60f2563c7ef6aae996bebed41081bd}{VECTOR\+\_\+\+MAGNETOMETER}} = BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR
+, \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a02367b4ed33bd911181d1fb0c1ceb1f0}{VECTOR\+\_\+\+GYROSCOPE}} = BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR
+, \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25af512e6567f6decb1c18af65b5cb1d539}{VECTOR\+\_\+\+EULER}} = BNO055\+\_\+\+EULER\+\_\+\+H\+\_\+\+LSB\+\_\+\+ADDR
+, \newline
+\mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a8bef16d23fcf2d87d568273a1c1d022d}{VECTOR\+\_\+\+LINEARACCEL}} = BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR
+, \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a0bcfa0920b42abb820f6a4563cb4ef08}{VECTOR\+\_\+\+GRAVITY}} = BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_adafruit___b_n_o055_a29e00d7b95b8f7b4029b95f057ac003a}{Adafruit\+\_\+\+BNO055}} (int32\+\_\+t sensor\+ID=-\/1, uint8\+\_\+t address=\mbox{\hyperlink{_adafruit___b_n_o055_8h_ac3cdd930d950b35e2041e394d5f44693}{BNO055\+\_\+\+ADDRESS\+\_\+A}}, Two\+Wire \texorpdfstring{$\ast$}{*}the\+Wire=\&Wire)
+\begin{DoxyCompactList}\small\item\em Instantiates a new \doxylink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055} class. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_aeea25ebb2984c57ffd1292e87ba336cb}{begin}} (\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}} mode=\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a7aff545bcd830cb1c07c238464cc205d}{OPERATION\+\_\+\+MODE\+\_\+\+NDOF}})
+\begin{DoxyCompactList}\small\item\em Sets up the HW. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a899d247370c86febc01ca431eabac3f4}{set\+Mode}} (\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}} mode)
+\begin{DoxyCompactList}\small\item\em Puts the chip in the specified operating mode. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}} \mbox{\hyperlink{class_adafruit___b_n_o055_af8a4cfaf81fcda5f16c274017ed2350d}{get\+Mode}} ()
+\begin{DoxyCompactList}\small\item\em Gets the current operating mode of the chip. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_ae0bdc276735792dd219c6dfe041d9d91}{set\+Axis\+Remap}} (\mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+config\+\_\+t}} remapcode)
+\begin{DoxyCompactList}\small\item\em Changes the chip\textquotesingle{}s axis remap. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_ad154221f5c790321a978c74d6af92e2d}{set\+Axis\+Sign}} (\mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+sign\+\_\+t}} remapsign)
+\begin{DoxyCompactList}\small\item\em Changes the chip\textquotesingle{}s axis signs. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_ab0754eee135fdd3f952d9d2df3dfbf7a}{get\+Rev\+Info}} (\mbox{\hyperlink{struct_adafruit___b_n_o055_1_1adafruit__bno055__rev__info__t}{adafruit\+\_\+bno055\+\_\+rev\+\_\+info\+\_\+t}} \texorpdfstring{$\ast$}{*})
+\begin{DoxyCompactList}\small\item\em Gets the chip revision numbers. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a88343dd2f31190dfbb8dcea569e5ed97}{set\+Ext\+Crystal\+Use}} (boolean usextal)
+\begin{DoxyCompactList}\small\item\em Use the external 32.\+768\+KHz crystal. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_aa8b5c135d6b1e654066c24062ddf79b0}{get\+System\+Status}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}system\+\_\+status, uint8\+\_\+t \texorpdfstring{$\ast$}{*}self\+\_\+test\+\_\+result, uint8\+\_\+t \texorpdfstring{$\ast$}{*}system\+\_\+error)
+\begin{DoxyCompactList}\small\item\em Gets the latest system status info. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a34cb7b7421d4d9597ccfc31470c2c3f7}{get\+Calibration}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}system, uint8\+\_\+t \texorpdfstring{$\ast$}{*}gyro, uint8\+\_\+t \texorpdfstring{$\ast$}{*}accel, uint8\+\_\+t \texorpdfstring{$\ast$}{*}mag)
+\begin{DoxyCompactList}\small\item\em Gets current calibration state. Each value should be a uint8\+\_\+t pointer and it will be set to 0 if not calibrated and 3 if fully calibrated. See section 34.\+3.\+54. \end{DoxyCompactList}\item 
+imu\+::\+Vector$<$ 3 $>$ \mbox{\hyperlink{class_adafruit___b_n_o055_aa352ee195ee844ba5c1ba61b010e4517}{get\+Vector}} (\mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{adafruit\+\_\+vector\+\_\+type\+\_\+t}} vector\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Gets a vector reading from the specified source. \end{DoxyCompactList}\item 
+imu\+::\+Quaternion \mbox{\hyperlink{class_adafruit___b_n_o055_afe84dad4e5dfb61d6c2a5fa5daa97147}{get\+Quat}} ()
+\begin{DoxyCompactList}\small\item\em Gets a quaternion reading from the specified source. \end{DoxyCompactList}\item 
+int8\+\_\+t \mbox{\hyperlink{class_adafruit___b_n_o055_a098073aa38eccfbb4235219e7f4fd403}{get\+Temp}} ()
+\begin{DoxyCompactList}\small\item\em Gets the temperature in degrees celsius. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_a8c91811617bd61d7c130ae8b79dd58ee}{get\+Event}} (sensors\+\_\+event\+\_\+t \texorpdfstring{$\ast$}{*})
+\begin{DoxyCompactList}\small\item\em Reads the sensor and returns the data as a sensors\+\_\+event\+\_\+t. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_a33f7a219f8f5ed55e286d93821854d21}{get\+Event}} (sensors\+\_\+event\+\_\+t \texorpdfstring{$\ast$}{*}, \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{adafruit\+\_\+vector\+\_\+type\+\_\+t}})
+\begin{DoxyCompactList}\small\item\em Reads the sensor and returns the data as a sensors\+\_\+event\+\_\+t. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a1a0849285f6cebde09b4812d9683010c}{get\+Sensor}} (\mbox{\hyperlink{_o_v5640__camera_8h_ae18537f707eafe967eef969678a44a71}{sensor\+\_\+t}} \texorpdfstring{$\ast$}{*})
+\begin{DoxyCompactList}\small\item\em Provides the sensor\+\_\+t data for this sensor. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_a9ef7b25de21d0a0c3a561bc74d8eb59a}{get\+Sensor\+Offsets}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}calib\+Data)
+\begin{DoxyCompactList}\small\item\em Reads the sensor\textquotesingle{}s offset registers into a byte array. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_ab5325dfe2c54d13f103b9fec89188107}{get\+Sensor\+Offsets}} (\mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \&offsets\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Reads the sensor\textquotesingle{}s offset registers into an offset struct. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a0061212193d496480ea03f2bf65c146b}{set\+Sensor\+Offsets}} (const uint8\+\_\+t \texorpdfstring{$\ast$}{*}calib\+Data)
+\begin{DoxyCompactList}\small\item\em Writes an array of calibration values to the sensor\textquotesingle{}s offset. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a5bf6f9bf48b4dc750e0d33a7d71127c6}{set\+Sensor\+Offsets}} (const \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \&offsets\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Writes to the sensor\textquotesingle{}s offset registers from an offset struct. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_adafruit___b_n_o055_aa28b877a895ee462626f08924e508d25}{is\+Fully\+Calibrated}} ()
+\begin{DoxyCompactList}\small\item\em Checks of all cal status values are set to 3 (fully calibrated) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a0a9c704d35681ed420065432e3eb7a99}{enter\+Suspend\+Mode}} ()
+\begin{DoxyCompactList}\small\item\em Enter Suspend mode (i.\+e., sleep) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_adafruit___b_n_o055_a4b0c7258735569a31af5bf31936264fa}{enter\+Normal\+Mode}} ()
+\begin{DoxyCompactList}\small\item\em Enter Normal mode (i.\+e., wake) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class that stores state and functions for interacting with BNO055 Sensor. 
+
+\label{doc-enum-members}
+\Hypertarget{class_adafruit___b_n_o055_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!adafruit\_bno055\_axis\_remap\_config\_t@{adafruit\_bno055\_axis\_remap\_config\_t}}
+\index{adafruit\_bno055\_axis\_remap\_config\_t@{adafruit\_bno055\_axis\_remap\_config\_t}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{adafruit\_bno055\_axis\_remap\_config\_t}{adafruit\_bno055\_axis\_remap\_config\_t}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2} 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+config\+\_\+t}}}
+
+Remap settings \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P0@{REMAP\_CONFIG\_P0}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P0@{REMAP\_CONFIG\_P0}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8e817092a5d22121af7f86bf93180747}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8e817092a5d22121af7f86bf93180747} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P1@{REMAP\_CONFIG\_P1}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P1@{REMAP\_CONFIG\_P1}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a0c30da353c8ed59f5a1cf075a8e8ceba}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a0c30da353c8ed59f5a1cf075a8e8ceba} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P2@{REMAP\_CONFIG\_P2}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P2@{REMAP\_CONFIG\_P2}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2af3ef7ad245f765374601269b41991382}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2af3ef7ad245f765374601269b41991382} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P3@{REMAP\_CONFIG\_P3}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P3@{REMAP\_CONFIG\_P3}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a6486a669c1c0804a91f71c20061199b7}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a6486a669c1c0804a91f71c20061199b7} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P4@{REMAP\_CONFIG\_P4}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P4@{REMAP\_CONFIG\_P4}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2aa588d28a9820c0245711cde409b23b45}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2aa588d28a9820c0245711cde409b23b45} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P5@{REMAP\_CONFIG\_P5}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P5@{REMAP\_CONFIG\_P5}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a1b4d622113e09fdae9c1bb26f382da93}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a1b4d622113e09fdae9c1bb26f382da93} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P6@{REMAP\_CONFIG\_P6}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P6@{REMAP\_CONFIG\_P6}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8a40b7bb1ac85d97f6aa5c2992d9508b}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a8a40b7bb1ac85d97f6aa5c2992d9508b} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_CONFIG\_P7@{REMAP\_CONFIG\_P7}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_CONFIG\_P7@{REMAP\_CONFIG\_P7}}}\Hypertarget{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a2c855fbe9e915b8f846d2fb76595fee9}\label{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2a2c855fbe9e915b8f846d2fb76595fee9} 
+REMAP\+\_\+\+CONFIG\+\_\+\+P7&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!adafruit\_bno055\_axis\_remap\_sign\_t@{adafruit\_bno055\_axis\_remap\_sign\_t}}
+\index{adafruit\_bno055\_axis\_remap\_sign\_t@{adafruit\_bno055\_axis\_remap\_sign\_t}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{adafruit\_bno055\_axis\_remap\_sign\_t}{adafruit\_bno055\_axis\_remap\_sign\_t}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f} 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+sign\+\_\+t}}}
+
+Remap Signs \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P0@{REMAP\_SIGN\_P0}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P0@{REMAP\_SIGN\_P0}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa5404965af5a7b32681f3bb1027e68353}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa5404965af5a7b32681f3bb1027e68353} 
+REMAP\+\_\+\+SIGN\+\_\+\+P0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P1@{REMAP\_SIGN\_P1}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P1@{REMAP\_SIGN\_P1}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faced743dfcd5f5bf5e9a41be47eb8cb67}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faced743dfcd5f5bf5e9a41be47eb8cb67} 
+REMAP\+\_\+\+SIGN\+\_\+\+P1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P2@{REMAP\_SIGN\_P2}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P2@{REMAP\_SIGN\_P2}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa8da49877f98a9ee4edde173216cce8e3}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa8da49877f98a9ee4edde173216cce8e3} 
+REMAP\+\_\+\+SIGN\+\_\+\+P2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P3@{REMAP\_SIGN\_P3}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P3@{REMAP\_SIGN\_P3}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa9028255038e953d91171b3840c5191c9}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa9028255038e953d91171b3840c5191c9} 
+REMAP\+\_\+\+SIGN\+\_\+\+P3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P4@{REMAP\_SIGN\_P4}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P4@{REMAP\_SIGN\_P4}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa05d7712bc1c8d3b3e1aac382e5d21eb3}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fa05d7712bc1c8d3b3e1aac382e5d21eb3} 
+REMAP\+\_\+\+SIGN\+\_\+\+P4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P5@{REMAP\_SIGN\_P5}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P5@{REMAP\_SIGN\_P5}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fad1bbfd659ea8e2dbdf957a26381ec771}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fad1bbfd659ea8e2dbdf957a26381ec771} 
+REMAP\+\_\+\+SIGN\+\_\+\+P5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P6@{REMAP\_SIGN\_P6}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P6@{REMAP\_SIGN\_P6}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fab725b0e2dc1b7d7feabb20dc8e4376c3}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2fab725b0e2dc1b7d7feabb20dc8e4376c3} 
+REMAP\+\_\+\+SIGN\+\_\+\+P6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REMAP\_SIGN\_P7@{REMAP\_SIGN\_P7}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!REMAP\_SIGN\_P7@{REMAP\_SIGN\_P7}}}\Hypertarget{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faff37eaad5a9abf43dee7059b22ab9c38}\label{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2faff37eaad5a9abf43dee7059b22ab9c38} 
+REMAP\+\_\+\+SIGN\+\_\+\+P7&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4a}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!adafruit\_bno055\_powermode\_t@{adafruit\_bno055\_powermode\_t}}
+\index{adafruit\_bno055\_powermode\_t@{adafruit\_bno055\_powermode\_t}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{adafruit\_bno055\_powermode\_t}{adafruit\_bno055\_powermode\_t}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4a} 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4a}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+bno055\+\_\+powermode\+\_\+t}}}
+
+BNO055 power settings \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POWER\_MODE\_NORMAL@{POWER\_MODE\_NORMAL}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!POWER\_MODE\_NORMAL@{POWER\_MODE\_NORMAL}}}\Hypertarget{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa460773e8dd4c41a8328260ebdd0911d6}\label{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa460773e8dd4c41a8328260ebdd0911d6} 
+POWER\+\_\+\+MODE\+\_\+\+NORMAL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POWER\_MODE\_LOWPOWER@{POWER\_MODE\_LOWPOWER}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!POWER\_MODE\_LOWPOWER@{POWER\_MODE\_LOWPOWER}}}\Hypertarget{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa3793d3ac7ca6a2935624bbaba817eacf}\label{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aa3793d3ac7ca6a2935624bbaba817eacf} 
+POWER\+\_\+\+MODE\+\_\+\+LOWPOWER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POWER\_MODE\_SUSPEND@{POWER\_MODE\_SUSPEND}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!POWER\_MODE\_SUSPEND@{POWER\_MODE\_SUSPEND}}}\Hypertarget{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aae81c9f7bed51e3d51440a7c9b0c1c279}\label{class_adafruit___b_n_o055_ae61dcad8ce3c5e6ffd701011cf75ca4aae81c9f7bed51e3d51440a7c9b0c1c279} 
+POWER\+\_\+\+MODE\+\_\+\+SUSPEND&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!adafruit\_bno055\_reg\_t@{adafruit\_bno055\_reg\_t}}
+\index{adafruit\_bno055\_reg\_t@{adafruit\_bno055\_reg\_t}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{adafruit\_bno055\_reg\_t}{adafruit\_bno055\_reg\_t}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485} 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+bno055\+\_\+reg\+\_\+t}}}
+
+BNO055 Registers \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_PAGE\_ID\_ADDR@{BNO055\_PAGE\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_PAGE\_ID\_ADDR@{BNO055\_PAGE\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4335c5a431c79bdbaa90285529c55ad9}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4335c5a431c79bdbaa90285529c55ad9} 
+BNO055\+\_\+\+PAGE\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_CHIP\_ID\_ADDR@{BNO055\_CHIP\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_CHIP\_ID\_ADDR@{BNO055\_CHIP\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa275fa7224eeaf5dee18716a4131e851}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa275fa7224eeaf5dee18716a4131e851} 
+BNO055\+\_\+\+CHIP\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_REV\_ID\_ADDR@{BNO055\_ACCEL\_REV\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_REV\_ID\_ADDR@{BNO055\_ACCEL\_REV\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a149f2f8fc3fce4cfb0aefb815ef00a48}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a149f2f8fc3fce4cfb0aefb815ef00a48} 
+BNO055\+\_\+\+ACCEL\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_REV\_ID\_ADDR@{BNO055\_MAG\_REV\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_REV\_ID\_ADDR@{BNO055\_MAG\_REV\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a746e1fc48d00c95444cc6842871e1799}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a746e1fc48d00c95444cc6842871e1799} 
+BNO055\+\_\+\+MAG\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_REV\_ID\_ADDR@{BNO055\_GYRO\_REV\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_REV\_ID\_ADDR@{BNO055\_GYRO\_REV\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac3e24f4d9b0856d5adf453d48d212229}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac3e24f4d9b0856d5adf453d48d212229} 
+BNO055\+\_\+\+GYRO\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SW\_REV\_ID\_LSB\_ADDR@{BNO055\_SW\_REV\_ID\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SW\_REV\_ID\_LSB\_ADDR@{BNO055\_SW\_REV\_ID\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6daa86f588765df194d98edcc3507442}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6daa86f588765df194d98edcc3507442} 
+BNO055\+\_\+\+SW\+\_\+\+REV\+\_\+\+ID\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SW\_REV\_ID\_MSB\_ADDR@{BNO055\_SW\_REV\_ID\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SW\_REV\_ID\_MSB\_ADDR@{BNO055\_SW\_REV\_ID\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acdf7f4b1082a3fcbc8d56f59e58ca4cc}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acdf7f4b1082a3fcbc8d56f59e58ca4cc} 
+BNO055\+\_\+\+SW\+\_\+\+REV\+\_\+\+ID\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_BL\_REV\_ID\_ADDR@{BNO055\_BL\_REV\_ID\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_BL\_REV\_ID\_ADDR@{BNO055\_BL\_REV\_ID\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a099f530e4e69326e7c56b9516bc58ab8}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a099f530e4e69326e7c56b9516bc58ab8} 
+BNO055\+\_\+\+BL\+\_\+\+REV\+\_\+\+ID\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_X\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_X\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3eec9ae5c1e3ac26884285a04463b5a0}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3eec9ae5c1e3ac26884285a04463b5a0} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_X\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_X\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aed5c07c001912e9747475a3ae7f757f6}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aed5c07c001912e9747475a3ae7f757f6} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_Y\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_Y\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a0f230da78da7741f7d084d1ff11c85}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a0f230da78da7741f7d084d1ff11c85} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_Y\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_Y\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a96740da9d72fcc66629ec06b231e7155}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a96740da9d72fcc66629ec06b231e7155} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_Z\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_Z\_LSB\_ADDR@{BNO055\_ACCEL\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01bbeb7c8748bc8c8d2fd74d728c441e}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01bbeb7c8748bc8c8d2fd74d728c441e} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_ACCEL\_DATA\_Z\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_ACCEL\_DATA\_Z\_MSB\_ADDR@{BNO055\_ACCEL\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c1b7b62c2c0ed23a66b7150ba7303d0}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c1b7b62c2c0ed23a66b7150ba7303d0} 
+BNO055\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_X\_LSB\_ADDR@{BNO055\_MAG\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_X\_LSB\_ADDR@{BNO055\_MAG\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a340110cfdfa8cee2198101d33b77f}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a340110cfdfa8cee2198101d33b77f} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_X\_MSB\_ADDR@{BNO055\_MAG\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_X\_MSB\_ADDR@{BNO055\_MAG\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abee55ac5b6d232f8f272cbad3418a49d}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abee55ac5b6d232f8f272cbad3418a49d} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_Y\_LSB\_ADDR@{BNO055\_MAG\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_Y\_LSB\_ADDR@{BNO055\_MAG\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad8b1f59d70f8288977b10ab1cf3f271f}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad8b1f59d70f8288977b10ab1cf3f271f} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_Y\_MSB\_ADDR@{BNO055\_MAG\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_Y\_MSB\_ADDR@{BNO055\_MAG\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a327baecdadb03ffa6791ff1798a85353}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a327baecdadb03ffa6791ff1798a85353} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_Z\_LSB\_ADDR@{BNO055\_MAG\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_Z\_LSB\_ADDR@{BNO055\_MAG\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aba0df390c763b57de543b3eab89538d6}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aba0df390c763b57de543b3eab89538d6} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_MAG\_DATA\_Z\_MSB\_ADDR@{BNO055\_MAG\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_MAG\_DATA\_Z\_MSB\_ADDR@{BNO055\_MAG\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8f59e5deeb4839086fc16624c977e934}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8f59e5deeb4839086fc16624c977e934} 
+BNO055\+\_\+\+MAG\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_X\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_X\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a270a56500cd5214287b0e95a38f906e1}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a270a56500cd5214287b0e95a38f906e1} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_X\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_X\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01f2b6b240d948436fa94a1ce2edf240}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a01f2b6b240d948436fa94a1ce2edf240} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_Y\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_Y\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afc196b018194442a9b2bb96732a07f10}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afc196b018194442a9b2bb96732a07f10} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_Y\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_Y\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abe31685ab8e47f6b6a1f27455b681b79}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485abe31685ab8e47f6b6a1f27455b681b79} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_Z\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_Z\_LSB\_ADDR@{BNO055\_GYRO\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3b30fae627e7e46a14087af83dfd8d4a}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3b30fae627e7e46a14087af83dfd8d4a} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GYRO\_DATA\_Z\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GYRO\_DATA\_Z\_MSB\_ADDR@{BNO055\_GYRO\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2e9e8d7a657624f0239b1fced09a2307}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2e9e8d7a657624f0239b1fced09a2307} 
+BNO055\+\_\+\+GYRO\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_H\_LSB\_ADDR@{BNO055\_EULER\_H\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_H\_LSB\_ADDR@{BNO055\_EULER\_H\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad64633c61f1ba8929e2f65b1bda2254c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad64633c61f1ba8929e2f65b1bda2254c} 
+BNO055\+\_\+\+EULER\+\_\+\+H\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_H\_MSB\_ADDR@{BNO055\_EULER\_H\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_H\_MSB\_ADDR@{BNO055\_EULER\_H\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a37f7984d8007213bc172480e674da53d}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a37f7984d8007213bc172480e674da53d} 
+BNO055\+\_\+\+EULER\+\_\+\+H\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_R\_LSB\_ADDR@{BNO055\_EULER\_R\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_R\_LSB\_ADDR@{BNO055\_EULER\_R\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6332dca143b57920f16829ab9753a450}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6332dca143b57920f16829ab9753a450} 
+BNO055\+\_\+\+EULER\+\_\+\+R\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_R\_MSB\_ADDR@{BNO055\_EULER\_R\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_R\_MSB\_ADDR@{BNO055\_EULER\_R\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a756121c54605abc500d6dc81c6177150}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a756121c54605abc500d6dc81c6177150} 
+BNO055\+\_\+\+EULER\+\_\+\+R\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_P\_LSB\_ADDR@{BNO055\_EULER\_P\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_P\_LSB\_ADDR@{BNO055\_EULER\_P\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a376bfd46c3ed49686bffdb20f8854d29}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a376bfd46c3ed49686bffdb20f8854d29} 
+BNO055\+\_\+\+EULER\+\_\+\+P\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_EULER\_P\_MSB\_ADDR@{BNO055\_EULER\_P\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_EULER\_P\_MSB\_ADDR@{BNO055\_EULER\_P\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af249fb4963281dd06646ab18b5e7d51f}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af249fb4963281dd06646ab18b5e7d51f} 
+BNO055\+\_\+\+EULER\+\_\+\+P\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_W\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_W\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_W\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_W\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aaa7d9546054fa74cc8d84028da2de91e}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aaa7d9546054fa74cc8d84028da2de91e} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+W\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_W\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_W\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_W\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_W\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6ebf09724371184d474998af32690bfc}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6ebf09724371184d474998af32690bfc} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+W\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_X\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_X\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a21f3ca8391c91c4f94bc225e8e93590a}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a21f3ca8391c91c4f94bc225e8e93590a} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_X\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_X\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7eb2f9da483f396cdaf5997d04024de3}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7eb2f9da483f396cdaf5997d04024de3} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_Y\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_Y\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac91d16d51ddf754e82674c7cd05c7961}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac91d16d51ddf754e82674c7cd05c7961} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_Y\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_Y\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a545e6a5c14f42691eb94c3a170fe0e58}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a545e6a5c14f42691eb94c3a170fe0e58} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_Z\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_Z\_LSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b0fbf37d2875ebe75d02cd381088dd0}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b0fbf37d2875ebe75d02cd381088dd0} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_QUATERNION\_DATA\_Z\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_QUATERNION\_DATA\_Z\_MSB\_ADDR@{BNO055\_QUATERNION\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aeaca752822de2be682e2d3aa90719ccf}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aeaca752822de2be682e2d3aa90719ccf} 
+BNO055\+\_\+\+QUATERNION\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_X\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_X\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a401cdc550521e75a125b9c458a1130e9}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a401cdc550521e75a125b9c458a1130e9} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_X\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_X\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af5f860463f4de5846934cf9ef0eff786}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af5f860463f4de5846934cf9ef0eff786} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_Y\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a0688bf1398a3a8b31e9248a93b282}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a74a0688bf1398a3a8b31e9248a93b282} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_Y\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad0217760f661fabfaf3c20b0beded597}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad0217760f661fabfaf3c20b0beded597} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_Z\_LSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a61b8e1ec9855716f71be554ede008f2c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a61b8e1ec9855716f71be554ede008f2c} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_LINEAR\_ACCEL\_DATA\_Z\_MSB\_ADDR@{BNO055\_LINEAR\_ACCEL\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab5094d798297a383266d52c957af640c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab5094d798297a383266d52c957af640c} 
+BNO055\+\_\+\+LINEAR\+\_\+\+ACCEL\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_X\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_X\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2b026fccd14b8bd074bbac936fc62051}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2b026fccd14b8bd074bbac936fc62051} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_X\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_X\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3ae6282a5d52d11691a28b52da82c61c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3ae6282a5d52d11691a28b52da82c61c} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_Y\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_Y\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7c3324352963727f23166ceafdcb01e8}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7c3324352963727f23166ceafdcb01e8} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_Y\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_Y\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485adb200404230c7b63a9ae0048882d10c0}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485adb200404230c7b63a9ae0048882d10c0} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_Z\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_Z\_LSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aec7ea2d6e3c15e440f1cdb12692517d7}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aec7ea2d6e3c15e440f1cdb12692517d7} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_GRAVITY\_DATA\_Z\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_GRAVITY\_DATA\_Z\_MSB\_ADDR@{BNO055\_GRAVITY\_DATA\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aff6c1ab944302edba37689e06a22e424}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aff6c1ab944302edba37689e06a22e424} 
+BNO055\+\_\+\+GRAVITY\+\_\+\+DATA\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_TEMP\_ADDR@{BNO055\_TEMP\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_TEMP\_ADDR@{BNO055\_TEMP\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4a72b5554806edfc051b59a387d3bd57}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4a72b5554806edfc051b59a387d3bd57} 
+BNO055\+\_\+\+TEMP\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_CALIB\_STAT\_ADDR@{BNO055\_CALIB\_STAT\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_CALIB\_STAT\_ADDR@{BNO055\_CALIB\_STAT\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a48c8b7d04d47aedf7dbcb0bc34d1adea}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a48c8b7d04d47aedf7dbcb0bc34d1adea} 
+BNO055\+\_\+\+CALIB\+\_\+\+STAT\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SELFTEST\_RESULT\_ADDR@{BNO055\_SELFTEST\_RESULT\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SELFTEST\_RESULT\_ADDR@{BNO055\_SELFTEST\_RESULT\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab136291bff48f7d6ac0b594da19ca66b}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab136291bff48f7d6ac0b594da19ca66b} 
+BNO055\+\_\+\+SELFTEST\+\_\+\+RESULT\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_INTR\_STAT\_ADDR@{BNO055\_INTR\_STAT\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_INTR\_STAT\_ADDR@{BNO055\_INTR\_STAT\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8175047d1963d83affff3a32ea40ee23}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8175047d1963d83affff3a32ea40ee23} 
+BNO055\+\_\+\+INTR\+\_\+\+STAT\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SYS\_CLK\_STAT\_ADDR@{BNO055\_SYS\_CLK\_STAT\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SYS\_CLK\_STAT\_ADDR@{BNO055\_SYS\_CLK\_STAT\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a02cb584cb6378481ca9c25ffb3821f18}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a02cb584cb6378481ca9c25ffb3821f18} 
+BNO055\+\_\+\+SYS\+\_\+\+CLK\+\_\+\+STAT\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SYS\_STAT\_ADDR@{BNO055\_SYS\_STAT\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SYS\_STAT\_ADDR@{BNO055\_SYS\_STAT\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad48a64ee8f956b33f1b75b9dbb6a8512}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ad48a64ee8f956b33f1b75b9dbb6a8512} 
+BNO055\+\_\+\+SYS\+\_\+\+STAT\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SYS\_ERR\_ADDR@{BNO055\_SYS\_ERR\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SYS\_ERR\_ADDR@{BNO055\_SYS\_ERR\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a97b93ee49ef0ea754c1e0a92ee5cf9ab}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a97b93ee49ef0ea754c1e0a92ee5cf9ab} 
+BNO055\+\_\+\+SYS\+\_\+\+ERR\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_UNIT\_SEL\_ADDR@{BNO055\_UNIT\_SEL\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_UNIT\_SEL\_ADDR@{BNO055\_UNIT\_SEL\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a20338b0135c683192b19c5977c433c74}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a20338b0135c683192b19c5977c433c74} 
+BNO055\+\_\+\+UNIT\+\_\+\+SEL\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_OPR\_MODE\_ADDR@{BNO055\_OPR\_MODE\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_OPR\_MODE\_ADDR@{BNO055\_OPR\_MODE\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac04456f6b816356de9c9ffc7d0f328b1}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ac04456f6b816356de9c9ffc7d0f328b1} 
+BNO055\+\_\+\+OPR\+\_\+\+MODE\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_PWR\_MODE\_ADDR@{BNO055\_PWR\_MODE\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_PWR\_MODE\_ADDR@{BNO055\_PWR\_MODE\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8796ceaf4ce33b9bd553c0bd77ec6cfa}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8796ceaf4ce33b9bd553c0bd77ec6cfa} 
+BNO055\+\_\+\+PWR\+\_\+\+MODE\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SYS\_TRIGGER\_ADDR@{BNO055\_SYS\_TRIGGER\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SYS\_TRIGGER\_ADDR@{BNO055\_SYS\_TRIGGER\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acce68cf3512455d31a574820832f7d21}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acce68cf3512455d31a574820832f7d21} 
+BNO055\+\_\+\+SYS\+\_\+\+TRIGGER\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_TEMP\_SOURCE\_ADDR@{BNO055\_TEMP\_SOURCE\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_TEMP\_SOURCE\_ADDR@{BNO055\_TEMP\_SOURCE\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae808e91f7177a54d939d334dd7744cf1}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae808e91f7177a54d939d334dd7744cf1} 
+BNO055\+\_\+\+TEMP\+\_\+\+SOURCE\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_AXIS\_MAP\_CONFIG\_ADDR@{BNO055\_AXIS\_MAP\_CONFIG\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_AXIS\_MAP\_CONFIG\_ADDR@{BNO055\_AXIS\_MAP\_CONFIG\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3049c470d3a481198488cf2f663a6074}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3049c470d3a481198488cf2f663a6074} 
+BNO055\+\_\+\+AXIS\+\_\+\+MAP\+\_\+\+CONFIG\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_AXIS\_MAP\_SIGN\_ADDR@{BNO055\_AXIS\_MAP\_SIGN\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_AXIS\_MAP\_SIGN\_ADDR@{BNO055\_AXIS\_MAP\_SIGN\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a13c8e7798197d4a92ee1fe5c54c5f62e}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a13c8e7798197d4a92ee1fe5c54c5f62e} 
+BNO055\+\_\+\+AXIS\+\_\+\+MAP\+\_\+\+SIGN\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_0\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_0\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_0\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_0\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a277c5f87b88608f0d67156902e8e4c49}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a277c5f87b88608f0d67156902e8e4c49} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+0\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_0\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_0\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_0\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_0\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8de4bd54412e0c83a69afdc133f2b67c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8de4bd54412e0c83a69afdc133f2b67c} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+0\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_1\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_1\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_1\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_1\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c14a9bc4b62fdd6f5a04e2f62f67450}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a6c14a9bc4b62fdd6f5a04e2f62f67450} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+1\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_1\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_1\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_1\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_1\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2c8c6710f3a9c3886e2d08f35349294a}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a2c8c6710f3a9c3886e2d08f35349294a} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+1\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_2\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_2\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_2\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_2\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a269a0d34a06b7c50fa18b36de61139ff}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a269a0d34a06b7c50fa18b36de61139ff} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+2\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_2\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_2\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_2\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_2\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae4e393f0e82ca0b5ef78956b2fd472f4}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ae4e393f0e82ca0b5ef78956b2fd472f4} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+2\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_3\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_3\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_3\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_3\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a45e8f4cab9f41d41d595da04a41f646c}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a45e8f4cab9f41d41d595da04a41f646c} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+3\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_3\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_3\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_3\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_3\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a429768195916acbb17d564b42f75a378}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a429768195916acbb17d564b42f75a378} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+3\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_4\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_4\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_4\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_4\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd90c3ff1db748a26e063e1dddfa31e6}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd90c3ff1db748a26e063e1dddfa31e6} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+4\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_4\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_4\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_4\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_4\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa13d2f6f97aa439c20c10da8ecbb939a}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa13d2f6f97aa439c20c10da8ecbb939a} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+4\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_5\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_5\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_5\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_5\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a68888cdf8631ef9a5730e440d22ccdf8}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a68888cdf8631ef9a5730e440d22ccdf8} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+5\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_5\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_5\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_5\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_5\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af4bbb8c54001f70f042c2b177d5105c0}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af4bbb8c54001f70f042c2b177d5105c0} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+5\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_6\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_6\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_6\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_6\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3f724412df24569625bae17d7a306108}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3f724412df24569625bae17d7a306108} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+6\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_6\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_6\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_6\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_6\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a2a7c04e1bf22d8217c04c39dd628b5}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a1a2a7c04e1bf22d8217c04c39dd628b5} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+6\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_7\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_7\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_7\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_7\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa381f9bc320ce3d4c08f4dad9d50abe2}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aa381f9bc320ce3d4c08f4dad9d50abe2} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+7\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_7\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_7\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_7\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_7\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a40ae97b7686a7f3b0d3dfae1befa0b9d}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a40ae97b7686a7f3b0d3dfae1befa0b9d} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+7\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_8\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_8\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_8\_LSB\_ADDR@{BNO055\_SIC\_MATRIX\_8\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a16984212653726337ffef8dc676fecfc}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a16984212653726337ffef8dc676fecfc} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+8\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BNO055\_SIC\_MATRIX\_8\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_8\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!BNO055\_SIC\_MATRIX\_8\_MSB\_ADDR@{BNO055\_SIC\_MATRIX\_8\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd02e469aecce234f301c2dfd4da2ed6}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acd02e469aecce234f301c2dfd4da2ed6} 
+BNO055\+\_\+\+SIC\+\_\+\+MATRIX\+\_\+8\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_X\_LSB\_ADDR@{ACCEL\_OFFSET\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_X\_LSB\_ADDR@{ACCEL\_OFFSET\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a355e8ebc21269e6622a39796d60dbad5}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a355e8ebc21269e6622a39796d60dbad5} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_X\_MSB\_ADDR@{ACCEL\_OFFSET\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_X\_MSB\_ADDR@{ACCEL\_OFFSET\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab879121437e4fa4ddc2860cdd7bf3adf}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485ab879121437e4fa4ddc2860cdd7bf3adf} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_Y\_LSB\_ADDR@{ACCEL\_OFFSET\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_Y\_LSB\_ADDR@{ACCEL\_OFFSET\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a06f50b821ad2520459e8092054a8b73a}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a06f50b821ad2520459e8092054a8b73a} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_Y\_MSB\_ADDR@{ACCEL\_OFFSET\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_Y\_MSB\_ADDR@{ACCEL\_OFFSET\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af68acdeca7fdd2f62b82d269f7337975}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485af68acdeca7fdd2f62b82d269f7337975} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_Z\_LSB\_ADDR@{ACCEL\_OFFSET\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_Z\_LSB\_ADDR@{ACCEL\_OFFSET\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afe669b51b1a24ec855cade38dd90c14f}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485afe669b51b1a24ec855cade38dd90c14f} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_OFFSET\_Z\_MSB\_ADDR@{ACCEL\_OFFSET\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_OFFSET\_Z\_MSB\_ADDR@{ACCEL\_OFFSET\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3e83f024a1cd15203011c9fb6ff82c20}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3e83f024a1cd15203011c9fb6ff82c20} 
+ACCEL\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_X\_LSB\_ADDR@{MAG\_OFFSET\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_X\_LSB\_ADDR@{MAG\_OFFSET\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a5f08403caae91da3c1400663d0a699d9}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a5f08403caae91da3c1400663d0a699d9} 
+MAG\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_X\_MSB\_ADDR@{MAG\_OFFSET\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_X\_MSB\_ADDR@{MAG\_OFFSET\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a821605b292b685e8a1adaa8c47e51f82}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a821605b292b685e8a1adaa8c47e51f82} 
+MAG\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_Y\_LSB\_ADDR@{MAG\_OFFSET\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_Y\_LSB\_ADDR@{MAG\_OFFSET\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a70945d5d295324d9d51e72de2a53627b}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a70945d5d295324d9d51e72de2a53627b} 
+MAG\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_Y\_MSB\_ADDR@{MAG\_OFFSET\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_Y\_MSB\_ADDR@{MAG\_OFFSET\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4d1a875e3f6d2cf79bb54d5ac0ac2f33}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4d1a875e3f6d2cf79bb54d5ac0ac2f33} 
+MAG\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_Z\_LSB\_ADDR@{MAG\_OFFSET\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_Z\_LSB\_ADDR@{MAG\_OFFSET\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acbd993f302ad780c35962b82627f4354}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485acbd993f302ad780c35962b82627f4354} 
+MAG\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_OFFSET\_Z\_MSB\_ADDR@{MAG\_OFFSET\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_OFFSET\_Z\_MSB\_ADDR@{MAG\_OFFSET\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7d306e69d9028202556b60ec7aac5495}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7d306e69d9028202556b60ec7aac5495} 
+MAG\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_X\_LSB\_ADDR@{GYRO\_OFFSET\_X\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_X\_LSB\_ADDR@{GYRO\_OFFSET\_X\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a27cee1097050facde2ff2a8cbfa97208}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a27cee1097050facde2ff2a8cbfa97208} 
+GYRO\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_X\_MSB\_ADDR@{GYRO\_OFFSET\_X\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_X\_MSB\_ADDR@{GYRO\_OFFSET\_X\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4c76d89b177bd0f11545e11236c8639b}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4c76d89b177bd0f11545e11236c8639b} 
+GYRO\+\_\+\+OFFSET\+\_\+\+X\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_Y\_LSB\_ADDR@{GYRO\_OFFSET\_Y\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_Y\_LSB\_ADDR@{GYRO\_OFFSET\_Y\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3df1fb42f0a6124038a9363d730c05d8}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a3df1fb42f0a6124038a9363d730c05d8} 
+GYRO\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_Y\_MSB\_ADDR@{GYRO\_OFFSET\_Y\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_Y\_MSB\_ADDR@{GYRO\_OFFSET\_Y\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7fd08ded7a83052ab3c4a52ca9bcfa35}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a7fd08ded7a83052ab3c4a52ca9bcfa35} 
+GYRO\+\_\+\+OFFSET\+\_\+\+Y\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_Z\_LSB\_ADDR@{GYRO\_OFFSET\_Z\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_Z\_LSB\_ADDR@{GYRO\_OFFSET\_Z\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a81c2b9e5ecc14b329c0a21d6e363c8c7}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a81c2b9e5ecc14b329c0a21d6e363c8c7} 
+GYRO\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GYRO\_OFFSET\_Z\_MSB\_ADDR@{GYRO\_OFFSET\_Z\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!GYRO\_OFFSET\_Z\_MSB\_ADDR@{GYRO\_OFFSET\_Z\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8927bab6ef05496739e3f54e866df55b}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8927bab6ef05496739e3f54e866df55b} 
+GYRO\+\_\+\+OFFSET\+\_\+\+Z\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_RADIUS\_LSB\_ADDR@{ACCEL\_RADIUS\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_RADIUS\_LSB\_ADDR@{ACCEL\_RADIUS\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a367bdee20e01c777c2e6c760523b800e}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a367bdee20e01c777c2e6c760523b800e} 
+ACCEL\+\_\+\+RADIUS\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCEL\_RADIUS\_MSB\_ADDR@{ACCEL\_RADIUS\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!ACCEL\_RADIUS\_MSB\_ADDR@{ACCEL\_RADIUS\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4bce0759850a331000a48cdd0490403f}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a4bce0759850a331000a48cdd0490403f} 
+ACCEL\+\_\+\+RADIUS\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_RADIUS\_LSB\_ADDR@{MAG\_RADIUS\_LSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_RADIUS\_LSB\_ADDR@{MAG\_RADIUS\_LSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aadc1cd6166e834e0e58c496b21260e56}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485aadc1cd6166e834e0e58c496b21260e56} 
+MAG\+\_\+\+RADIUS\+\_\+\+LSB\+\_\+\+ADDR&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MAG\_RADIUS\_MSB\_ADDR@{MAG\_RADIUS\_MSB\_ADDR}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!MAG\_RADIUS\_MSB\_ADDR@{MAG\_RADIUS\_MSB\_ADDR}}}\Hypertarget{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b021b2977145e0c7fd1c006983380d3}\label{class_adafruit___b_n_o055_a37bdd791ec4916fb29933a5b78be0485a8b021b2977145e0c7fd1c006983380d3} 
+MAG\+\_\+\+RADIUS\+\_\+\+MSB\+\_\+\+ADDR&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!adafruit\_vector\_type\_t@{adafruit\_vector\_type\_t}}
+\index{adafruit\_vector\_type\_t@{adafruit\_vector\_type\_t}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{adafruit\_vector\_type\_t}{adafruit\_vector\_type\_t}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25} 
+enum \mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{Adafruit\+\_\+\+BNO055\+::adafruit\+\_\+vector\+\_\+type\+\_\+t}}}
+
+Vector Mappings \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_ACCELEROMETER@{VECTOR\_ACCELEROMETER}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_ACCELEROMETER@{VECTOR\_ACCELEROMETER}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a7683862660e6744c7b986635b8a1c275}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a7683862660e6744c7b986635b8a1c275} 
+VECTOR\+\_\+\+ACCELEROMETER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_MAGNETOMETER@{VECTOR\_MAGNETOMETER}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_MAGNETOMETER@{VECTOR\_MAGNETOMETER}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a1c60f2563c7ef6aae996bebed41081bd}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a1c60f2563c7ef6aae996bebed41081bd} 
+VECTOR\+\_\+\+MAGNETOMETER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_GYROSCOPE@{VECTOR\_GYROSCOPE}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_GYROSCOPE@{VECTOR\_GYROSCOPE}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a02367b4ed33bd911181d1fb0c1ceb1f0}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a02367b4ed33bd911181d1fb0c1ceb1f0} 
+VECTOR\+\_\+\+GYROSCOPE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_EULER@{VECTOR\_EULER}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_EULER@{VECTOR\_EULER}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25af512e6567f6decb1c18af65b5cb1d539}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25af512e6567f6decb1c18af65b5cb1d539} 
+VECTOR\+\_\+\+EULER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_LINEARACCEL@{VECTOR\_LINEARACCEL}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_LINEARACCEL@{VECTOR\_LINEARACCEL}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a8bef16d23fcf2d87d568273a1c1d022d}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a8bef16d23fcf2d87d568273a1c1d022d} 
+VECTOR\+\_\+\+LINEARACCEL&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{VECTOR\_GRAVITY@{VECTOR\_GRAVITY}!Adafruit\_BNO055@{Adafruit\_BNO055}}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!VECTOR\_GRAVITY@{VECTOR\_GRAVITY}}}\Hypertarget{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a0bcfa0920b42abb820f6a4563cb4ef08}\label{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25a0bcfa0920b42abb820f6a4563cb4ef08} 
+VECTOR\+\_\+\+GRAVITY&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_adafruit___b_n_o055_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_adafruit___b_n_o055_a29e00d7b95b8f7b4029b95f057ac003a}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\index{Adafruit\_BNO055@{Adafruit\_BNO055}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{Adafruit\_BNO055()}{Adafruit\_BNO055()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a29e00d7b95b8f7b4029b95f057ac003a} 
+Adafruit\+\_\+\+BNO055\+::\+Adafruit\+\_\+\+BNO055 (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{sensor\+ID}{ = {\ttfamily -\/1}, }\item[{uint8\+\_\+t}]{address}{ = {\ttfamily \mbox{\hyperlink{_adafruit___b_n_o055_8h_ac3cdd930d950b35e2041e394d5f44693}{BNO055\+\_\+\+ADDRESS\+\_\+A}}}, }\item[{Two\+Wire \texorpdfstring{$\ast$}{*}}]{the\+Wire}{ = {\ttfamily \&Wire}}\end{DoxyParamCaption})}
+
+
+
+Instantiates a new \doxylink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055} class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sensor\+ID} & sensor ID \\
+\hline
+{\em address} & i2c address \\
+\hline
+{\em the\+Wire} & Wire object \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_adafruit___b_n_o055_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_adafruit___b_n_o055_aeea25ebb2984c57ffd1292e87ba336cb}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!begin@{begin}}
+\index{begin@{begin}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_aeea25ebb2984c57ffd1292e87ba336cb} 
+bool Adafruit\+\_\+\+BNO055\+::begin (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}}}]{mode}{ = {\ttfamily \mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5a7aff545bcd830cb1c07c238464cc205d}{OPERATION\+\_\+\+MODE\+\_\+\+NDOF}}}}\end{DoxyParamCaption})}
+
+
+
+Sets up the HW. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mode} & mode values \mbox{[}OPERATION\+\_\+\+MODE\+\_\+\+CONFIG, OPERATION\+\_\+\+MODE\+\_\+\+ACCONLY, OPERATION\+\_\+\+MODE\+\_\+\+MAGONLY, OPERATION\+\_\+\+MODE\+\_\+\+GYRONLY, OPERATION\+\_\+\+MODE\+\_\+\+ACCMAG, OPERATION\+\_\+\+MODE\+\_\+\+ACCGYRO, OPERATION\+\_\+\+MODE\+\_\+\+MAGGYRO, OPERATION\+\_\+\+MODE\+\_\+\+AMG, OPERATION\+\_\+\+MODE\+\_\+\+IMUPLUS, OPERATION\+\_\+\+MODE\+\_\+\+COMPASS, OPERATION\+\_\+\+MODE\+\_\+\+M4G, OPERATION\+\_\+\+MODE\+\_\+\+NDOF\+\_\+\+FMC\+\_\+\+OFF, OPERATION\+\_\+\+MODE\+\_\+\+NDOF\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if process is successful 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_a4b0c7258735569a31af5bf31936264fa}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!enterNormalMode@{enterNormalMode}}
+\index{enterNormalMode@{enterNormalMode}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{enterNormalMode()}{enterNormalMode()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a4b0c7258735569a31af5bf31936264fa} 
+void Adafruit\+\_\+\+BNO055\+::enter\+Normal\+Mode (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Enter Normal mode (i.\+e., wake) 
+
+\Hypertarget{class_adafruit___b_n_o055_a0a9c704d35681ed420065432e3eb7a99}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!enterSuspendMode@{enterSuspendMode}}
+\index{enterSuspendMode@{enterSuspendMode}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{enterSuspendMode()}{enterSuspendMode()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a0a9c704d35681ed420065432e3eb7a99} 
+void Adafruit\+\_\+\+BNO055\+::enter\+Suspend\+Mode (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Enter Suspend mode (i.\+e., sleep) 
+
+\Hypertarget{class_adafruit___b_n_o055_a34cb7b7421d4d9597ccfc31470c2c3f7}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getCalibration@{getCalibration}}
+\index{getCalibration@{getCalibration}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getCalibration()}{getCalibration()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a34cb7b7421d4d9597ccfc31470c2c3f7} 
+void Adafruit\+\_\+\+BNO055\+::get\+Calibration (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{sys}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{gyro}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{accel}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{mag}{}\end{DoxyParamCaption})}
+
+
+
+Gets current calibration state. Each value should be a uint8\+\_\+t pointer and it will be set to 0 if not calibrated and 3 if fully calibrated. See section 34.\+3.\+54. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sys} & Current system calibration status, depends on status of all sensors, read-\/only \\
+\hline
+{\em gyro} & Current calibration status of Gyroscope, read-\/only \\
+\hline
+{\em accel} & Current calibration status of Accelerometer, read-\/only \\
+\hline
+{\em mag} & Current calibration status of Magnetometer, read-\/only \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a8c91811617bd61d7c130ae8b79dd58ee}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getEvent@{getEvent}}
+\index{getEvent@{getEvent}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getEvent()}{getEvent()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a8c91811617bd61d7c130ae8b79dd58ee} 
+bool Adafruit\+\_\+\+BNO055\+::get\+Event (\begin{DoxyParamCaption}\item[{sensors\+\_\+event\+\_\+t \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Reads the sensor and returns the data as a sensors\+\_\+event\+\_\+t. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & Event description \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+always returns true 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_a33f7a219f8f5ed55e286d93821854d21}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getEvent@{getEvent}}
+\index{getEvent@{getEvent}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getEvent()}{getEvent()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a33f7a219f8f5ed55e286d93821854d21} 
+bool Adafruit\+\_\+\+BNO055\+::get\+Event (\begin{DoxyParamCaption}\item[{sensors\+\_\+event\+\_\+t \texorpdfstring{$\ast$}{*}}]{event}{, }\item[{\mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{adafruit\+\_\+vector\+\_\+type\+\_\+t}}}]{vec\+\_\+type}{}\end{DoxyParamCaption})}
+
+
+
+Reads the sensor and returns the data as a sensors\+\_\+event\+\_\+t. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & Event description \\
+\hline
+{\em vec\+\_\+type} & specify the type of reading \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+always returns true 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_af8a4cfaf81fcda5f16c274017ed2350d}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getMode@{getMode}}
+\index{getMode@{getMode}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getMode()}{getMode()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_af8a4cfaf81fcda5f16c274017ed2350d} 
+\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}} Adafruit\+\_\+\+BNO055\+::get\+Mode (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Gets the current operating mode of the chip. 
+
+\begin{DoxyReturn}{Returns}
+operating\+\_\+mode in integer which can be mapped in Section 3.\+3 for example\+: a return of 12 (0X0C) =\texorpdfstring{$>$}{>} NDOF 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_afe84dad4e5dfb61d6c2a5fa5daa97147}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getQuat@{getQuat}}
+\index{getQuat@{getQuat}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getQuat()}{getQuat()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_afe84dad4e5dfb61d6c2a5fa5daa97147} 
+imu\+::\+Quaternion Adafruit\+\_\+\+BNO055\+::get\+Quat (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Gets a quaternion reading from the specified source. 
+
+\begin{DoxyReturn}{Returns}
+quaternion reading 
+\end{DoxyReturn}
+Assign to Quaternion See \href{https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf}{\texttt{https\+://cdn-\/shop.\+adafruit.\+com/datasheets/\+BST\+\_\+\+BNO055\+\_\+\+DS000\+\_\+12.\+pdf}} 3.\+6.\+5.\+5 Orientation (Quaternion)\Hypertarget{class_adafruit___b_n_o055_ab0754eee135fdd3f952d9d2df3dfbf7a}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getRevInfo@{getRevInfo}}
+\index{getRevInfo@{getRevInfo}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getRevInfo()}{getRevInfo()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_ab0754eee135fdd3f952d9d2df3dfbf7a} 
+void Adafruit\+\_\+\+BNO055\+::get\+Rev\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_adafruit___b_n_o055_1_1adafruit__bno055__rev__info__t}{adafruit\+\_\+bno055\+\_\+rev\+\_\+info\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{info}{}\end{DoxyParamCaption})}
+
+
+
+Gets the chip revision numbers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em info} & revision info \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a1a0849285f6cebde09b4812d9683010c}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getSensor@{getSensor}}
+\index{getSensor@{getSensor}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getSensor()}{getSensor()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a1a0849285f6cebde09b4812d9683010c} 
+void Adafruit\+\_\+\+BNO055\+::get\+Sensor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_o_v5640__camera_8h_ae18537f707eafe967eef969678a44a71}{sensor\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{sensor}{}\end{DoxyParamCaption})}
+
+
+
+Provides the sensor\+\_\+t data for this sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sensor} & Sensor description \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_ab5325dfe2c54d13f103b9fec89188107}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getSensorOffsets@{getSensorOffsets}}
+\index{getSensorOffsets@{getSensorOffsets}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getSensorOffsets()}{getSensorOffsets()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_ab5325dfe2c54d13f103b9fec89188107} 
+bool Adafruit\+\_\+\+BNO055\+::get\+Sensor\+Offsets (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \&}]{offsets\+\_\+type}{}\end{DoxyParamCaption})}
+
+
+
+Reads the sensor\textquotesingle{}s offset registers into an offset struct. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offsets\+\_\+type} & type of offsets \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if read is successful 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_a9ef7b25de21d0a0c3a561bc74d8eb59a}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getSensorOffsets@{getSensorOffsets}}
+\index{getSensorOffsets@{getSensorOffsets}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getSensorOffsets()}{getSensorOffsets()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a9ef7b25de21d0a0c3a561bc74d8eb59a} 
+bool Adafruit\+\_\+\+BNO055\+::get\+Sensor\+Offsets (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{calib\+Data}{}\end{DoxyParamCaption})}
+
+
+
+Reads the sensor\textquotesingle{}s offset registers into a byte array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em calib\+Data} & Calibration offset (buffer size should be 22) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if read is successful 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_aa8b5c135d6b1e654066c24062ddf79b0}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getSystemStatus@{getSystemStatus}}
+\index{getSystemStatus@{getSystemStatus}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getSystemStatus()}{getSystemStatus()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_aa8b5c135d6b1e654066c24062ddf79b0} 
+void Adafruit\+\_\+\+BNO055\+::get\+System\+Status (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{system\+\_\+status}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{self\+\_\+test\+\_\+result}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{system\+\_\+error}{}\end{DoxyParamCaption})}
+
+
+
+Gets the latest system status info. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em system\+\_\+status} & system status info \\
+\hline
+{\em self\+\_\+test\+\_\+result} & self test result \\
+\hline
+{\em system\+\_\+error} & system error info \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a098073aa38eccfbb4235219e7f4fd403}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getTemp@{getTemp}}
+\index{getTemp@{getTemp}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getTemp()}{getTemp()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a098073aa38eccfbb4235219e7f4fd403} 
+int8\+\_\+t Adafruit\+\_\+\+BNO055\+::get\+Temp (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Gets the temperature in degrees celsius. 
+
+\begin{DoxyReturn}{Returns}
+temperature in degrees celsius 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_aa352ee195ee844ba5c1ba61b010e4517}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!getVector@{getVector}}
+\index{getVector@{getVector}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{getVector()}{getVector()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_aa352ee195ee844ba5c1ba61b010e4517} 
+imu\+::\+Vector$<$ 3 $>$ Adafruit\+\_\+\+BNO055\+::get\+Vector (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_adafruit___b_n_o055_aca6c5acffc9a752e5309ff2bb21f3e25}{adafruit\+\_\+vector\+\_\+type\+\_\+t}}}]{vector\+\_\+type}{}\end{DoxyParamCaption})}
+
+
+
+Gets a vector reading from the specified source. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vector\+\_\+type} & possible vector type values \mbox{[}VECTOR\+\_\+\+ACCELEROMETER VECTOR\+\_\+\+MAGNETOMETER VECTOR\+\_\+\+GYROSCOPE VECTOR\+\_\+\+EULER VECTOR\+\_\+\+LINEARACCEL VECTOR\+\_\+\+GRAVITY\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector from specified source 
+\end{DoxyReturn}
+Convert the value to an appropriate range (section 3.\+6.\+4) and assign the value to the Vector type\Hypertarget{class_adafruit___b_n_o055_aa28b877a895ee462626f08924e508d25}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!isFullyCalibrated@{isFullyCalibrated}}
+\index{isFullyCalibrated@{isFullyCalibrated}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{isFullyCalibrated()}{isFullyCalibrated()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_aa28b877a895ee462626f08924e508d25} 
+bool Adafruit\+\_\+\+BNO055\+::is\+Fully\+Calibrated (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Checks of all cal status values are set to 3 (fully calibrated) 
+
+\begin{DoxyReturn}{Returns}
+status of calibration 
+\end{DoxyReturn}
+\Hypertarget{class_adafruit___b_n_o055_ae0bdc276735792dd219c6dfe041d9d91}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setAxisRemap@{setAxisRemap}}
+\index{setAxisRemap@{setAxisRemap}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setAxisRemap()}{setAxisRemap()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_ae0bdc276735792dd219c6dfe041d9d91} 
+void Adafruit\+\_\+\+BNO055\+::set\+Axis\+Remap (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_adafruit___b_n_o055_a14148c0000d1f13e4438c6dca1e386f2}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+config\+\_\+t}}}]{remapcode}{}\end{DoxyParamCaption})}
+
+
+
+Changes the chip\textquotesingle{}s axis remap. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em remapcode} & remap code possible values \mbox{[}REMAP\+\_\+\+CONFIG\+\_\+\+P0 REMAP\+\_\+\+CONFIG\+\_\+\+P1 (default) REMAP\+\_\+\+CONFIG\+\_\+\+P2 REMAP\+\_\+\+CONFIG\+\_\+\+P3 REMAP\+\_\+\+CONFIG\+\_\+\+P4 REMAP\+\_\+\+CONFIG\+\_\+\+P5 REMAP\+\_\+\+CONFIG\+\_\+\+P6 REMAP\+\_\+\+CONFIG\+\_\+\+P7\mbox{]} \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_ad154221f5c790321a978c74d6af92e2d}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setAxisSign@{setAxisSign}}
+\index{setAxisSign@{setAxisSign}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setAxisSign()}{setAxisSign()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_ad154221f5c790321a978c74d6af92e2d} 
+void Adafruit\+\_\+\+BNO055\+::set\+Axis\+Sign (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_adafruit___b_n_o055_a2456a57a97fb940f07b08319580b2e2f}{adafruit\+\_\+bno055\+\_\+axis\+\_\+remap\+\_\+sign\+\_\+t}}}]{remapsign}{}\end{DoxyParamCaption})}
+
+
+
+Changes the chip\textquotesingle{}s axis signs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em remapsign} & remap sign possible values \mbox{[}REMAP\+\_\+\+SIGN\+\_\+\+P0 REMAP\+\_\+\+SIGN\+\_\+\+P1 (default) REMAP\+\_\+\+SIGN\+\_\+\+P2 REMAP\+\_\+\+SIGN\+\_\+\+P3 REMAP\+\_\+\+SIGN\+\_\+\+P4 REMAP\+\_\+\+SIGN\+\_\+\+P5 REMAP\+\_\+\+SIGN\+\_\+\+P6 REMAP\+\_\+\+SIGN\+\_\+\+P7\mbox{]} \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a88343dd2f31190dfbb8dcea569e5ed97}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setExtCrystalUse@{setExtCrystalUse}}
+\index{setExtCrystalUse@{setExtCrystalUse}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setExtCrystalUse()}{setExtCrystalUse()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a88343dd2f31190dfbb8dcea569e5ed97} 
+void Adafruit\+\_\+\+BNO055\+::set\+Ext\+Crystal\+Use (\begin{DoxyParamCaption}\item[{boolean}]{usextal}{}\end{DoxyParamCaption})}
+
+
+
+Use the external 32.\+768\+KHz crystal. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em usextal} & use external crystal boolean \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a899d247370c86febc01ca431eabac3f4}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setMode@{setMode}}
+\index{setMode@{setMode}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setMode()}{setMode()}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a899d247370c86febc01ca431eabac3f4} 
+void Adafruit\+\_\+\+BNO055\+::set\+Mode (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_adafruit___b_n_o055_8h_ae17c9a069a2744d4dd4b0c67923618b5}{adafruit\+\_\+bno055\+\_\+opmode\+\_\+t}}}]{mode}{}\end{DoxyParamCaption})}
+
+
+
+Puts the chip in the specified operating mode. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mode} & mode values \mbox{[}OPERATION\+\_\+\+MODE\+\_\+\+CONFIG, OPERATION\+\_\+\+MODE\+\_\+\+ACCONLY, OPERATION\+\_\+\+MODE\+\_\+\+MAGONLY, OPERATION\+\_\+\+MODE\+\_\+\+GYRONLY, OPERATION\+\_\+\+MODE\+\_\+\+ACCMAG, OPERATION\+\_\+\+MODE\+\_\+\+ACCGYRO, OPERATION\+\_\+\+MODE\+\_\+\+MAGGYRO, OPERATION\+\_\+\+MODE\+\_\+\+AMG, OPERATION\+\_\+\+MODE\+\_\+\+IMUPLUS, OPERATION\+\_\+\+MODE\+\_\+\+COMPASS, OPERATION\+\_\+\+MODE\+\_\+\+M4G, OPERATION\+\_\+\+MODE\+\_\+\+NDOF\+\_\+\+FMC\+\_\+\+OFF, OPERATION\+\_\+\+MODE\+\_\+\+NDOF\mbox{]} \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_adafruit___b_n_o055_a5bf6f9bf48b4dc750e0d33a7d71127c6}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setSensorOffsets@{setSensorOffsets}}
+\index{setSensorOffsets@{setSensorOffsets}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setSensorOffsets()}{setSensorOffsets()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a5bf6f9bf48b4dc750e0d33a7d71127c6} 
+void Adafruit\+\_\+\+BNO055\+::set\+Sensor\+Offsets (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\+\_\+bno055\+\_\+offsets\+\_\+t}} \&}]{offsets\+\_\+type}{}\end{DoxyParamCaption})}
+
+
+
+Writes to the sensor\textquotesingle{}s offset registers from an offset struct. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offsets\+\_\+type} & accel\+\_\+offset\+\_\+x = acceleration offset x accel\+\_\+offset\+\_\+y = acceleration offset y accel\+\_\+offset\+\_\+z = acceleration offset z\\
+\hline
+\end{DoxyParams}
+mag\+\_\+offset\+\_\+x = magnetometer offset x mag\+\_\+offset\+\_\+y = magnetometer offset y mag\+\_\+offset\+\_\+z = magnetometer offset z
+
+gyro\+\_\+offset\+\_\+x = gyroscrope offset x gyro\+\_\+offset\+\_\+y = gyroscrope offset y gyro\+\_\+offset\+\_\+z = gyroscrope offset z \Hypertarget{class_adafruit___b_n_o055_a0061212193d496480ea03f2bf65c146b}\index{Adafruit\_BNO055@{Adafruit\_BNO055}!setSensorOffsets@{setSensorOffsets}}
+\index{setSensorOffsets@{setSensorOffsets}!Adafruit\_BNO055@{Adafruit\_BNO055}}
+\doxysubsubsection{\texorpdfstring{setSensorOffsets()}{setSensorOffsets()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_adafruit___b_n_o055_a0061212193d496480ea03f2bf65c146b} 
+void Adafruit\+\_\+\+BNO055\+::set\+Sensor\+Offsets (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{calib\+Data}{}\end{DoxyParamCaption})}
+
+
+
+Writes an array of calibration values to the sensor\textquotesingle{}s offset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em calib\+Data} & calibration data \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/hardware/\mbox{\hyperlink{_adafruit___b_n_o055_8h}{Adafruit\+\_\+\+BNO055.\+h}}\item 
+src/hardware/\mbox{\hyperlink{_adafruit___b_n_o055_8cpp}{Adafruit\+\_\+\+BNO055.\+cpp}}\end{DoxyCompactItemize}

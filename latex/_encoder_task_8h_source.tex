@@ -1,0 +1,76 @@
+\doxysection{Encoder\+Task.\+h}
+\hypertarget{_encoder_task_8h_source}{}\label{_encoder_task_8h_source}\index{src/tasks/EncoderTask.h@{src/tasks/EncoderTask.h}}
+\mbox{\hyperlink{_encoder_task_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_encoder_8h}{../hardware/Encoder.h}}"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ "{}freertos/FreeRTOS.h"{}}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#include\ "{}freertos/task.h"{}}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ "{}taskqueue.h"{}}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}\ \ \textcolor{comment}{//\ For\ Share<T>}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}{EncoderTask}}\ \{}
+\DoxyCodeLine{00067\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}{EncoderTask}}*\ \mbox{\hyperlink{class_encoder_task_a7f09bf2913cb6aed020899f6bfe8e905}{instance\_}};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789c}{StateId}}\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789ca004afebeb094c98d566bf4247b4a3369}{WAIT}}\ =\ 0,\ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789caa74f1fe5e18b9a593e57661d9c2cfc6f}{RUN}}\ =\ 1\ \ \ \ \ }
+\DoxyCodeLine{00075\ \ \ \ \ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ }
+\DoxyCodeLine{00087\ \ \ \ \ \mbox{\hyperlink{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}{EncoderTask}}(\mbox{\hyperlink{class_encoder}{Encoder}}*\ encoder,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<float>*\ positionShare,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<float>*\ velocityShare,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ cmdShare,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<bool>*\ zeroShare,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ updateMs\ =\ 10)\ noexcept;}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_encoder_task_afdb52aade28ab80753b7aa5f8a1eff26}{update}}()\ noexcept\ \{\ fsm\_.run\_curstate();\ \}}
+\DoxyCodeLine{00095\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ Set\ the\ static\ instance\ pointer\ (called\ by\ task\ function\ before\ each\ update)}}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_encoder_task_a3c19fac329f756581010b3e61a3a1aa9}{set\_instance}}(\mbox{\hyperlink{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}{EncoderTask}}*\ inst)\ \{\ \mbox{\hyperlink{class_encoder_task_a7f09bf2913cb6aed020899f6bfe8e905}{instance\_}}\ =\ inst;\ \}}
+\DoxyCodeLine{00098\ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ Set\ telemetry\ queues\ for\ pushing\ data\ to\ UITask}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_encoder_task_ad6a2ee48a1c0c4afb043be6a87561723}{setTelemetryQueues}}(Queue<float>*\ vel\_q,\ Queue<float>*\ pos\_q)\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ vel\_queue\_\ =\ vel\_q;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ pos\_queue\_\ =\ pos\_q;}
+\DoxyCodeLine{00103\ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ }
+\DoxyCodeLine{00105\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ Hardware\ /\ timing\ config}}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{class_encoder}{Encoder}}*\ encoder\_;}
+\DoxyCodeLine{00108\ \ \ \ \ uint32\_t\ updateMs\_;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ Shared\ resources}}
+\DoxyCodeLine{00111\ \ \ \ \ Share<float>*\ positionShare\_;}
+\DoxyCodeLine{00112\ \ \ \ \ Share<float>*\ velocityShare\_;}
+\DoxyCodeLine{00113\ \ \ \ \ Share<uint8\_t>*\ cmdShare\_;}
+\DoxyCodeLine{00114\ \ \ \ \ Share<bool>*\ zeroShare\_;}
+\DoxyCodeLine{00115\ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Telemetry\ queues\ for\ pushing\ to\ UITask\ (non-\/blocking)}}
+\DoxyCodeLine{00117\ \ \ \ \ Queue<float>*\ vel\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00118\ \ \ \ \ Queue<float>*\ pos\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{comment}{//\ State\ management}}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_state}{State}}\ stateTable\_[];}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ FSM\ +\ states}}
+\DoxyCodeLine{00124\ \ \ \ \ \mbox{\hyperlink{class_state}{State}}\ state\_wait\_\{\mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789ca004afebeb094c98d566bf4247b4a3369}{WAIT}},\ \textcolor{stringliteral}{"{}WAIT"{}},\ \&EncoderTask::exec\_wait\};}
+\DoxyCodeLine{00125\ \ \ \ \ State\ state\_run\_\ \{\mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789caa74f1fe5e18b9a593e57661d9c2cfc6f}{RUN}},\ \ \textcolor{stringliteral}{"{}RUN"{}},\ \ \&EncoderTask::exec\_run\ \};}
+\DoxyCodeLine{00126\ \ \ \ \ State*\ states\_[2]\ =\ \{\ \&state\_wait\_,\ \&state\_run\_\ \};}
+\DoxyCodeLine{00127\ \ \ \ \ FSM\ fsm\_;}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{comment}{//\ State\ functions}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{//\ Static\ wrappers\ used\ for\ State\ C-\/style\ function\ pointers}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_wait()\ noexcept;}
+\DoxyCodeLine{00131\ \ \ \ \ static\ uint8\_t\ exec\_run()\ noexcept;}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{//\ Static\ instance\ pointer\ for\ state\ functions}}
+\DoxyCodeLine{00134\ \};}
+
+\end{DoxyCode}

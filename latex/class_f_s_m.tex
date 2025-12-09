@@ -1,0 +1,116 @@
+\doxysection{FSM Class Reference}
+\hypertarget{class_f_s_m}{}\label{class_f_s_m}\index{FSM@{FSM}}
+
+
+{\ttfamily \#include $<$FSM.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629}{FSM}} (\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}states, std\+::size\+\_\+t count) noexcept
+\begin{DoxyCompactList}\small\item\em Construct \doxylink{class_f_s_m}{FSM} with a provided state table. The \doxylink{class_f_s_m}{FSM} does not take ownership. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_f_s_m_a593d3fc27483578741d0e07a341b2383}{run\+\_\+curstate}} () noexcept
+\begin{DoxyCompactList}\small\item\em Provide the table of states and its length. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_f_s_m_a7cd920df6a0e5d7c1d19d8d5fe98d2da}{get\+\_\+curstate}} () const noexcept
+\item 
+void \mbox{\hyperlink{class_f_s_m_aa30c2273589c42c1fe69ff33db1d0f2e}{set\+\_\+curstate}} (\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*}new\+\_\+cur\+State)
+\item 
+int \mbox{\hyperlink{class_f_s_m_a6cb75cbac9dca77310cfd28587f94caf}{get\+\_\+curstateidx}} () const noexcept
+\item 
+void \mbox{\hyperlink{class_f_s_m_a643eaa9a406aada77c0207e7b4c30036}{set\+\_\+curstateidx}} (uint8\+\_\+t stateidx)
+\item 
+std\+::size\+\_\+t \mbox{\hyperlink{class_f_s_m_a99d6700ac84e5e0afa2b2da7a0efa8af}{get\+\_\+count}} () const noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_s_m_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629}\index{FSM@{FSM}!FSM@{FSM}}
+\index{FSM@{FSM}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{FSM()}{FSM()}}
+{\footnotesize\ttfamily \label{class_f_s_m_abf7e6d54b29eb2215ad24290e5f38629} 
+FSM\+::\+FSM (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{states}{, }\item[{std\+::size\+\_\+t}]{count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct \doxylink{class_f_s_m}{FSM} with a provided state table. The \doxylink{class_f_s_m}{FSM} does not take ownership. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_s_m_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_s_m_a99d6700ac84e5e0afa2b2da7a0efa8af}\index{FSM@{FSM}!get\_count@{get\_count}}
+\index{get\_count@{get\_count}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{get\_count()}{get\_count()}}
+{\footnotesize\ttfamily \label{class_f_s_m_a99d6700ac84e5e0afa2b2da7a0efa8af} 
+std\+::size\+\_\+t FSM\+::get\+\_\+count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Number of states registered 
+\end{DoxyReturn}
+\Hypertarget{class_f_s_m_a7cd920df6a0e5d7c1d19d8d5fe98d2da}\index{FSM@{FSM}!get\_curstate@{get\_curstate}}
+\index{get\_curstate@{get\_curstate}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{get\_curstate()}{get\_curstate()}}
+{\footnotesize\ttfamily \label{class_f_s_m_a7cd920df6a0e5d7c1d19d8d5fe98d2da} 
+\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*} FSM\+::get\+\_\+curstate (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Current State\texorpdfstring{$\ast$}{*} (may be nullptr if none active) 
+\end{DoxyReturn}
+\Hypertarget{class_f_s_m_a6cb75cbac9dca77310cfd28587f94caf}\index{FSM@{FSM}!get\_curstateidx@{get\_curstateidx}}
+\index{get\_curstateidx@{get\_curstateidx}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{get\_curstateidx()}{get\_curstateidx()}}
+{\footnotesize\ttfamily \label{class_f_s_m_a6cb75cbac9dca77310cfd28587f94caf} 
+int FSM\+::get\+\_\+curstateidx (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\begin{DoxyReturn}{Returns}
+Current state index in the list; -\/1 if none active 
+\end{DoxyReturn}
+\Hypertarget{class_f_s_m_a593d3fc27483578741d0e07a341b2383}\index{FSM@{FSM}!run\_curstate@{run\_curstate}}
+\index{run\_curstate@{run\_curstate}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{run\_curstate()}{run\_curstate()}}
+{\footnotesize\ttfamily \label{class_f_s_m_a593d3fc27483578741d0e07a341b2383} 
+void FSM\+::run\+\_\+curstate (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Provide the table of states and its length. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em states} & Pointer to an array of State\texorpdfstring{$\ast$}{*} (not owned) \\
+\hline
+{\em count} & Number of entries in the array\\
+\hline
+\end{DoxyParams}
+The \doxylink{class_f_s_m}{FSM} does not take ownership; ensure the pointed-\/to States outlive the \doxylink{class_f_s_m}{FSM}.
+
+Execute the current state\textquotesingle{}s behavior (initializing to the first entry on startup).
+
+Selection rule\+:
+\begin{DoxyItemize}
+\item This \doxylink{class_f_s_m}{FSM} is execute-\/driven (no predicate-\/based scanning).
+\item On creation it is initialized with a state table; the first update will initialize the current state to the first entry in that table.
+\item Thereafter \doxylink{class_f_s_m_a593d3fc27483578741d0e07a341b2383}{run\+\_\+curstate()} calls the current state\textquotesingle{}s execute() and honors any returned next-\/state ID to perform a forced transition.
+\end{DoxyItemize}
+
+Note\+: This function does not return the State\texorpdfstring{$\ast$}{*}; use {\ttfamily \doxylink{class_f_s_m_a7cd920df6a0e5d7c1d19d8d5fe98d2da}{get\+\_\+curstate()}} to query the currently active state when needed. \Hypertarget{class_f_s_m_aa30c2273589c42c1fe69ff33db1d0f2e}\index{FSM@{FSM}!set\_curstate@{set\_curstate}}
+\index{set\_curstate@{set\_curstate}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{set\_curstate()}{set\_curstate()}}
+{\footnotesize\ttfamily \label{class_f_s_m_aa30c2273589c42c1fe69ff33db1d0f2e} 
+void FSM\+::set\+\_\+curstate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_state}{State}} \texorpdfstring{$\ast$}{*}}]{new\+\_\+cur\+State}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_f_s_m_a643eaa9a406aada77c0207e7b4c30036}\index{FSM@{FSM}!set\_curstateidx@{set\_curstateidx}}
+\index{set\_curstateidx@{set\_curstateidx}!FSM@{FSM}}
+\doxysubsubsection{\texorpdfstring{set\_curstateidx()}{set\_curstateidx()}}
+{\footnotesize\ttfamily \label{class_f_s_m_a643eaa9a406aada77c0207e7b4c30036} 
+void FSM\+::set\+\_\+curstateidx (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{stateidx}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/fsm/\mbox{\hyperlink{_f_s_m_8h}{FSM.\+h}}\item 
+src/fsm/\mbox{\hyperlink{_f_s_m_8cpp}{FSM.\+cpp}}\end{DoxyCompactItemize}

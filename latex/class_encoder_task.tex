@@ -1,0 +1,167 @@
+\doxysection{Encoder\+Task Class Reference}
+\hypertarget{class_encoder_task}{}\label{class_encoder_task}\index{EncoderTask@{EncoderTask}}
+
+
+High-\/frequency encoder monitoring with \doxylink{class_f_s_m}{FSM} control and velocity estimation.  
+
+
+
+
+{\ttfamily \#include $<$Encoder\+Task.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789c}{State\+Id}} \{ \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789ca004afebeb094c98d566bf4247b4a3369}{WAIT}} = 0
+, \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789caa74f1fe5e18b9a593e57661d9c2cfc6f}{RUN}} = 1
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}{Encoder\+Task}} (\mbox{\hyperlink{class_encoder}{Encoder}} \texorpdfstring{$\ast$}{*}encoder, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}position\+Share, Share$<$ float $>$ \texorpdfstring{$\ast$}{*}velocity\+Share, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}cmd\+Share, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}zero\+Share, uint32\+\_\+t update\+Ms=10) noexcept
+\begin{DoxyCompactList}\small\item\em Construct encoder task with shares and queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_encoder_task_afdb52aade28ab80753b7aa5f8a1eff26}{update}} () noexcept
+\item 
+void \mbox{\hyperlink{class_encoder_task_ad6a2ee48a1c0c4afb043be6a87561723}{set\+Telemetry\+Queues}} (Queue$<$ float $>$ \texorpdfstring{$\ast$}{*}vel\+\_\+q, Queue$<$ float $>$ \texorpdfstring{$\ast$}{*}pos\+\_\+q)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_encoder_task_a3c19fac329f756581010b3e61a3a1aa9}{set\+\_\+instance}} (\mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} \texorpdfstring{$\ast$}{*}inst)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_encoder_task_a7f09bf2913cb6aed020899f6bfe8e905}{instance\+\_\+}} = nullptr
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+High-\/frequency encoder monitoring with \doxylink{class_f_s_m}{FSM} control and velocity estimation. 
+
+Provides continuous encoder position tracking and velocity calculation for motor control feedback. Uses ESP32 PCNT peripheral for hardware quadrature decoding, enabling high resolution and low CPU overhead.
+
+Typical Usage\+:
+\begin{DoxyEnumerate}
+\item Construct with \doxylink{class_encoder}{Encoder} object and data shares
+\item Start Free\+RTOS task (runs at update\+Ms rate)
+\item Set cmd\+Share to 1 to begin monitoring
+\item Read position/velocity from shares in control loops
+\item Set zero\+Share to true to home/calibrate position
+\end{DoxyEnumerate}
+
+\begin{DoxyNote}{Note}
+Default 10ms update rate suitable for most control applications 
+
+Velocity calculated as (position\+\_\+new -\/ position\+\_\+old) / dt 
+\end{DoxyNote}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_encoder_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789c}\index{EncoderTask@{EncoderTask}!StateId@{StateId}}
+\index{StateId@{StateId}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{StateId}{StateId}}
+{\footnotesize\ttfamily \label{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789c} 
+enum \mbox{\hyperlink{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789c}{Encoder\+Task\+::\+State\+Id}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WAIT@{WAIT}!EncoderTask@{EncoderTask}}\index{EncoderTask@{EncoderTask}!WAIT@{WAIT}}}\Hypertarget{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789ca004afebeb094c98d566bf4247b4a3369}\label{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789ca004afebeb094c98d566bf4247b4a3369} 
+WAIT&Waiting for command. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RUN@{RUN}!EncoderTask@{EncoderTask}}\index{EncoderTask@{EncoderTask}!RUN@{RUN}}}\Hypertarget{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789caa74f1fe5e18b9a593e57661d9c2cfc6f}\label{class_encoder_task_a200c9a20acc214d2385e4d0eefa2789caa74f1fe5e18b9a593e57661d9c2cfc6f} 
+RUN&Reading encoder. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_encoder_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a}\index{EncoderTask@{EncoderTask}!EncoderTask@{EncoderTask}}
+\index{EncoderTask@{EncoderTask}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{EncoderTask()}{EncoderTask()}}
+{\footnotesize\ttfamily \label{class_encoder_task_a50cf40343cf7bfcfd78d56a82626568a} 
+Encoder\+Task\+::\+Encoder\+Task (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_encoder}{Encoder}} \texorpdfstring{$\ast$}{*}}]{encoder}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{position\+Share}{, }\item[{Share$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{velocity\+Share}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{cmd\+Share}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{zero\+Share}{, }\item[{uint32\+\_\+t}]{update\+Ms}{ = {\ttfamily 10}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct encoder task with shares and queue. 
+
+Construct the \doxylink{class_encoder}{Encoder} task and bind shares/queue.
+
+
+\begin{DoxyParams}{Parameters}
+{\em encoder} & Pointer to \doxylink{class_encoder}{Encoder} object \\
+\hline
+{\em position\+Share} & Share for current position \\
+\hline
+{\em velocity\+Share} & Share for current velocity \\
+\hline
+{\em cmd\+Share} & Share for commands \\
+\hline
+{\em zero\+Share} & Share for zero command (boolean) \\
+\hline
+{\em update\+Ms} & Update period in milliseconds\\
+\hline
+{\em encoder} & Pointer to \doxylink{class_encoder}{Encoder} (not owned) \\
+\hline
+{\em position\+Share} & Share to publish position (counts) \\
+\hline
+{\em velocity\+Share} & Share to publish velocity (counts/sec) \\
+\hline
+{\em cmd\+Share} & Share to receive Encoder\+Task\+::\+Command \\
+\hline
+{\em zero\+Share} & Share to receive zero command (boolean) \\
+\hline
+{\em ui\+\_\+mode} & Share for UI mode (0=choose, 1=tracker, 2=teleop) \\
+\hline
+{\em dcalibrate} & Share for calibration flag \\
+\hline
+{\em update\+Ms} & Period in ms between updates \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_encoder_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_encoder_task_a3c19fac329f756581010b3e61a3a1aa9}\index{EncoderTask@{EncoderTask}!set\_instance@{set\_instance}}
+\index{set\_instance@{set\_instance}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{set\_instance()}{set\_instance()}}
+{\footnotesize\ttfamily \label{class_encoder_task_a3c19fac329f756581010b3e61a3a1aa9} 
+void Encoder\+Task\+::set\+\_\+instance (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} \texorpdfstring{$\ast$}{*}}]{inst}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{class_encoder_task_ad6a2ee48a1c0c4afb043be6a87561723}\index{EncoderTask@{EncoderTask}!setTelemetryQueues@{setTelemetryQueues}}
+\index{setTelemetryQueues@{setTelemetryQueues}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{setTelemetryQueues()}{setTelemetryQueues()}}
+{\footnotesize\ttfamily \label{class_encoder_task_ad6a2ee48a1c0c4afb043be6a87561723} 
+void Encoder\+Task\+::set\+Telemetry\+Queues (\begin{DoxyParamCaption}\item[{Queue$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{vel\+\_\+q}{, }\item[{Queue$<$ float $>$ \texorpdfstring{$\ast$}{*}}]{pos\+\_\+q}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_encoder_task_afdb52aade28ab80753b7aa5f8a1eff26}\index{EncoderTask@{EncoderTask}!update@{update}}
+\index{update@{update}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_encoder_task_afdb52aade28ab80753b7aa5f8a1eff26} 
+void Encoder\+Task\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_encoder_task_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_encoder_task_a7f09bf2913cb6aed020899f6bfe8e905}\index{EncoderTask@{EncoderTask}!instance\_@{instance\_}}
+\index{instance\_@{instance\_}!EncoderTask@{EncoderTask}}
+\doxysubsubsection{\texorpdfstring{instance\_}{instance\_}}
+{\footnotesize\ttfamily \label{class_encoder_task_a7f09bf2913cb6aed020899f6bfe8e905} 
+\mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} \texorpdfstring{$\ast$}{*} Encoder\+Task\+::instance\+\_\+ = nullptr\hspace{0.3cm}{\ttfamily [static]}}
+
+\doxylink{class_state}{State} IDs (index into state table) Singleton instance pointer for static callbacks 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_encoder_task_8h}{Encoder\+Task.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_encoder_task_8cpp}{Encoder\+Task.\+cpp}}\end{DoxyCompactItemize}

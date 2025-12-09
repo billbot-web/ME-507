@@ -1,0 +1,77 @@
+\doxysection{src/tasks/\+Controller\+Task.cpp File Reference}
+\hypertarget{_controller_task_8cpp}{}\label{_controller_task_8cpp}\index{src/tasks/ControllerTask.cpp@{src/tasks/ControllerTask.cpp}}
+
+
+Implementation of top-\/level \doxylink{class_f_s_m}{FSM} controller for LED tracking and manual control.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include "{}Controller\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+{\ttfamily \#include "{}PID.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_controller_task_8cpp_a666b8f7e8309abb257c178d08fdaec1c}{controller\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry; repeatedly calls update() at configured period. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of top-\/level \doxylink{class_f_s_m}{FSM} controller for LED tracking and manual control. 
+
+This file implements a sophisticated multi-\/mode controller that coordinates camera-\/based LED tracking, manual teleoperation, motor testing, and calibration. The task acts as the system supervisor, managing state transitions and motor command generation.
+
+\doxylink{class_state}{State} Machine Details\+:
+\begin{DoxyItemize}
+\item {\bfseries{CALIBRATE}}\+: Homes motors to known positions using encoder feedback
+\item {\bfseries{WAIT}}\+: Idle state with motors stopped
+\item {\bfseries{SCAN}}\+: Sweeping search pattern when LED not detected
+\item {\bfseries{TRACKR}}\+: Active tracking using camera pixel errors for PID control
+\item {\bfseries{TELEOP}}\+: Manual D-\/pad control from web UI
+\item {\bfseries{MOTOR\+\_\+\+TEST}}\+: Open-\/loop testing for diagnostics
+\end{DoxyItemize}
+
+Tracking Behavior\+:
+\begin{DoxyItemize}
+\item Uses camera pixel errors (pan\+\_\+err, tilt\+\_\+err) from LED detection
+\item LED loss handled with 5-\/frame persistence counter before switching to SCAN
+\item Automatic recovery to TRACKR when LED redetected during SCAN
+\item Position limits enforced on tilt axis for mechanical safety
+\end{DoxyItemize}
+
+Motor Command Generation\+:
+\begin{DoxyItemize}
+\item Sets motor modes\+: 0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA\+\_\+\+PRUN
+\item Updates velocity setpoints for VRUN and TELEOP modes
+\item Updates camera errors for CAMERA\+\_\+\+PRUN tracking mode
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Control Systems Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+November 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+1
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_controller_task_8h}{Controller\+Task.\+h} for class interface and mode descriptions 
+
+\doxylink{_motor_task_8h}{Motor\+Task.\+h} for motor control implementation details 
+\end{DoxySeeAlso}
+
+
+\label{doc-func-members}
+\Hypertarget{_controller_task_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_controller_task_8cpp_a666b8f7e8309abb257c178d08fdaec1c}\index{ControllerTask.cpp@{ControllerTask.cpp}!controller\_task\_func@{controller\_task\_func}}
+\index{controller\_task\_func@{controller\_task\_func}!ControllerTask.cpp@{ControllerTask.cpp}}
+\doxysubsubsection{\texorpdfstring{controller\_task\_func()}{controller\_task\_func()}}
+{\footnotesize\ttfamily \label{_controller_task_8cpp_a666b8f7e8309abb257c178d08fdaec1c} 
+void controller\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry; repeatedly calls update() at configured period. 
+

@@ -1,0 +1,173 @@
+\doxysection{Controller\+Task Class Reference}
+\hypertarget{class_controller_task}{}\label{class_controller_task}\index{ControllerTask@{ControllerTask}}
+
+
+{\ttfamily \#include $<$Controller\+Task.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160}{State\+Id}} \+: uint8\+\_\+t \{ \newline
+\mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ade28a8eb425fc4c3c42b7913905336e4}{CALIBRATE}} = 0
+, \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a4998ee134f283d4b100f78aa5996b4f5}{WAIT}} = 1
+, \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a5ddecd17b8f401419a5166c869bcc220}{SCAN}} = 2
+, \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0}{TRACKR}} = 3
+, \newline
+\mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe}{TELEOP}} = 4
+, \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ace4cc239b016d753a354e6cc036c9b1f}{MOTOR\+\_\+\+TEST}} = 5
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_f_s_m}{FSM} state IDs. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d}{Controller\+Task}} (Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\+\_\+err}}, Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\+\_\+err}}, Share$<$ float\+\_\+t $>$ \texorpdfstring{$\ast$}{*}tiltpos, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}tilt\+Velo, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}pan\+Velo, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}tilt\+\_\+mode, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}pan\+\_\+mode, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}Cam\+\_\+mode, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{has\+Led}}, Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a1c51aaca3189ef0686fe5a8dffce1a99}{UI\+\_\+mode}}, Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}{dcalibrate}}, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}{dpad\+\_\+pan}}, Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}\mbox{\hyperlink{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}{dpad\+\_\+tilt}}, uint32\+\_\+t update\+Ms=100) noexcept
+\begin{DoxyCompactList}\small\item\em Construct axis controller task. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_controller_task_a0ac8b1606f822f8c944674dcb68d44d1}{update}} () noexcept
+\begin{DoxyCompactList}\small\item\em Called by Free\+RTOS task wrapper. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_controller_task_a8fe7e9e6620d67e636d4b73997598583}{Constrain\+Tilt\+Motor}} (Share$<$ float\+\_\+t $>$ \texorpdfstring{$\ast$}{*}tiltpos) noexcept
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_controller_task_a90af8a0eac4cf5f4e6be64b27a455864}{get\+Update\+Ms}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get update period in milliseconds (for task delay) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_controller_task_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160}\index{ControllerTask@{ControllerTask}!StateId@{StateId}}
+\index{StateId@{StateId}!ControllerTask@{ControllerTask}}
+\doxysubsubsection{\texorpdfstring{StateId}{StateId}}
+{\footnotesize\ttfamily \label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160} 
+enum \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160}{Controller\+Task\+::\+State\+Id}} \+: uint8\+\_\+t}
+
+
+
+\doxylink{class_f_s_m}{FSM} state IDs. 
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CALIBRATE@{CALIBRATE}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!CALIBRATE@{CALIBRATE}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ade28a8eb425fc4c3c42b7913905336e4}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ade28a8eb425fc4c3c42b7913905336e4} 
+CALIBRATE&Calibration state. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{WAIT@{WAIT}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!WAIT@{WAIT}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a4998ee134f283d4b100f78aa5996b4f5}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a4998ee134f283d4b100f78aa5996b4f5} 
+WAIT&Effort = 0, waiting for RUN command. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SCAN@{SCAN}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!SCAN@{SCAN}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a5ddecd17b8f401419a5166c869bcc220}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a5ddecd17b8f401419a5166c869bcc220} 
+SCAN&Scanning for target. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TRACKR@{TRACKR}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!TRACKR@{TRACKR}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0} 
+TRACKR&Tracking mode. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TELEOP@{TELEOP}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!TELEOP@{TELEOP}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe} 
+TELEOP&Manual teleoperation. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MOTOR\_TEST@{MOTOR\_TEST}!ControllerTask@{ControllerTask}}\index{ControllerTask@{ControllerTask}!MOTOR\_TEST@{MOTOR\_TEST}}}\Hypertarget{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ace4cc239b016d753a354e6cc036c9b1f}\label{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ace4cc239b016d753a354e6cc036c9b1f} 
+MOTOR\+\_\+\+TEST&Motor testing mode. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_controller_task_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d}\index{ControllerTask@{ControllerTask}!ControllerTask@{ControllerTask}}
+\index{ControllerTask@{ControllerTask}!ControllerTask@{ControllerTask}}
+\doxysubsubsection{\texorpdfstring{ControllerTask()}{ControllerTask()}}
+{\footnotesize\ttfamily \label{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d} 
+Controller\+Task\+::\+Controller\+Task (\begin{DoxyParamCaption}\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+err}{, }\item[{Share$<$ int16\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+err}{, }\item[{Share$<$ float\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tiltpos}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+Velo}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+Velo}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tilt\+\_\+mode}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{pan\+\_\+mode}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{Cam\+\_\+mode}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{has\+Led}{, }\item[{Share$<$ uint8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{UI\+\_\+mode}{, }\item[{Share$<$ bool $>$ \texorpdfstring{$\ast$}{*}}]{dcalibrate}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{dpad\+\_\+pan}{, }\item[{Share$<$ int8\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{dpad\+\_\+tilt}{, }\item[{uint32\+\_\+t}]{update\+Ms}{ = {\ttfamily 100}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Construct axis controller task. 
+
+Construct controller task with all necessary data shares.
+
+
+\begin{DoxyParams}{Parameters}
+{\em err\+Share} & Share for error from camera (pixels, signed) \\
+\hline
+{\em effort\+Share} & Share to publish motor effort \mbox{[}-\/100, 100\mbox{]} \\
+\hline
+{\em cmd\+Share} & Command share\+: 0=STOP, 1=RUN, 2=ZERO \\
+\hline
+{\em dpad\+\_\+pan} & D-\/pad pan direction\+: -\/1 (left), 0 (none), 1 (right) \\
+\hline
+{\em dpad\+\_\+tilt} & D-\/pad tilt direction\+: -\/1 (down), 0 (none), 1 (up) \\
+\hline
+{\em update\+Ms} & Control period in milliseconds\\
+\hline
+\end{DoxyParams}
+Initializes the controller task with pointers to all shared data containers used for inter-\/task communication. Sets up \doxylink{class_f_s_m}{FSM} with all six states and initializes LED loss tracking.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pan\+\_\+err} & Camera pan error share (pixels from image center) \\
+\hline
+{\em tilt\+\_\+err} & Camera tilt error share (pixels from image center) \\
+\hline
+{\em tiltpos} & Current tilt position share (degrees from encoder) \\
+\hline
+{\em tilt\+Velo} & Tilt velocity command share (-\/100 to 100) \\
+\hline
+{\em pan\+Velo} & Pan velocity command share (-\/100 to 100) \\
+\hline
+{\em tilt\+\_\+mode} & Tilt motor mode command (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA\+\_\+\+PRUN) \\
+\hline
+{\em pan\+\_\+mode} & Pan motor mode command (0=WAIT, 1=VRUN, 2=PRUN, 3=CAMERA\+\_\+\+PRUN) \\
+\hline
+{\em Cam\+\_\+mode} & Camera mode control share \\
+\hline
+{\em has\+Led} & LED detection status share (true when LED visible) \\
+\hline
+{\em UI\+\_\+mode} & User interface mode selection share \\
+\hline
+{\em dcalibrate} & Calibration trigger share (true to start calibration) \\
+\hline
+{\em dpad\+\_\+pan} & D-\/pad pan direction (-\/1=left, 0=none, 1=right) \\
+\hline
+{\em dpad\+\_\+tilt} & D-\/pad tilt direction (-\/1=down, 0=none, 1=up) \\
+\hline
+{\em update\+Ms} & \doxylink{class_f_s_m}{FSM} update period in milliseconds (default 100ms = 10Hz) \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_controller_task_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_controller_task_a8fe7e9e6620d67e636d4b73997598583}\index{ControllerTask@{ControllerTask}!ConstrainTiltMotor@{ConstrainTiltMotor}}
+\index{ConstrainTiltMotor@{ConstrainTiltMotor}!ControllerTask@{ControllerTask}}
+\doxysubsubsection{\texorpdfstring{ConstrainTiltMotor()}{ConstrainTiltMotor()}}
+{\footnotesize\ttfamily \label{class_controller_task_a8fe7e9e6620d67e636d4b73997598583} 
+void Controller\+Task\+::\+Constrain\+Tilt\+Motor (\begin{DoxyParamCaption}\item[{Share$<$ float\+\_\+t $>$ \texorpdfstring{$\ast$}{*}}]{tiltpos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_controller_task_a90af8a0eac4cf5f4e6be64b27a455864}\index{ControllerTask@{ControllerTask}!getUpdateMs@{getUpdateMs}}
+\index{getUpdateMs@{getUpdateMs}!ControllerTask@{ControllerTask}}
+\doxysubsubsection{\texorpdfstring{getUpdateMs()}{getUpdateMs()}}
+{\footnotesize\ttfamily \label{class_controller_task_a90af8a0eac4cf5f4e6be64b27a455864} 
+uint32\+\_\+t Controller\+Task\+::get\+Update\+Ms (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get update period in milliseconds (for task delay) 
+
+\Hypertarget{class_controller_task_a0ac8b1606f822f8c944674dcb68d44d1}\index{ControllerTask@{ControllerTask}!update@{update}}
+\index{update@{update}!ControllerTask@{ControllerTask}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_controller_task_a0ac8b1606f822f8c944674dcb68d44d1} 
+void Controller\+Task\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Called by Free\+RTOS task wrapper. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/tasks/\mbox{\hyperlink{_controller_task_8h}{Controller\+Task.\+h}}\item 
+src/tasks/\mbox{\hyperlink{_controller_task_8cpp}{Controller\+Task.\+cpp}}\end{DoxyCompactItemize}

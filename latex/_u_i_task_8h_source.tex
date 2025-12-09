@@ -1,0 +1,230 @@
+\doxysection{UITask.\+h}
+\hypertarget{_u_i_task_8h_source}{}\label{_u_i_task_8h_source}\index{src/tasks/UITask.h@{src/tasks/UITask.h}}
+\mbox{\hyperlink{_u_i_task_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_f_s_m_8h}{../fsm/FSM.h}}"{}}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#include\ "{}freertos/FreeRTOS.h"{}}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#include\ "{}freertos/task.h"{}}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#include\ "{}taskqueue.h"{}}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}\ \ \textcolor{comment}{//\ Share<T>}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#include\ <WiFi.h>}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#include\ <ESPAsyncWebServer.h>}}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#include\ <ArduinoJson.h>}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#include\ <SPIFFS.h>}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_i_m_u___t_a_s_k_8h}{IMU\_TASK.h}}"{}}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{//\ Forward\ declarations\ for\ IMU\ data\ structures}}
+\DoxyCodeLine{00060\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_euler_angles}{EulerAngles}};}
+\DoxyCodeLine{00061\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_gyro_data}{GyroData}};}
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_accel_data}{AccelData}};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00073\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}{UITask}}\ \{}
+\DoxyCodeLine{00074\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67}{StateId}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67abc20a95e3774ce0813538460fb48edea}{CHOOSE\_MODE}}\ =\ 0,\ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a04627c82d1da6e7529234aacfa633904}{CALIBRATE}}\ =\ 4,\ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5b7a6ae91330b934ea963c652a57e3f0}{MOTOR\_TEST}}\ =\ 3,\ \ \ }
+\DoxyCodeLine{00080\ \ \ \ \ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d}{TELEOP}}\ =\ 2,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089}{TRACKER}}\ =\ 1\ \ \ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00103\ \ \ \mbox{\hyperlink{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}{UITask}}(Share<float>*\ tilt\_positionShare,}
+\DoxyCodeLine{00104\ \ \ \ \ Share<float>*\ \ \ tilt\_velocityShare,}
+\DoxyCodeLine{00105\ \ \ \ \ Share<int8\_t>*\ \ \mbox{\hyperlink{main_8cpp_a96b1d304ef59f992b9c7f26d345bd3bd}{tilt\_vref}},}
+\DoxyCodeLine{00106\ \ \ \ \ Share<int16\_t>*\ \ \mbox{\hyperlink{main_8cpp_a2c11930701703706b683072d5f5b7f34}{tilt\_posref}},}
+\DoxyCodeLine{00107\ \ \ \ \ Share<uint8\_t>*\ \ tilt\_cmdShare,}
+\DoxyCodeLine{00108\ \ \ \ \ Share<bool>*\ \ \ \ tilt\_zeroShare,}
+\DoxyCodeLine{00109\ \ \ \ \ Share<float>*\ pan\_positionShare,}
+\DoxyCodeLine{00110\ \ \ \ \ Share<float>*\ \ \ pan\_velocityShare,}
+\DoxyCodeLine{00111\ \ \ \ \ Share<int8\_t>*\ \ \mbox{\hyperlink{main_8cpp_a22f65a631b2d8634743b796fe8177a85}{pan\_vref}},}
+\DoxyCodeLine{00112\ \ \ \ \ Share<int16\_t>*\ \ \mbox{\hyperlink{main_8cpp_a7ed3ad0733ad4ecedf22eb04235e7505}{pan\_posref}},}
+\DoxyCodeLine{00113\ \ \ \ \ Share<uint8\_t>*\ \ pan\_cmdShare,}
+\DoxyCodeLine{00114\ \ \ \ \ Share<bool>*\ \ \ \ pan\_zeroShare,}
+\DoxyCodeLine{00115\ \ \ \ \ Share<int8\_t>*\ \ \mbox{\hyperlink{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}{dpad\_pan}},}
+\DoxyCodeLine{00116\ \ \ \ \ Share<int8\_t>*\ \ \mbox{\hyperlink{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}{dpad\_tilt}},}
+\DoxyCodeLine{00117\ \ \ \ \ Share<bool>*\ \ \ \ \mbox{\hyperlink{main_8cpp_ab1874b468c8f4403be5bde3cc31d1c2d}{imu\_mode}},}
+\DoxyCodeLine{00118\ \ \ \ \ Share<uint8\_t>*\ ui\_mode,}
+\DoxyCodeLine{00119\ \ \ \ \ Share<bool>*\ \ \ \ \mbox{\hyperlink{main_8cpp_a937afed701c3b444b9fbe0355529bbd7}{motortest\_mode}},}
+\DoxyCodeLine{00120\ \ \ \ \ Share<bool>*\ \ \ \ \mbox{\hyperlink{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}{dcalibrate}},}
+\DoxyCodeLine{00121\ \ \ \ \ Share<EulerAngles>*\ eulerAngles,}
+\DoxyCodeLine{00122\ \ \ \ \ Share<GyroData>*\ gyroData,}
+\DoxyCodeLine{00123\ \ \ \ \ Share<AccelData>*\ accelData,}
+\DoxyCodeLine{00124\ \ \ \ \ Share<bool>*\ \ \ \ \mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{hasLed}},}
+\DoxyCodeLine{00125\ \ \ \ \ Share<uint16\_t>*\ \mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{ledThreshold}},}
+\DoxyCodeLine{00126\ \ \ \ \ Share<int16\_t>*\ \mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\_err}},}
+\DoxyCodeLine{00127\ \ \ \ \ Share<int16\_t>*\ \mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\_err}},}
+\DoxyCodeLine{00128\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ updateMs\ =\ 200)\ noexcept;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00136\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_u_i_task_a368fa1a565749cbfce4a09ed65ff71dd}{initWebServer}}(const\ String\&\ ssid\ =\ \textcolor{stringliteral}{"{}"{}},\ const\ String\&\ password\ =\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_u_i_task_a7a90f8b51ac15868dd748e07f9c88dcc}{start}}(uint8\_t\ priority\ =\ 1,\ int8\_t\ core\ =\ 1);}
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_u_i_task_a6091a8e1e2054d34571bda7ad95efb80}{update}}()\ noexcept;}
+\DoxyCodeLine{00140\ \ \ \textcolor{comment}{//\ FreeRTOS\ entry\ function\ is\ defined\ in\ the\ .cpp\ as\ a\ C-\/linkage\ function}}
+\DoxyCodeLine{00141\ \ \ \textcolor{comment}{//\ extern\ "{}C"{}\ void\ ui\_task\_func(void*\ pvParameters);}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \textcolor{comment}{//\ Public\ accessors\ used\ by\ the\ C-\/style\ task\ entry}}
+\DoxyCodeLine{00144\ \ \ uint32\_t\ \mbox{\hyperlink{class_u_i_task_a4ed43fe41fd5c4ae8ec9830ac17ce4cd}{get\_updateMs}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ updateMs\_;\ \}}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_u_i_task_a1cd263dba60a2170fc4d429623ce29be}{set\_instance}}(\mbox{\hyperlink{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}{UITask}}*\ inst)\ \{\ instance\_\ =\ inst;\ \}}
+\DoxyCodeLine{00146\ \ \ }
+\DoxyCodeLine{00147\ \ \ \textcolor{comment}{//\ Telemetry\ queue\ accessors\ for\ encoder\ tasks\ to\ push\ data}}
+\DoxyCodeLine{00148\ \ \ Queue<float>*\ \mbox{\hyperlink{class_u_i_task_aa6d747376ee266e9e574d76965ad9885}{getTiltVelQueue}}()\ \{\ \textcolor{keywordflow}{return}\ tilt\_vel\_queue\_;\ \}}
+\DoxyCodeLine{00149\ \ \ Queue<float>*\ \mbox{\hyperlink{class_u_i_task_a5656e03ff16c39d0af686baa386a246a}{getTiltPosQueue}}()\ \{\ \textcolor{keywordflow}{return}\ tilt\_pos\_queue\_;\ \}}
+\DoxyCodeLine{00150\ \ \ Queue<float>*\ \mbox{\hyperlink{class_u_i_task_a7fb6917f8e8956626c577787b89290dc}{getPanVelQueue}}()\ \{\ \textcolor{keywordflow}{return}\ pan\_vel\_queue\_;\ \}}
+\DoxyCodeLine{00151\ \ \ Queue<float>*\ \mbox{\hyperlink{class_u_i_task_a12bb7256916fd031e89d1afc078c62bd}{getPanPosQueue}}()\ \{\ \textcolor{keywordflow}{return}\ pan\_pos\_queue\_;\ \}}
+\DoxyCodeLine{00152\ \ \ Queue<bool>*\ \mbox{\hyperlink{class_u_i_task_a8cd4813feca206ef3404f4461019a49c}{getHasLedQueue}}()\ \{\ \textcolor{keywordflow}{return}\ has\_led\_queue\_;\ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{//\ Web\ interface\ accessors}}
+\DoxyCodeLine{00155\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_u_i_task_a639849e1bcdd2eebe0823598e96c4ccf}{isWiFiConnected}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ WiFi.status()\ ==\ WL\_CONNECTED;\ \}}
+\DoxyCodeLine{00156\ \ \ String\ \mbox{\hyperlink{class_u_i_task_a26c40c7771ea8cd44b09151b9be70313}{getIPAddress}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ WiFi.localIP().toString();\ \}}
+\DoxyCodeLine{00157\ \ \ uint32\_t\ \mbox{\hyperlink{class_u_i_task_a8b32c94bd5849a197960d35d400fb6bf}{getWebSocketClientCount}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00160\ \ \ \textcolor{comment}{//\ Tilt\ motor\ shares}}
+\DoxyCodeLine{00161\ \ \ Share<float>*\ tilt\_positionShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00162\ \ \ Share<float>*\ tilt\_velocityShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00163\ \ \ Share<int8\_t>*\ tilt\_vref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00164\ \ \ Share<int16\_t>*\ tilt\_posref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00165\ \ \ Share<uint8\_t>*\ tilt\_cmdShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00166\ \ \ Share<bool>*\ tilt\_zeroShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00167\ \ \ }
+\DoxyCodeLine{00168\ \ \ \textcolor{comment}{//\ Pan\ motor\ shares}}
+\DoxyCodeLine{00169\ \ \ Share<float>*\ pan\_positionShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00170\ \ \ Share<float>*\ pan\_velocityShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00171\ \ \ Share<int8\_t>*\ pan\_vref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00172\ \ \ Share<int16\_t>*\ pan\_posref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00173\ \ \ Share<uint8\_t>*\ pan\_cmdShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00174\ \ \ Share<bool>*\ pan\_zeroShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00175\ \ \ \textcolor{comment}{//\ Motor\ test\ mode\ share}}
+\DoxyCodeLine{00176\ \ \ Share<bool>*\ motortest\_mode\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00177\ \ \ }
+\DoxyCodeLine{00178\ \ \ \textcolor{comment}{//\ D-\/pad\ direction\ shares}}
+\DoxyCodeLine{00179\ \ \ Share<int8\_t>*\ dpad\_pan\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00180\ \ \ Share<int8\_t>*\ dpad\_tilt\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00181\ \ \ }
+\DoxyCodeLine{00182\ \ \ \textcolor{comment}{//\ IMU\ mode\ control}}
+\DoxyCodeLine{00183\ \ \ Share<bool>*\ imu\_mode\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00184\ \ \ }
+\DoxyCodeLine{00185\ \ \ \textcolor{comment}{//\ UI\ mode\ and\ calibration\ control}}
+\DoxyCodeLine{00186\ \ \ Share<uint8\_t>*\ ui\_mode\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00187\ \ \ Share<bool>*\ dcalibrate\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00188\ \ \ }
+\DoxyCodeLine{00189\ \ \ \textcolor{comment}{//\ IMU\ shares}}
+\DoxyCodeLine{00190\ \ \ Share<EulerAngles>*\ eulerAngles\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00191\ \ \ Share<GyroData>*\ gyroData\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00192\ \ \ Share<AccelData>*\ accelData\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00193\ \ \ }
+\DoxyCodeLine{00194\ \ \ \textcolor{comment}{//\ Camera/LED\ tracking\ shares}}
+\DoxyCodeLine{00195\ \ \ Share<bool>*\ hasLed\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00196\ \ \ Share<uint16\_t>*\ ledThreshold\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00197\ \ \ Share<int16\_t>*\ pan\_err\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00198\ \ \ Share<int16\_t>*\ tilt\_err\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00199\ \ \ }
+\DoxyCodeLine{00200\ \ \ \textcolor{comment}{//\ Telemetry\ queues\ for\ non-\/blocking\ data\ transfer\ (encoder\ tasks\ push,\ UITask\ reads)}}
+\DoxyCodeLine{00201\ \ \ Queue<float>*\ tilt\_vel\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00202\ \ \ Queue<float>*\ tilt\_pos\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00203\ \ \ Queue<float>*\ pan\_vel\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00204\ \ \ Queue<float>*\ pan\_pos\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00205\ \ \ Queue<bool>*\ has\_led\_queue\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00206\ \ \ }
+\DoxyCodeLine{00207\ \ \ \textcolor{comment}{//\ Legacy\ compatibility\ pointers\ (point\ to\ tilt\ for\ backward\ compatibility)}}
+\DoxyCodeLine{00208\ \ \ Share<float>*\ positionShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00209\ \ \ Share<float>*\ velocityShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00210\ \ \ Share<int8\_t>*\ vref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00211\ \ \ Share<int16\_t>*\ posref\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00212\ \ \ Share<uint8\_t>*\ cmdShare\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \textcolor{comment}{//\ Timing}}
+\DoxyCodeLine{00215\ \ \ uint32\_t\ updateMs\_\ =\ 200;}
+\DoxyCodeLine{00216\ \ \ uint32\_t\ lastMenuPrintMs\_\ =\ 0;}
+\DoxyCodeLine{00217\ \ \ uint32\_t\ lastValuePrintMs\_\ =\ 0;}
+\DoxyCodeLine{00218\ \ \ \textcolor{comment}{//\ Whether\ we've\ printed\ the\ menu\ since\ entering\ WAIT\ state}}
+\DoxyCodeLine{00219\ \ \ \textcolor{keywordtype}{bool}\ menuPrinted\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00220\ \ \ \textcolor{comment}{//\ Input\ buffer\ for\ numeric\ entry\ from\ Serial}}
+\DoxyCodeLine{00221\ \ \ \textcolor{keywordtype}{char}\ inputBuf\_[32];}
+\DoxyCodeLine{00222\ \ \ \textcolor{keywordtype}{size\_t}\ inputPos\_\ =\ 0;}
+\DoxyCodeLine{00223\ \ \ \textcolor{comment}{//\ Input\ mode:\ 0=selecting\ mode,\ 'v'=velocity\ input,\ 'p'=position\ input}}
+\DoxyCodeLine{00224\ \ \ \textcolor{keywordtype}{char}\ inputMode\_\ =\ 0;}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \textcolor{comment}{//\ Web\ server\ components}}
+\DoxyCodeLine{00227\ \ \ AsyncWebServer*\ server\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00228\ \ \ AsyncWebSocket*\ ws\_\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00229\ \ \ String\ ssid\_;}
+\DoxyCodeLine{00230\ \ \ String\ password\_;}
+\DoxyCodeLine{00231\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ lastConnectAttempt\_\ =\ 0;}
+\DoxyCodeLine{00232\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ lastTelemetryBroadcast\_\ =\ 0;}
+\DoxyCodeLine{00233\ \ \ \textcolor{keywordtype}{bool}\ connecting\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00234\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ telemetryInterval\_\ =\ 200;\ \textcolor{comment}{//\ 200ms\ =\ 5Hz}}
+\DoxyCodeLine{00235\ \ \ }
+\DoxyCodeLine{00236\ \ \ \textcolor{comment}{//\ Cached\ telemetry\ values\ to\ avoid\ mutex\ blocking}}
+\DoxyCodeLine{00237\ \ \ \textcolor{keywordtype}{float}\ cached\_tilt\_vel\_\ =\ 0.0f;}
+\DoxyCodeLine{00238\ \ \ \textcolor{keywordtype}{float}\ cached\_tilt\_pos\_\ =\ 0.0f;}
+\DoxyCodeLine{00239\ \ \ \textcolor{keywordtype}{float}\ cached\_pan\_vel\_\ =\ 0.0f;}
+\DoxyCodeLine{00240\ \ \ \textcolor{keywordtype}{float}\ cached\_pan\_pos\_\ =\ 0.0f;}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordtype}{bool}\ cached\_has\_led\_\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00242\ \ \ int16\_t\ cached\_pan\_err\_\ =\ 0;}
+\DoxyCodeLine{00243\ \ \ int16\_t\ cached\_tilt\_err\_\ =\ 0;}
+\DoxyCodeLine{00244\ \ \ \mbox{\hyperlink{struct_euler_angles}{EulerAngles}}\ cached\_euler\_\ =\ \{0.0f,\ 0.0f,\ 0.0f\};}
+\DoxyCodeLine{00245\ \ \ GyroData\ cached\_gyro\_\ =\ \{0.0f,\ 0.0f,\ 0.0f\};}
+\DoxyCodeLine{00246\ \ \ AccelData\ cached\_accel\_\ =\ \{0.0f,\ 0.0f,\ 0.0f\};}
+\DoxyCodeLine{00247\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ lastCacheUpdate\_\ =\ 0;}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \textcolor{comment}{//\ FSM}}
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{comment}{//\ FSM\ +\ states}}
+\DoxyCodeLine{00251\ \ \ State\ state\_choose\_mode\_\{\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67abc20a95e3774ce0813538460fb48edea}{CHOOSE\_MODE}},\ \textcolor{stringliteral}{"{}CHOOSE\_MODE"{}},\ \&UITask::exec\_choose\_mode\};}
+\DoxyCodeLine{00252\ \ \ State\ state\_calibrate\_\{\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a04627c82d1da6e7529234aacfa633904}{CALIBRATE}},\ \textcolor{stringliteral}{"{}CALIBRATE"{}},\ \&UITask::exec\_calibrate\};}
+\DoxyCodeLine{00253\ \ \ State\ state\_motor\_test\_\{\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5b7a6ae91330b934ea963c652a57e3f0}{MOTOR\_TEST}},\ \textcolor{stringliteral}{"{}MOTOR\_TEST"{}},\ \&UITask::exec\_motor\_test\};}
+\DoxyCodeLine{00254\ \ \ State\ state\_teleop\_\{\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67a5ab35e270f5684e83f92f122740afe7d}{TELEOP}},\ \textcolor{stringliteral}{"{}TELEOP"{}},\ \&UITask::exec\_teleop\};}
+\DoxyCodeLine{00255\ \ \ State\ state\_tracker\_\{\mbox{\hyperlink{class_u_i_task_a63462dae225a76e2127916f011180d67ae475ff5e59debe7d93f42ac8cb6ef089}{TRACKER}},\ \textcolor{stringliteral}{"{}TRACKER"{}},\ \&UITask::exec\_tracker\};}
+\DoxyCodeLine{00256\ \ \ State*\ states\_[5]\ =\ \{\&state\_choose\_mode\_,\ \&state\_tracker\_,\ \&state\_teleop\_,\ \&state\_motor\_test\_,\ \&state\_calibrate\_\ \};}
+\DoxyCodeLine{00257\ \ \ FSM\ fsm\_;}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \textcolor{comment}{//\ State\ functions}}
+\DoxyCodeLine{00260\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_choose\_mode();}
+\DoxyCodeLine{00261\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_calibrate();}
+\DoxyCodeLine{00262\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_motor\_test();}
+\DoxyCodeLine{00263\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_teleop();}
+\DoxyCodeLine{00264\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_tracker();}
+\DoxyCodeLine{00265\ \ }
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \textcolor{comment}{//\ Web\ server\ methods}}
+\DoxyCodeLine{00268\ \ \ \textcolor{keywordtype}{bool}\ initSPIFFS();}
+\DoxyCodeLine{00269\ \ \ \textcolor{keywordtype}{void}\ setupWebRoutes();}
+\DoxyCodeLine{00270\ \ \ \textcolor{keywordtype}{void}\ setupAPI();}
+\DoxyCodeLine{00271\ \ \ \textcolor{keywordtype}{void}\ connectToWiFi();}
+\DoxyCodeLine{00272\ \ \ \textcolor{keywordtype}{void}\ updateWebServer();}
+\DoxyCodeLine{00273\ \ \ \textcolor{keywordtype}{void}\ broadcastTelemetry();}
+\DoxyCodeLine{00274\ \ \ String\ createTelemetryMessage();}
+\DoxyCodeLine{00275\ \ \ \textcolor{keywordtype}{void}\ processWebSocketMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00276\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ sendWebSocketResponse(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ response);}
+\DoxyCodeLine{00277\ \ \ }
+\DoxyCodeLine{00278\ \ \ \textcolor{comment}{//\ State-\/specific\ message\ handlers}}
+\DoxyCodeLine{00279\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ handleChooseModeMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00280\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ handleCalibrateMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00281\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ handleMotorTestMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00282\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ handleTeleopMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ handleTrackerMessage(AsyncWebSocketClient*\ client,\ \textcolor{keyword}{const}\ String\&\ message);}
+\DoxyCodeLine{00284\ \ \ }
+\DoxyCodeLine{00285\ \ \ \textcolor{comment}{//\ Pending\ message\ queue}}
+\DoxyCodeLine{00286\ \ \ \textcolor{keyword}{static}\ String\ pendingMessage\_;}
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{static}\ AsyncWebSocketClient*\ pendingClient\_;}
+\DoxyCodeLine{00288\ \ \ }
+\DoxyCodeLine{00289\ \ \ \textcolor{comment}{//\ Static\ WebSocket\ event\ handler}}
+\DoxyCodeLine{00290\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ onWebSocketEvent(AsyncWebSocket\ *server,\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AsyncWebSocketClient\ *client,\ }
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ AwsEventType\ type,\ }
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ *arg,\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ *data,\ }
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ len);}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \ \ \textcolor{comment}{//\ Singleton\ for\ static\ callbacks}}
+\DoxyCodeLine{00298\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_u_i_task_a9dc006aa6b7b2fd51d166223646e3554}{UITask}}*\ instance\_;}
+\DoxyCodeLine{00299\ \};}
+\DoxyCodeLine{00300\ }
+
+\end{DoxyCode}

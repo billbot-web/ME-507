@@ -1,0 +1,188 @@
+\doxysection{Encoder Class Reference}
+\hypertarget{class_encoder}{}\label{class_encoder}\index{Encoder@{Encoder}}
+
+
+ESP32 PCNT-\/based quadrature encoder reader (X4), matching a Micro\+Python-\/style API.  
+
+
+
+
+{\ttfamily \#include $<$Encoder.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_encoder_afcebffdb47ff31b7023bfc820a487fe7}{Encoder}} (gpio\+\_\+num\+\_\+t pinA, gpio\+\_\+num\+\_\+t pinB, pcnt\+\_\+unit\+\_\+t unit)
+\begin{DoxyCompactList}\small\item\em Construct an \doxylink{class_encoder}{Encoder} (does not touch hardware yet). \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin}} ()
+\begin{DoxyCompactList}\small\item\em Configure the PCNT hardware for X4 quadrature. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update}} ()
+\begin{DoxyCompactList}\small\item\em Run one update step\+: compute dt, read counter, delta (with wrap), smooth, accumulate. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{class_encoder_ab734ff97e6a6a615e42d7679af438ff5}{get\+\_\+position}} () const
+\begin{DoxyCompactList}\small\item\em Total accumulated position (counts), updated by \doxylink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update()}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{class_encoder_a28a42bd2463b9cdfefc05929532f6657}{get\+\_\+velocity}} () const
+\begin{DoxyCompactList}\small\item\em Smoothed velocity (counts per microsecond), like the Python class. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef}{zero}} ()
+\begin{DoxyCompactList}\small\item\em Set accumulated position to zero (does not clear hardware counter). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+ESP32 PCNT-\/based quadrature encoder reader (X4), matching a Micro\+Python-\/style API. 
+
+Behavior mirrors the provided Python class\+:
+\begin{DoxyItemize}
+\item \doxylink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update()}\+: reads current hardware counter and time, computes delta with wrap handling, updates a 5-\/sample smoothing window, accumulates position
+\item \doxylink{class_encoder_ab734ff97e6a6a615e42d7679af438ff5}{get\+\_\+position()}\+: returns accumulated position (counts)
+\item \doxylink{class_encoder_a28a42bd2463b9cdfefc05929532f6657}{get\+\_\+velocity()}\+: returns smoothed velocity (counts per microsecond) like the Python version
+\item \doxylink{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef}{zero()}\+: sets accumulated position to zero
+\end{DoxyItemize}
+
+Hardware\+:
+\begin{DoxyItemize}
+\item Uses one PCNT unit with both channels for true X4\+: CH0\+: pulse = A, ctrl = B (flip when B is high) CH1\+: pulse = B, ctrl = A (flip when A is low)
+\item Counter range is signed 16-\/bit \mbox{[}-\/32768, 32767\mbox{]}
+\end{DoxyItemize}
+
+Notes\+:
+\begin{DoxyItemize}
+\item Call \doxylink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin()} once after constructing.
+\item Call \doxylink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update()} at a regular cadence (e.\+g., every 1–10 ms) to refresh velocity smoothing.
+\item \doxylink{class_encoder_a28a42bd2463b9cdfefc05929532f6657}{get\+\_\+velocity()} returns counts / microsecond. Multiply by 1e6 for counts / second. 
+\end{DoxyItemize}
+
+\label{doc-constructors}
+\Hypertarget{class_encoder_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_encoder_afcebffdb47ff31b7023bfc820a487fe7}\index{Encoder@{Encoder}!Encoder@{Encoder}}
+\index{Encoder@{Encoder}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{Encoder()}{Encoder()}}
+{\footnotesize\ttfamily \label{class_encoder_afcebffdb47ff31b7023bfc820a487fe7} 
+Encoder\+::\+Encoder (\begin{DoxyParamCaption}\item[{gpio\+\_\+num\+\_\+t}]{pinA}{, }\item[{gpio\+\_\+num\+\_\+t}]{pinB}{, }\item[{pcnt\+\_\+unit\+\_\+t}]{unit}{}\end{DoxyParamCaption})}
+
+
+
+Construct an \doxylink{class_encoder}{Encoder} (does not touch hardware yet). 
+
+Construct \doxylink{class_encoder}{Encoder} instance with GPIO pins and PCNT unit assignment.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pinA} & GPIO for phase A (must be PCNT-\/capable) \\
+\hline
+{\em pinB} & GPIO for phase B (must be PCNT-\/capable) \\
+\hline
+{\em unit} & PCNT unit to use (PCNT\+\_\+\+UNIT\+\_\+0 .. PCNT\+\_\+\+UNIT\+\_\+7)\\
+\hline
+\end{DoxyParams}
+This constructor initializes the encoder object with the specified GPIO pins and PCNT unit, but does not configure the hardware yet. Actual hardware configuration occurs in the \doxylink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin()} method to allow for error handling.
+
+Initial \doxylink{class_state}{State}\+:
+\begin{DoxyItemize}
+\item Sets GPIO pin assignments for quadrature phases A and B
+\item Assigns PCNT unit for hardware counter operations
+\item Initializes timing variables with current microsecond timestamp
+\item Sets default gear ratio (70\+:1 gearbox \texorpdfstring{$\ast$}{*} 64 CPR = 4480 counts/revolution)
+\item Clears position accumulator and velocity smoothing windows
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em pinA} & GPIO pin for encoder Phase A (must support PCNT input) \\
+\hline
+{\em pinB} & GPIO pin for encoder Phase B (must support PCNT input) \\
+\hline
+{\em unit} & PCNT unit to use (PCNT\+\_\+\+UNIT\+\_\+0 through PCNT\+\_\+\+UNIT\+\_\+7)\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Hardware configuration deferred to \doxylink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin()} method 
+
+GPIO pins must be capable of PCNT input (most ESP32 pins supported) 
+
+Each PCNT unit can only be used by one \doxylink{class_encoder}{Encoder} instance
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\doxylink{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}{begin()} for hardware initialization 
+\end{DoxySeeAlso}
+
+
+\label{doc-func-members}
+\Hypertarget{class_encoder_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49}\index{Encoder@{Encoder}!begin@{begin}}
+\index{begin@{begin}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{begin()}{begin()}}
+{\footnotesize\ttfamily \label{class_encoder_a4b7357e35d35fb92f6abb2ded5c4db49} 
+bool Encoder\+::begin (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Configure the PCNT hardware for X4 quadrature. 
+
+Configure PCNT for true X4 quadrature.
+
+\begin{DoxyReturn}{Returns}
+true on success, false otherwise 
+\end{DoxyReturn}
+\Hypertarget{class_encoder_ab734ff97e6a6a615e42d7679af438ff5}\index{Encoder@{Encoder}!get\_position@{get\_position}}
+\index{get\_position@{get\_position}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{get\_position()}{get\_position()}}
+{\footnotesize\ttfamily \label{class_encoder_ab734ff97e6a6a615e42d7679af438ff5} 
+float Encoder\+::get\+\_\+position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+
+
+Total accumulated position (counts), updated by \doxylink{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}{update()}. 
+
+Get total accumulated position (counts).
+
+\begin{DoxyReturn}{Returns}
+accumulated counts since startup or \doxylink{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef}{zero()} 
+\end{DoxyReturn}
+\Hypertarget{class_encoder_a28a42bd2463b9cdfefc05929532f6657}\index{Encoder@{Encoder}!get\_velocity@{get\_velocity}}
+\index{get\_velocity@{get\_velocity}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{get\_velocity()}{get\_velocity()}}
+{\footnotesize\ttfamily \label{class_encoder_a28a42bd2463b9cdfefc05929532f6657} 
+double Encoder\+::get\+\_\+velocity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+
+
+Smoothed velocity (counts per microsecond), like the Python class. 
+
+Smoothed velocity (counts per microsecond) using last 5 samples.
+
+\begin{DoxyReturn}{Returns}
+(sum of recent deltas) / (sum of recent dt in microseconds)
+\end{DoxyReturn}
+Multiply by 1e6 to get counts per second. \Hypertarget{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2}\index{Encoder@{Encoder}!update@{update}}
+\index{update@{update}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_encoder_a9d7fcd5ad0cfde12666720a8b2ac0ae2} 
+void Encoder\+::update (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Run one update step\+: compute dt, read counter, delta (with wrap), smooth, accumulate. 
+
+Perform one update\+: time delta, read counter, compute wrapped delta, smooth, accumulate.
+
+Matches the Python semantics\+:
+\begin{DoxyItemize}
+\item Uses micros() for timing (ticks\+\_\+us())
+\item Keeps 5-\/sample windows for delta and dt 
+\end{DoxyItemize}\Hypertarget{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef}\index{Encoder@{Encoder}!zero@{zero}}
+\index{zero@{zero}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{zero()}{zero()}}
+{\footnotesize\ttfamily \label{class_encoder_a0d3bf72860cbdc4cd62ed0019a3c8aef} 
+void Encoder\+::zero (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Set accumulated position to zero (does not clear hardware counter). 
+
+Zero the accumulated position (does not clear hardware counter). 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/hardware/\mbox{\hyperlink{_encoder_8h}{Encoder.\+h}}\item 
+src/hardware/\mbox{\hyperlink{_encoder_8cpp}{Encoder.\+cpp}}\end{DoxyCompactItemize}

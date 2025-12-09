@@ -1,0 +1,100 @@
+\doxysection{Controller\+Task.\+h}
+\hypertarget{_controller_task_8h_source}{}\label{_controller_task_8h_source}\index{src/tasks/ControllerTask.h@{src/tasks/ControllerTask.h}}
+\mbox{\hyperlink{_controller_task_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}freertos/FreeRTOS.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}freertos/task.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_f_s_m_8h}{../fsm/FSM.h}}"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ "{}taskqueue.h"{}}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d}{ControllerTask}}\ \{}
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160}{StateId}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ade28a8eb425fc4c3c42b7913905336e4}{CALIBRATE}}\ =\ 0,\ \ }
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a4998ee134f283d4b100f78aa5996b4f5}{WAIT}}\ =\ 1,\ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a5ddecd17b8f401419a5166c869bcc220}{SCAN}}\ \ =\ 2,\ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0}{TRACKR}}\ =\ 3,\ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe}{TELEOP}}\ =\ 4,\ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ace4cc239b016d753a354e6cc036c9b1f}{MOTOR\_TEST}}\ =\ 5\ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00064\ \ \ \ \ \mbox{\hyperlink{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d}{ControllerTask}}(Share<int16\_t>*\ \mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\_err}},}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int16\_t>*\ \ \mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\_err}},}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<float\_t>*\ \ tiltpos,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int8\_t>*\ \ tiltVelo,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int8\_t>*\ \ panVelo,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ \ tilt\_mode,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ \ pan\_mode,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ \ Cam\_mode,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<bool>*\ \ \ \ \ \ \ \mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{hasLed}},}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<uint8\_t>*\ \mbox{\hyperlink{main_8cpp_a1c51aaca3189ef0686fe5a8dffce1a99}{UI\_mode}},}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<bool>*\ \mbox{\hyperlink{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}{dcalibrate}},}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int8\_t>*\ \mbox{\hyperlink{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}{dpad\_pan}},}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Share<int8\_t>*\ \mbox{\hyperlink{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}{dpad\_tilt}},}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ updateMs\ =\ 100)\ noexcept;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_controller_task_a0ac8b1606f822f8c944674dcb68d44d1}{update}}()\ noexcept\ \{\ fsm\_.run\_curstate();\ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_controller_task_a8fe7e9e6620d67e636d4b73997598583}{ConstrainTiltMotor}}(Share<float\_t>*\ tiltpos)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00082\ \ \ \ \ }
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{class_controller_task_a90af8a0eac4cf5f4e6be64b27a455864}{getUpdateMs}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ updateMs\_;\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//\ Timing}}
+\DoxyCodeLine{00089\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ updateMs\_;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ Shares}}
+\DoxyCodeLine{00092\ \ \ \ \ Share<int16\_t>*\ pan\_err\_;}
+\DoxyCodeLine{00093\ \ \ \ \ Share<int16\_t>*\ tilt\_err\_;}
+\DoxyCodeLine{00094\ \ \ \ \ Share<float\_t>*\ tiltpos\_;}
+\DoxyCodeLine{00095\ \ \ \ \ Share<int8\_t>*\ tiltVelo\_;}
+\DoxyCodeLine{00096\ \ \ \ \ Share<int8\_t>*\ panVelo\_;}
+\DoxyCodeLine{00097\ \ \ \ \ Share<uint8\_t>*\ \ tilt\_mode\_;}
+\DoxyCodeLine{00098\ \ \ \ \ Share<uint8\_t>*\ \ pan\_mode\_;}
+\DoxyCodeLine{00099\ \ \ \ \ Share<uint8\_t>*\ \ Cam\_mode\_;}
+\DoxyCodeLine{00100\ \ \ \ \ Share<bool>*\ \ \ \ \ \ \ hasLed\_;}
+\DoxyCodeLine{00101\ \ \ \ \ Share<uint8\_t>*\ \ UI\_mode\_;}
+\DoxyCodeLine{00102\ \ \ \ \ Share<bool>*\ \ dcalibrate\_;}
+\DoxyCodeLine{00103\ \ \ \ \ Share<int8\_t>*\ dpad\_pan\_;}
+\DoxyCodeLine{00104\ \ \ \ \ Share<int8\_t>*\ dpad\_tilt\_;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ LED\ tracking}}
+\DoxyCodeLine{00107\ \ \ \ \ uint8\_t\ led\_loss\_counter\_\ =\ 0;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ LED\_LOSS\_THRESHOLD\ =\ 5;\ \ \textcolor{comment}{//\ Consecutive\ cycles\ before\ switching\ to\ SCAN}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//Base\ Scan\ Velocities}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{const}\ int16\_t\ SCAN\_PAN\_VELO\ =\ 0;\ \ \ \textcolor{comment}{//\ effrtfor\ pan\ 50\ for\ tilt}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{const}\ int16\_t\ TELEOP\_VELO\ =\ 17;\ \ \ \textcolor{comment}{//\ velocity\ for\ teleop\ mode}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ FSM\ +\ states}}
+\DoxyCodeLine{00115\ \ \ \ \ \mbox{\hyperlink{class_state}{State}}\ state\_calibrate\_\{\ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ade28a8eb425fc4c3c42b7913905336e4}{CALIBRATE}},\ \textcolor{stringliteral}{"{}CTL\_CALIBRATE"{}},\ \&ControllerTask::exec\_calibrate\ \};}
+\DoxyCodeLine{00116\ \ \ \ \ State\ state\_wait\_\{\ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a4998ee134f283d4b100f78aa5996b4f5}{WAIT}},\ \textcolor{stringliteral}{"{}CTL\_WAIT"{}},\ \&ControllerTask::exec\_wait\ \};}
+\DoxyCodeLine{00117\ \ \ \ \ State\ state\_scan\_\{\ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a5ddecd17b8f401419a5166c869bcc220}{SCAN}},\ \ \textcolor{stringliteral}{"{}CTL\_SCAN"{}},\ \ \&ControllerTask::exec\_scan\ \};}
+\DoxyCodeLine{00118\ \ \ \ \ State\ state\_trackr\_\{\ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a2b8244a560caf7691f1f4e9afebe9ee0}{TRACKR}},\ \textcolor{stringliteral}{"{}CTL\_TRACKR"{}},\ \&ControllerTask::exec\_trackr\ \};}
+\DoxyCodeLine{00119\ \ \ \ \ State\ state\_teleop\_\{\ \ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160a97f358051fa20fc5b547a5f2c934c9fe}{TELEOP}},\ \ \textcolor{stringliteral}{"{}CTL\_TELEOP"{}},\ \ \&ControllerTask::exec\_teleop\ \};}
+\DoxyCodeLine{00120\ \ \ \ \ State\ state\_motor\_test\_\{\ \mbox{\hyperlink{class_controller_task_a879d587ece7e316a15a3a7744e9e0160ace4cc239b016d753a354e6cc036c9b1f}{MOTOR\_TEST}},\ \textcolor{stringliteral}{"{}CTL\_MOTOR\_TEST"{}},\ \&ControllerTask::exec\_motor\_test\ \};}
+\DoxyCodeLine{00121\ \ \ \ \ State*\ states\_[6]\ =\ \{\ \&state\_calibrate\_,\ \&state\_wait\_,\ \&state\_scan\_,\ \&state\_trackr\_,\ \&state\_teleop\_,\ \&state\_motor\_test\_\ \};}
+\DoxyCodeLine{00122\ \ \ \ \ FSM\ \ \ \ fsm\_;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{comment}{//\ State\ functions\ (static\ wrappers)}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_calibrate();}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_wait();}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_scan();}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_trackr();}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_teleop();}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_motor\_test();}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_controller_task_a115185ca24a66c4a6b7577a24ee6cf6d}{ControllerTask}}*\ instance\_;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \};}
+\DoxyCodeLine{00137\ }
+
+\end{DoxyCode}

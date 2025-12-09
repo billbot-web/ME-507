@@ -1,0 +1,27 @@
+\doxysection{DRV883.\+h}
+\hypertarget{_d_r_v883_8h_source}{}\label{_d_r_v883_8h_source}\index{src/hardware/DRV883.h@{src/hardware/DRV883.h}}
+\mbox{\hyperlink{_d_r_v883_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00052\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_d_r_v883_a9c1bcac4457ad2ec606785ffb6a63a9a}{DRV883}}\ \{}
+\DoxyCodeLine{00053\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{class_d_r_v883_a9c1bcac4457ad2ec606785ffb6a63a9a}{DRV883}}(\textcolor{keywordtype}{int}\ in1,\ \textcolor{keywordtype}{int}\ in2,\ \textcolor{keywordtype}{int}\ ledcCh1,\ \textcolor{keywordtype}{int}\ ledcCh2,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ pwmFreq\ =\ 20000,\ uint8\_t\ resolutionBits\ =\ 10);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_d_r_v883_a7e8c99a162d755bb37a0466f13aba844}{setEff}}(\textcolor{keywordtype}{int}\ effort);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_d_r_v883_a50bfd9a9b5f3368ffc8aa5b39a4bc623}{stop}}();}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_d_r_v883_af60168e33988e1cb01734c692d48af94}{brake}}();}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{int}\ in1\_,\ in2\_;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{int}\ ch1\_,\ ch2\_;}
+\DoxyCodeLine{00082\ \ \ \ \ uint8\_t\ resBits\_;}
+\DoxyCodeLine{00083\ \ \ \ \ uint32\_t\ maxDuty\_;}
+\DoxyCodeLine{00084\ \};}
+
+\end{DoxyCode}

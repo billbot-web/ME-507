@@ -1,0 +1,134 @@
+\doxysection{IMU\+\_\+\+TASK.\+h}
+\hypertarget{_i_m_u___t_a_s_k_8h_source}{}\label{_i_m_u___t_a_s_k_8h_source}\index{src/tasks/IMU\_TASK.h@{src/tasks/IMU\_TASK.h}}
+\mbox{\hyperlink{_i_m_u___t_a_s_k_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <Arduino.h>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_f_s_m_8h}{../fsm/FSM.h}}"{}}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_state_8h}{../fsm/State.h}}"{}}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ "{}freertos/FreeRTOS.h"{}}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ "{}freertos/task.h"{}}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_adafruit___b_n_o055_8h}{../hardware/Adafruit\_BNO055.h}}"{}}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#include\ "{}taskshare.h"{}}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_euler_angles}{EulerAngles}}\ \{}
+\DoxyCodeLine{00047\ \ \ float\_t\ \mbox{\hyperlink{struct_euler_angles_a518ad40648d242f13bf248344382008c}{x}};\ \ }
+\DoxyCodeLine{00048\ \ \ float\_t\ \mbox{\hyperlink{struct_euler_angles_a0c68a4eee1984479e573a614b05956e9}{y}};\ \ }
+\DoxyCodeLine{00049\ \ \ float\_t\ \mbox{\hyperlink{struct_euler_angles_a774f27cb45dbb4c467f03957aa7a1aac}{z}};\ \ }
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_gyro_data}{GyroData}}\ \{}
+\DoxyCodeLine{00058\ \ \ float\_t\ \mbox{\hyperlink{struct_gyro_data_a28f8ffbb9eb66268407d016d86ef6474}{x}};\ \ }
+\DoxyCodeLine{00059\ \ \ float\_t\ \mbox{\hyperlink{struct_gyro_data_aa448fc0a6f0ab9fbee72ef14f35f19da}{y}};\ \ }
+\DoxyCodeLine{00060\ \ \ float\_t\ \mbox{\hyperlink{struct_gyro_data_a6b5d4303f080ac20e2d41e299d49992c}{z}};\ \ }
+\DoxyCodeLine{00061\ \};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_accel_data}{AccelData}}\ \{}
+\DoxyCodeLine{00069\ \ \ float\_t\ \mbox{\hyperlink{struct_accel_data_ade33a6509e31f4100a566faf258d4177}{x}};\ \ }
+\DoxyCodeLine{00070\ \ \ float\_t\ \mbox{\hyperlink{struct_accel_data_a1ab4d7f6d1d2f4ac352207974a5b00e8}{y}};\ \ }
+\DoxyCodeLine{00071\ \ \ float\_t\ \mbox{\hyperlink{struct_accel_data_a566898a1c126f636bad3341de867e604}{z}};\ \ }
+\DoxyCodeLine{00072\ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00100\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}{IMUTask}}\ \{}
+\DoxyCodeLine{00101\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{enum}\ \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9ca}{StateId}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9caa1e449c519d4e3dcfef62a1346e5d6495}{WAIT}}\ =\ 0,\ \ \ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \mbox{\hyperlink{class_i_m_u_task_ab753136579c24435a9358626f45da9caadf0b6100763d821f728de9a5a611099d}{SEND\_DATA}}\ =\ 1,\ \ }
+\DoxyCodeLine{00109\ \ \ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00123\ \ \ \mbox{\hyperlink{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}{IMUTask}}(\mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\_BNO055}}*\ imu,\ Share<EulerAngles>*\ \mbox{\hyperlink{struct_euler_angles}{EulerAngles}},\ Share<GyroData>*\ \mbox{\hyperlink{struct_gyro_data}{GyroData}},\ }
+\DoxyCodeLine{00124\ \ \ \ \ Share<AccelData>*\ \mbox{\hyperlink{struct_accel_data}{AccelData}},\ uint32\_t\ updateMs\ =\ 500)\ noexcept;}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00138\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_i_m_u_task_a81db980a2c8f7be5174ccd20d39dd751}{initIMU}}();}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00145\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_abfa7658c2d1e6eda10bc332a48667e30}{start}}(uint8\_t\ priority\ =\ 1,\ int8\_t\ core\ =\ -\/1);}
+\DoxyCodeLine{00146\ \ \ }
+\DoxyCodeLine{00151\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a6dd4ce19e4790858f3a9e6a6f349d2ee}{update}}()\ noexcept;}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00154\ \ \ \textcolor{comment}{//\ Calibration\ Methods}}
+\DoxyCodeLine{00155\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00156\ \ \ }
+\DoxyCodeLine{00161\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a2445ab1fcc5f513a3b5acfb8a8968888}{printCalibrationStatus}}();}
+\DoxyCodeLine{00162\ \ \ }
+\DoxyCodeLine{00167\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_i_m_u_task_adef8c108195c7960ee1b1e6bac093401}{isFullyCalibrated}}();}
+\DoxyCodeLine{00168\ \ \ }
+\DoxyCodeLine{00173\ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_i_m_u_task_a585d4d1660cb0384d7eda70a58832f1f}{isDataReliable}}();}
+\DoxyCodeLine{00174\ \ \ }
+\DoxyCodeLine{00179\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_ad28cac79ccdfabaf0a303256d5538359}{getCalibrationOffsets}}(\mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\_bno055\_offsets\_t}}*\ offsets);}
+\DoxyCodeLine{00180\ \ \ }
+\DoxyCodeLine{00186\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a55ce116a01e25836c9f0094e788bd15c}{setCalibrationOffsets}}(const\ \mbox{\hyperlink{structadafruit__bno055__offsets__t}{adafruit\_bno055\_offsets\_t}}*\ offsets);}
+\DoxyCodeLine{00187\ \ \ }
+\DoxyCodeLine{00192\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a8f4d046a615f404983eb9f055771b11d}{printCalibrationOffsets}}();}
+\DoxyCodeLine{00193\ \ \ }
+\DoxyCodeLine{00200\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_ace03e3c1d0c608ead75e259f9d334d6c}{performCalibration}}(uint32\_t\ timeoutMs\ =\ 60000);}
+\DoxyCodeLine{00201\ \ \ }
+\DoxyCodeLine{00206\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a2c28e6a4d383a13bdda9e748de181530}{loadSavedCalibration}}();}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00209\ \ \ \textcolor{comment}{//\ Configuration\ and\ Accessors}}
+\DoxyCodeLine{00210\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00211\ \ \ }
+\DoxyCodeLine{00216\ \ \ uint32\_t\ \mbox{\hyperlink{class_i_m_u_task_a5f17e194f522641a58a0ff54ce4a65c6}{get\_updateMs}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ updateMs\_;\ \}}
+\DoxyCodeLine{00217\ \ \ }
+\DoxyCodeLine{00222\ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_adfb9db9321d1d5e15f060e7da3e41a84}{set\_instance}}(\mbox{\hyperlink{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}{IMUTask}}*\ inst)\ \{\ instance\_\ =\ inst;\ \}}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00229\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_i_m_u_task_a09aee3391a75fa643391764a7a7c90b1}{setSampleInterval}}(uint32\_t\ intervalMs)\ \{\ updateMs\_\ =\ intervalMs;\ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00232\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00233\ \ \ \textcolor{comment}{//\ Timing\ Configuration}}
+\DoxyCodeLine{00234\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00235\ \ \ }
+\DoxyCodeLine{00236\ \ \ uint32\_t\ updateMs\_\ =\ 1000;\ \ \ \ \ \ }
+\DoxyCodeLine{00237\ \ \ uint32\_t\ lastSampleMs\_\ =\ 0;\ \ \ \ \ }
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00240\ \ \ \textcolor{comment}{//\ Hardware\ Interface}}
+\DoxyCodeLine{00241\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00242\ \ \ }
+\DoxyCodeLine{00243\ \ \ \mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\_BNO055}}*\ imu\_;\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00244\ \ \ \textcolor{keywordtype}{bool}\ imuInitialized\_\ =\ \textcolor{keyword}{false};\ \ \ }
+\DoxyCodeLine{00245\ \ \ }
+\DoxyCodeLine{00246\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00247\ \ \ \textcolor{comment}{//\ Shared\ Data\ Containers}}
+\DoxyCodeLine{00248\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00249\ \ \ }
+\DoxyCodeLine{00250\ \ \ Share<EulerAngles>*\ eulerAngles\_;\ \ }
+\DoxyCodeLine{00251\ \ \ Share<GyroData>*\ gyroData\_;\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00252\ \ \ Share<AccelData>*\ accelData\_;\ \ \ \ \ \ }
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00255\ \ \ \textcolor{comment}{//\ Calibration\ Persistence}}
+\DoxyCodeLine{00256\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00257\ \ \ }
+\DoxyCodeLine{00258\ \ \ uint8\_t\ savedCalibrationData\_[22];\ \ }
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00261\ \ \ \textcolor{comment}{//\ FSM\ State\ Objects}}
+\DoxyCodeLine{00262\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00263\ \ \ }
+\DoxyCodeLine{00264\ \ \ \mbox{\hyperlink{class_state}{State}}\ state\_wait\_\{0,\ \textcolor{stringliteral}{"{}WAIT"{}},\ \&IMUTask::exec\_wait\};\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00265\ \ \ State\ state\_send\_data\_\{1,\ \textcolor{stringliteral}{"{}SEND\_DATA"{}},\ \&IMUTask::exec\_sendData\};\ }
+\DoxyCodeLine{00266\ \ \ State*\ states\_[2]\ =\ \{\ \&state\_wait\_,\ \&state\_send\_data\_\ \};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00267\ \ \ FSM\ fsm\_;\ \ }
+\DoxyCodeLine{00268\ }
+\DoxyCodeLine{00269\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00270\ \ \ \textcolor{comment}{//\ Static\ State\ Functions\ (FSM\ Callbacks)}}
+\DoxyCodeLine{00271\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00272\ \ \ }
+\DoxyCodeLine{00277\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_wait();}
+\DoxyCodeLine{00278\ \ \ }
+\DoxyCodeLine{00283\ \ \ \textcolor{keyword}{static}\ uint8\_t\ exec\_sendData();}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00286\ \ \ \textcolor{comment}{//\ Static\ Instance\ Pointer}}
+\DoxyCodeLine{00287\ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00288\ \ \ }
+\DoxyCodeLine{00289\ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{class_i_m_u_task_ad1c54b7c4deead447dd97d3b26eb135c}{IMUTask}}*\ instance\_;\ \ }
+\DoxyCodeLine{00290\ \};}
+
+\end{DoxyCode}

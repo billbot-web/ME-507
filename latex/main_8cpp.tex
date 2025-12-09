@@ -1,0 +1,825 @@
+\doxysection{src/main.cpp File Reference}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{src/main.cpp@{src/main.cpp}}
+
+
+Main application entry point for ESP32 camera-\/guided pan-\/tilt tracking system.  
+
+
+{\ttfamily \#include $<$Arduino.\+h$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include "{}hardware/\+DRV883.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+Motor\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}hardware/\+Encoder.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+Encoder\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+UITask.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+IMU\+\_\+\+Task.\+h"{}}\newline
+{\ttfamily \#include $<$Wire.\+h$>$}\newline
+{\ttfamily \#include "{}hardware/\+Adafruit\+\_\+\+BNO055.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+Camera\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}tasks/\+Controller\+Task.\+h"{}}\newline
+{\ttfamily \#include "{}hardware/\+OV5640\+\_\+camera.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/\+Free\+RTOS.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/task.\+h"{}}\newline
+{\ttfamily \#include "{}freertos/queue.\+h"{}}\newline
+{\ttfamily \#include "{}taskshare.\+h"{}}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a4f5313f502282fbcfd79f30302a3c82b}{Pan\+IN1}}~GPIO\+\_\+\+NUM\+\_\+2
+\item 
+\#define \mbox{\hyperlink{main_8cpp_ad46c6e4ac5145a2506b854c28c625aa3}{Pan\+IN2}}~GPIO\+\_\+\+NUM\+\_\+5
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a774a219393764de432dda837a163ca48}{n\+SLP\+\_\+\+PIN}}~GPIO\+\_\+\+NUM\+\_\+13
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a807a9e87c5be79125356eef1028e785d}{Tilt\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}~GPIO\+\_\+\+NUM\+\_\+14
+\item 
+\#define \mbox{\hyperlink{main_8cpp_ada9b39849b57a988ff22ec9550a1769d}{Tilt\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}~GPIO\+\_\+\+NUM\+\_\+19
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a1f1ad57f1c6023f908eb9446b759205a}{Tilt\+ENCODER\+\_\+\+UNIT}}~PCNT\+\_\+\+UNIT\+\_\+0
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a8e5bb8b9c5447a5a1636521c1eee0247}{Tilt\+IN1}}~GPIO\+\_\+\+NUM\+\_\+18
+\item 
+\#define \mbox{\hyperlink{main_8cpp_ad6a84ed2a08e70da7d9adda71470ead4}{Tilt\+IN2}}~GPIO\+\_\+\+NUM\+\_\+23
+\item 
+\#define \mbox{\hyperlink{main_8cpp_abdc6a0c3b4366410882e9b2728609e5a}{Pan\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}~GPIO\+\_\+\+NUM\+\_\+3
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a4d0ee5bdfb147d04624ac2d8aefbff46}{Pan\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}~GPIO\+\_\+\+NUM\+\_\+1
+\item 
+\#define \mbox{\hyperlink{main_8cpp_a039cf14d1dd6ffcb54227fda70d740a6}{Pan\+ENCODER\+\_\+\+UNIT}}~PCNT\+\_\+\+UNIT\+\_\+1
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{main_8cpp_a47703f0cbab9e92ed10160ce53f4f96d}{ui\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\item 
+void \mbox{\hyperlink{main_8cpp_af5729a7ef453042a1e3635e886a73167}{imu\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for IMU data acquisition. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a666b8f7e8309abb257c178d08fdaec1c}{controller\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry; repeatedly calls update() at configured period. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd}{camera\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for camera vision processing. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_afc9c2cf42049d569d15d14db75a3e661}{tilt\+\_\+motor\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for tilt motor control. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a302862cb5caa69a143d50001e12ef2a4}{pan\+\_\+motor\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for pan motor control. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a772e97ad5fae7403b411a5522fed540c}{tilt\+\_\+encoder\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for tilt encoder monitoring. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a0189909595ebf63214312f1e6fb9abea}{pan\+\_\+encoder\+\_\+task\+\_\+func}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Free\+RTOS task entry point for pan encoder monitoring. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup}} ()
+\begin{DoxyCompactList}\small\item\em Arduino \doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()} -\/ System initialization and Free\+RTOS task creation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop}} ()
+\begin{DoxyCompactList}\small\item\em Arduino \doxylink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop()} -\/ Idle function for Free\+RTOS operation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_o_v5640_camera}{OV5640\+Camera}} \mbox{\hyperlink{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}{camera}} = \mbox{\hyperlink{class_o_v5640_camera}{OV5640\+Camera}}(760)
+\item 
+\mbox{\hyperlink{class_d_r_v883}{DRV883}} \mbox{\hyperlink{main_8cpp_a000b34f09d3812c2177cbbc34e41bddc}{panmotor}} (\mbox{\hyperlink{main_8cpp_a4f5313f502282fbcfd79f30302a3c82b}{Pan\+IN1}}, \mbox{\hyperlink{main_8cpp_ad46c6e4ac5145a2506b854c28c625aa3}{Pan\+IN2}}, 0, 1)
+\item 
+\mbox{\hyperlink{class_encoder}{Encoder}} \mbox{\hyperlink{main_8cpp_a8782c85d1bc81cddd908140fa492fbe6}{panencoder}} (\mbox{\hyperlink{main_8cpp_abdc6a0c3b4366410882e9b2728609e5a}{Pan\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}, \mbox{\hyperlink{main_8cpp_a4d0ee5bdfb147d04624ac2d8aefbff46}{Pan\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}, \mbox{\hyperlink{main_8cpp_a039cf14d1dd6ffcb54227fda70d740a6}{Pan\+ENCODER\+\_\+\+UNIT}})
+\item 
+\mbox{\hyperlink{class_d_r_v883}{DRV883}} \mbox{\hyperlink{main_8cpp_ae8dcde356db462b2a7c48185714cf52c}{tiltmotor}} (\mbox{\hyperlink{main_8cpp_a8e5bb8b9c5447a5a1636521c1eee0247}{Tilt\+IN1}}, \mbox{\hyperlink{main_8cpp_ad6a84ed2a08e70da7d9adda71470ead4}{Tilt\+IN2}}, 2, 3)
+\item 
+\mbox{\hyperlink{class_encoder}{Encoder}} \mbox{\hyperlink{main_8cpp_ab54cdca66fa3cc7eb57b1edd9e77a716}{tiltencoder}} (\mbox{\hyperlink{main_8cpp_a807a9e87c5be79125356eef1028e785d}{Tilt\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}, \mbox{\hyperlink{main_8cpp_ada9b39849b57a988ff22ec9550a1769d}{Tilt\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}, \mbox{\hyperlink{main_8cpp_a1f1ad57f1c6023f908eb9446b759205a}{Tilt\+ENCODER\+\_\+\+UNIT}})
+\item 
+Two\+Wire \mbox{\hyperlink{main_8cpp_aa5098f58d7b46d0b1449973242d4fe60}{I2C}} = Two\+Wire(0)
+\item 
+\mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}} \mbox{\hyperlink{main_8cpp_a52dc7a530bd2ac368f726eac25d55494}{bno055\+\_\+sensor}} = \mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}}(1234, 0x28, \&\mbox{\hyperlink{main_8cpp_aa5098f58d7b46d0b1449973242d4fe60}{I2C}})
+\item 
+Share$<$ int16\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}{pan\+\_\+err}} \{"{}pan\+\_\+err"{}\}
+\item 
+Share$<$ int16\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a1f089d0053c4e4c30975796ecede8618}{tilt\+\_\+err}} \{"{}tilt\+\_\+err"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}{has\+Led}} \{"{}has\+Led"{}\}
+\item 
+Share$<$ uint16\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}{led\+Threshold}} \{"{}led\+Threshold"{}\}
+\item 
+Share$<$ uint8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a721f332798069cf7abda5b39364ba45a}{cam\+\_\+\+Mode}} \{"{}cam\+Mode"{}\}
+\item 
+Share$<$ uint8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a1c51aaca3189ef0686fe5a8dffce1a99}{UI\+\_\+mode}} \{"{}UI\+\_\+mode"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}{dcalibrate}} \{"{}dcalibrate"{}\}
+\item 
+Share$<$ float $>$ \mbox{\hyperlink{main_8cpp_a5d636c57d472db8f6188090ac3b20f79}{tilt\+\_\+enc\+Position}} \{"{}tiltenc\+\_\+pos"{}\}
+\item 
+Share$<$ float $>$ \mbox{\hyperlink{main_8cpp_ad6e508aaf5760993011a095c6fe4bb5c}{tilt\+\_\+enc\+Velocity}} \{"{}tiltenc\+\_\+vel"{}\}
+\item 
+Share$<$ float $>$ \mbox{\hyperlink{main_8cpp_abac84b503e5384bc907d1ebe03b84639}{pan\+\_\+enc\+Position}} \{"{}panenc\+\_\+pos"{}\}
+\item 
+Share$<$ float $>$ \mbox{\hyperlink{main_8cpp_a37117fd09522ec77568fc16714c6bd45}{pan\+\_\+enc\+Velocity}} \{"{}panenc\+\_\+vel"{}\}
+\item 
+Share$<$ int8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a96b1d304ef59f992b9c7f26d345bd3bd}{tilt\+\_\+vref}} \{"{}tiltvref"{}\}
+\item 
+Share$<$ int16\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a2c11930701703706b683072d5f5b7f34}{tilt\+\_\+posref}} \{"{}tiltposref"{}\}
+\item 
+Share$<$ int8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a22f65a631b2d8634743b796fe8177a85}{pan\+\_\+vref}} \{"{}panvref"{}\}
+\item 
+Share$<$ int16\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a7ed3ad0733ad4ecedf22eb04235e7505}{pan\+\_\+posref}} \{"{}panposref"{}\}
+\item 
+Share$<$ uint8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a9a053dffceaa3d3bbddb421847244cd4}{tilt\+\_\+\+Cmd}} \{"{}tiltenc\+\_\+cmd"{}\}
+\item 
+Share$<$ uint8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a5256688222b72b10ffdfe995f734004f}{pan\+\_\+\+Cmd}} \{"{}panenc\+\_\+cmd"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_a0c7f093b10e321a361eb12f2bbc5092c}{tilt\+\_\+enc\+Zero}} \{"{}tiltenc\+\_\+zero"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_ac1a325967c4f5dce4f46a77267befb72}{pan\+\_\+enc\+Zero}} \{"{}panenc\+\_\+zero"{}\}
+\item 
+Share$<$ int8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}{dpad\+\_\+pan}} \{"{}dpad\+\_\+pan"{}\}
+\item 
+Share$<$ int8\+\_\+t $>$ \mbox{\hyperlink{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}{dpad\+\_\+tilt}} \{"{}dpad\+\_\+tilt"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_a937afed701c3b444b9fbe0355529bbd7}{motortest\+\_\+mode}} \{"{}motortest\+\_\+mode"{}\}
+\item 
+Share$<$ bool $>$ \mbox{\hyperlink{main_8cpp_ab1874b468c8f4403be5bde3cc31d1c2d}{imu\+\_\+mode}} \{"{}imu\+\_\+mode"{}\}
+\item 
+Share$<$ \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} $>$ \mbox{\hyperlink{main_8cpp_a748452dadde96ed3e8b07ad6b0679d3e}{g\+\_\+euler\+Angles}} \{"{}euler\+\_\+angles"{}\}
+\item 
+Share$<$ \mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}} $>$ \mbox{\hyperlink{main_8cpp_ab7de3ec279bd1180c7916cc9165d7911}{g\+\_\+gyro\+Data}} \{"{}gyro\+\_\+data"{}\}
+\item 
+Share$<$ \mbox{\hyperlink{struct_accel_data}{Accel\+Data}} $>$ \mbox{\hyperlink{main_8cpp_af1b1e21003ea927a861341c110222121}{g\+\_\+accel\+Data}} \{"{}accel\+\_\+data"{}\}
+\item 
+PID \mbox{\hyperlink{main_8cpp_ab5a6f98a1d4dbdc85049552816acaa4e}{tilt\+\_\+velocity\+\_\+pid}}
+\item 
+PID \mbox{\hyperlink{main_8cpp_a8b499b7c99aaca60891b650d6bd0c809}{tilt\+\_\+position\+\_\+pid}}
+\item 
+PID \mbox{\hyperlink{main_8cpp_ad114459ce51573253fd6e470f90b2aec}{pan\+\_\+velocity\+\_\+pid}}
+\item 
+PID \mbox{\hyperlink{main_8cpp_af9936e6055a9cb1a04edf4a69ae076a4}{pan\+\_\+position\+\_\+pid}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main application entry point for ESP32 camera-\/guided pan-\/tilt tracking system. 
+
+This file implements a sophisticated multi-\/axis tracking system combining computer vision, inertial measurement, and PID motor control. The system can automatically track LED targets using camera feedback, provide manual teleoperation via web interface, and stream real-\/time telemetry data including motor positions, IMU orientation, and tracking errors.\hypertarget{main_8cpp_autotoc_md9}{}\doxysubsubsection{\texorpdfstring{System Architecture\+:}{System Architecture\+:}}\label{main_8cpp_autotoc_md9}
+The system uses Free\+RTOS multitasking to coordinate seven concurrent tasks\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{\doxylink{class_motor_task}{Motor\+Task} (Tilt \& Pan)}}\+: Multi-\/mode motor control (velocity, position, camera-\/based)
+\item {\bfseries{\doxylink{class_encoder_task}{Encoder\+Task} (Tilt \& Pan)}}\+: High-\/frequency position/velocity measurement via PCNT
+\item {\bfseries{\doxylink{class_controller_task}{Controller\+Task}}}\+: Top-\/level \doxylink{class_f_s_m}{FSM} coordinating tracking modes and state transitions
+\item {\bfseries{\doxylink{class_camera_task}{Camera\+Task}}}\+: LED detection and visual servoing error computation
+\item {\bfseries{\doxylink{class_i_m_u_task}{IMUTask}}}\+: BNO055 9-\/DOF orientation and motion sensing
+\item {\bfseries{\doxylink{class_u_i_task}{UITask}}}\+: Web server, Web\+Socket telemetry, and command interface
+\end{DoxyEnumerate}\hypertarget{main_8cpp_autotoc_md10}{}\doxysubsubsection{\texorpdfstring{Hardware Components\+:}{Hardware Components\+:}}\label{main_8cpp_autotoc_md10}
+
+\begin{DoxyItemize}
+\item ESP32-\/\+WROVER microcontroller (dual-\/core, Wi\+Fi, 8MB PSRAM)
+\item 2× DRV8833 dual H-\/bridge motor drivers
+\item 2× DC motors with 70\+:1 gearboxes
+\item 2× Quadrature encoders (64 CPR)
+\item OV5640 camera module (5MP, autofocus)
+\item BNO055 9-\/DOF IMU (accelerometer, gyroscope, magnetometer)
+\item Pan-\/tilt mechanical platform
+\end{DoxyItemize}\hypertarget{main_8cpp_autotoc_md11}{}\doxysubsubsection{\texorpdfstring{Control Modes\+:}{Control Modes\+:}}\label{main_8cpp_autotoc_md11}
+
+\begin{DoxyItemize}
+\item {\bfseries{TRACKER}}\+: Automatic LED tracking using camera feedback
+\item {\bfseries{TELEOP}}\+: Manual control via web UI D-\/pad
+\item {\bfseries{MOTOR\+\_\+\+TEST}}\+: Open-\/loop motor testing for diagnostics
+\item {\bfseries{CALIBRATE}}\+: \doxylink{class_encoder}{Encoder} homing and calibration sequence
+\end{DoxyItemize}\hypertarget{main_8cpp_autotoc_md12}{}\doxysubsubsection{\texorpdfstring{PID Tuning Guide\+:}{PID Tuning Guide\+:}}\label{main_8cpp_autotoc_md12}
+Four independent PID controllers are available for tuning\+:
+
+
+\begin{DoxyEnumerate}
+\item {\bfseries{tilt\+\_\+velocity\+\_\+pid}} -\/ Tilt axis velocity control
+\begin{DoxyItemize}
+\item Current\+: Kp=0.\+10, Ki=0.\+0, Kd=0.\+0
+\item Tuning\+: Increase Kp for faster velocity response, add Ki to eliminate steady-\/state error
+\end{DoxyItemize}
+\item {\bfseries{tilt\+\_\+position\+\_\+pid}} -\/ Tilt axis position control ~\newline
+
+\begin{DoxyItemize}
+\item Current\+: Kp=0.\+080, Ki=0.\+0005, Kd=0.\+0
+\item Tuning\+: Increase Kp for stiffer position hold, add Kd to reduce overshoot
+\end{DoxyItemize}
+\item {\bfseries{pan\+\_\+velocity\+\_\+pid}} -\/ Pan axis velocity control
+\begin{DoxyItemize}
+\item Current\+: Kp=0.\+10, Ki=0.\+0, Kd=0.\+0
+\item Tuning\+: Adjust independently from tilt due to different mechanical characteristics
+\end{DoxyItemize}
+\item {\bfseries{pan\+\_\+position\+\_\+pid}} -\/ Pan axis position control
+\begin{DoxyItemize}
+\item Current\+: Kp=0.\+080, Ki=0.\+0005, Kd=0.\+0
+\item Tuning\+: May need different gains than tilt due to gravity effects
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+To adjust gains, modify the Init() calls in \doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{main_8cpp_ab5a6f98a1d4dbdc85049552816acaa4e}{tilt\_velocity\_pid}}.Init(Kp,\ Ki,\ Kd);}
+
+\end{DoxyCode}
+\hypertarget{main_8cpp_autotoc_md13}{}\doxysubsubsection{\texorpdfstring{Network Configuration\+:}{Network Configuration\+:}}\label{main_8cpp_autotoc_md13}
+
+\begin{DoxyItemize}
+\item Wi\+Fi SSID/\+Password configured in \doxylink{_u_i_task_8cpp}{UITask.\+cpp}
+\item Web interface accessible at\+: \href{http://}{\texttt{http\+://}}$<$\+ESP32\+\_\+\+IP\+\_\+\+ADDRESS$>$
+\item Web\+Socket telemetry on same port as HTTP server
+\item Serial debug output at 115200 baud
+\end{DoxyItemize}\hypertarget{main_8cpp_autotoc_md14}{}\doxysubsubsection{\texorpdfstring{Pin Assignments\+:}{Pin Assignments\+:}}\label{main_8cpp_autotoc_md14}
+See hardware configuration section in \doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()} for complete GPIO mapping\+:
+\begin{DoxyItemize}
+\item Motors\+: GPIO pins for DRV8833 IN1/\+IN2
+\item Encoders\+: GPIO pins for Phase A/B quadrature signals
+\item Camera\+: SPIO interface to OV5640
+\item IMU\+: I2C interface to BNO055
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+Motor Control Development Team 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+December 2025 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+2.\+7
+\end{DoxyVersion}
+\begin{DoxySeeAlso}{See also}
+\doxylink{_motor_task_8h}{Motor\+Task.\+h} for motor control implementation 
+
+\doxylink{_camera_task_8h}{Camera\+Task.\+h} for computer vision details 
+
+\doxylink{_controller_task_8h}{Controller\+Task.\+h} for \doxylink{class_f_s_m}{FSM} state descriptions 
+\end{DoxySeeAlso}
+
+
+\label{doc-define-members}
+\Hypertarget{main_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{main_8cpp_a774a219393764de432dda837a163ca48}\index{main.cpp@{main.cpp}!nSLP\_PIN@{nSLP\_PIN}}
+\index{nSLP\_PIN@{nSLP\_PIN}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{nSLP\_PIN}{nSLP\_PIN}}
+{\footnotesize\ttfamily \label{main_8cpp_a774a219393764de432dda837a163ca48} 
+\#define n\+SLP\+\_\+\+PIN~GPIO\+\_\+\+NUM\+\_\+13}
+
+\Hypertarget{main_8cpp_abdc6a0c3b4366410882e9b2728609e5a}\index{main.cpp@{main.cpp}!PanENCODER\_A\_GPIO@{PanENCODER\_A\_GPIO}}
+\index{PanENCODER\_A\_GPIO@{PanENCODER\_A\_GPIO}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{PanENCODER\_A\_GPIO}{PanENCODER\_A\_GPIO}}
+{\footnotesize\ttfamily \label{main_8cpp_abdc6a0c3b4366410882e9b2728609e5a} 
+\#define Pan\+ENCODER\+\_\+\+A\+\_\+\+GPIO~GPIO\+\_\+\+NUM\+\_\+3}
+
+\Hypertarget{main_8cpp_a4d0ee5bdfb147d04624ac2d8aefbff46}\index{main.cpp@{main.cpp}!PanENCODER\_B\_GPIO@{PanENCODER\_B\_GPIO}}
+\index{PanENCODER\_B\_GPIO@{PanENCODER\_B\_GPIO}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{PanENCODER\_B\_GPIO}{PanENCODER\_B\_GPIO}}
+{\footnotesize\ttfamily \label{main_8cpp_a4d0ee5bdfb147d04624ac2d8aefbff46} 
+\#define Pan\+ENCODER\+\_\+\+B\+\_\+\+GPIO~GPIO\+\_\+\+NUM\+\_\+1}
+
+\Hypertarget{main_8cpp_a039cf14d1dd6ffcb54227fda70d740a6}\index{main.cpp@{main.cpp}!PanENCODER\_UNIT@{PanENCODER\_UNIT}}
+\index{PanENCODER\_UNIT@{PanENCODER\_UNIT}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{PanENCODER\_UNIT}{PanENCODER\_UNIT}}
+{\footnotesize\ttfamily \label{main_8cpp_a039cf14d1dd6ffcb54227fda70d740a6} 
+\#define Pan\+ENCODER\+\_\+\+UNIT~PCNT\+\_\+\+UNIT\+\_\+1}
+
+\Hypertarget{main_8cpp_a4f5313f502282fbcfd79f30302a3c82b}\index{main.cpp@{main.cpp}!PanIN1@{PanIN1}}
+\index{PanIN1@{PanIN1}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{PanIN1}{PanIN1}}
+{\footnotesize\ttfamily \label{main_8cpp_a4f5313f502282fbcfd79f30302a3c82b} 
+\#define Pan\+IN1~GPIO\+\_\+\+NUM\+\_\+2}
+
+\Hypertarget{main_8cpp_ad46c6e4ac5145a2506b854c28c625aa3}\index{main.cpp@{main.cpp}!PanIN2@{PanIN2}}
+\index{PanIN2@{PanIN2}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{PanIN2}{PanIN2}}
+{\footnotesize\ttfamily \label{main_8cpp_ad46c6e4ac5145a2506b854c28c625aa3} 
+\#define Pan\+IN2~GPIO\+\_\+\+NUM\+\_\+5}
+
+\Hypertarget{main_8cpp_a807a9e87c5be79125356eef1028e785d}\index{main.cpp@{main.cpp}!TiltENCODER\_A\_GPIO@{TiltENCODER\_A\_GPIO}}
+\index{TiltENCODER\_A\_GPIO@{TiltENCODER\_A\_GPIO}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TiltENCODER\_A\_GPIO}{TiltENCODER\_A\_GPIO}}
+{\footnotesize\ttfamily \label{main_8cpp_a807a9e87c5be79125356eef1028e785d} 
+\#define Tilt\+ENCODER\+\_\+\+A\+\_\+\+GPIO~GPIO\+\_\+\+NUM\+\_\+14}
+
+\Hypertarget{main_8cpp_ada9b39849b57a988ff22ec9550a1769d}\index{main.cpp@{main.cpp}!TiltENCODER\_B\_GPIO@{TiltENCODER\_B\_GPIO}}
+\index{TiltENCODER\_B\_GPIO@{TiltENCODER\_B\_GPIO}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TiltENCODER\_B\_GPIO}{TiltENCODER\_B\_GPIO}}
+{\footnotesize\ttfamily \label{main_8cpp_ada9b39849b57a988ff22ec9550a1769d} 
+\#define Tilt\+ENCODER\+\_\+\+B\+\_\+\+GPIO~GPIO\+\_\+\+NUM\+\_\+19}
+
+\Hypertarget{main_8cpp_a1f1ad57f1c6023f908eb9446b759205a}\index{main.cpp@{main.cpp}!TiltENCODER\_UNIT@{TiltENCODER\_UNIT}}
+\index{TiltENCODER\_UNIT@{TiltENCODER\_UNIT}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TiltENCODER\_UNIT}{TiltENCODER\_UNIT}}
+{\footnotesize\ttfamily \label{main_8cpp_a1f1ad57f1c6023f908eb9446b759205a} 
+\#define Tilt\+ENCODER\+\_\+\+UNIT~PCNT\+\_\+\+UNIT\+\_\+0}
+
+\Hypertarget{main_8cpp_a8e5bb8b9c5447a5a1636521c1eee0247}\index{main.cpp@{main.cpp}!TiltIN1@{TiltIN1}}
+\index{TiltIN1@{TiltIN1}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TiltIN1}{TiltIN1}}
+{\footnotesize\ttfamily \label{main_8cpp_a8e5bb8b9c5447a5a1636521c1eee0247} 
+\#define Tilt\+IN1~GPIO\+\_\+\+NUM\+\_\+18}
+
+\Hypertarget{main_8cpp_ad6a84ed2a08e70da7d9adda71470ead4}\index{main.cpp@{main.cpp}!TiltIN2@{TiltIN2}}
+\index{TiltIN2@{TiltIN2}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{TiltIN2}{TiltIN2}}
+{\footnotesize\ttfamily \label{main_8cpp_ad6a84ed2a08e70da7d9adda71470ead4} 
+\#define Tilt\+IN2~GPIO\+\_\+\+NUM\+\_\+23}
+
+
+
+\label{doc-func-members}
+\Hypertarget{main_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd}\index{main.cpp@{main.cpp}!camera\_task\_func@{camera\_task\_func}}
+\index{camera\_task\_func@{camera\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{camera\_task\_func()}{camera\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_aa4f3a74fdc57aa9bd8666a9a682e75cd} 
+void camera\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for camera vision processing. 
+
+C-\/style function required by x\+Task\+Create(). Creates an infinite loop that periodically calls the camera task\textquotesingle{}s update() method to execute the \doxylink{class_f_s_m}{FSM}.
+
+Task Loop\+:
+\begin{DoxyEnumerate}
+\item Call update() to execute current \doxylink{class_f_s_m}{FSM} state
+\item Delay for 10ms (100Hz maximum frame rate)
+\item Repeat indefinitely
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to \doxylink{class_camera_task}{Camera\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Fixed 10ms delay provides \texorpdfstring{$\sim$}{\string~}100\+Hz maximum frame rate 
+
+Actual frame rate depends on camera capture time and processing 
+
+Task never exits -\/ runs for lifetime of system 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a666b8f7e8309abb257c178d08fdaec1c}\index{main.cpp@{main.cpp}!controller\_task\_func@{controller\_task\_func}}
+\index{controller\_task\_func@{controller\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{controller\_task\_func()}{controller\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_a666b8f7e8309abb257c178d08fdaec1c} 
+void controller\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry; repeatedly calls update() at configured period. 
+
+\Hypertarget{main_8cpp_af5729a7ef453042a1e3635e886a73167}\index{main.cpp@{main.cpp}!imu\_task\_func@{imu\_task\_func}}
+\index{imu\_task\_func@{imu\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{imu\_task\_func()}{imu\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_af5729a7ef453042a1e3635e886a73167} 
+void imu\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for IMU data acquisition. 
+
+C-\/style function required by x\+Task\+Create(). Creates an infinite loop that periodically calls the IMU task\textquotesingle{}s update() method to execute the \doxylink{class_f_s_m}{FSM}.
+
+Task Loop\+:
+\begin{DoxyEnumerate}
+\item Set static instance pointer for callback access
+\item Call update() to execute current \doxylink{class_f_s_m}{FSM} state
+\item Delay for configured sample interval
+\item Repeat indefinitely
+\end{DoxyEnumerate}
+
+
+\begin{DoxyParams}{Parameters}
+{\em pv\+Parameters} & Pointer to \doxylink{class_i_m_u_task}{IMUTask} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Delay duration matches update\+Ms\+\_\+ from \doxylink{class_i_m_u_task}{IMUTask} configuration 
+
+Task never exits -\/ runs for lifetime of system 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_afe461d27b9c48d5921c00d521181f12f}\index{main.cpp@{main.cpp}!loop@{loop}}
+\index{loop@{loop}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{loop()}{loop()}}
+{\footnotesize\ttfamily \label{main_8cpp_afe461d27b9c48d5921c00d521181f12f} 
+void loop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Arduino \doxylink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop()} -\/ Idle function for Free\+RTOS operation. 
+
+In a Free\+RTOS-\/based system, the Arduino \doxylink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop()} function is not used for main program logic. All application code runs in Free\+RTOS tasks created in \doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()}. The \doxylink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop()} function simply delays indefinitely to prevent watchdog timer resets.
+
+Task Execution\+:
+\begin{DoxyItemize}
+\item All seven tasks run concurrently under Free\+RTOS scheduler
+\item Task priorities determine execution order when multiple tasks ready
+\item v\+Task\+Delay() in each task yields CPU to other tasks
+\item Free\+RTOS idle task runs when no other tasks ready (manages power)
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+This function runs on ESP32 core 1 (setup/loop core) 
+
+Free\+RTOS scheduler manages all task execution timing 
+
+Infinite delay prevents watchdog timer from triggering 
+
+To modify system behavior, edit task code, not \doxylink{main_8cpp_afe461d27b9c48d5921c00d521181f12f}{loop()} 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a0189909595ebf63214312f1e6fb9abea}\index{main.cpp@{main.cpp}!pan\_encoder\_task\_func@{pan\_encoder\_task\_func}}
+\index{pan\_encoder\_task\_func@{pan\_encoder\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_encoder\_task\_func()}{pan\_encoder\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_a0189909595ebf63214312f1e6fb9abea} 
+void pan\+\_\+encoder\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for pan encoder monitoring. 
+
+High-\/frequency task for pan axis encoder position and velocity measurement. Operates independently from tilt encoder to provide concurrent feedback for both axes without static instance conflicts.
+
+Task Configuration\+:
+\begin{DoxyItemize}
+\item Update rate\+: 10ms (100Hz)
+\item Priority\+: Typically higher than motor tasks for accurate feedback
+\item Stack size\+: Configured in task creation
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to pan \doxylink{class_encoder_task}{Encoder\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Matches tilt encoder update rate for consistent control behavior 
+
+Separate task function prevents static instance pointer conflicts 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a302862cb5caa69a143d50001e12ef2a4}\index{main.cpp@{main.cpp}!pan\_motor\_task\_func@{pan\_motor\_task\_func}}
+\index{pan\_motor\_task\_func@{pan\_motor\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_motor\_task\_func()}{pan\_motor\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_a302862cb5caa69a143d50001e12ef2a4} 
+void pan\+\_\+motor\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for pan motor control. 
+
+Dedicated task function for pan axis motor control, independent from tilt axis. Maintains separate static instance context to prevent conflicts during concurrent execution of both motor control tasks.
+
+Task Configuration\+:
+\begin{DoxyItemize}
+\item Update rate\+: 50ms (20Hz)
+\item Priority\+: Set during x\+Task\+Create() call
+\item Stack size\+: Configured in task creation
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to pan \doxylink{class_motor_task}{Motor\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Must be separate from tilt\+\_\+motor\+\_\+task\+\_\+func due to static instance pattern 
+
+Both motor tasks run concurrently without interference 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}\index{main.cpp@{main.cpp}!setup@{setup}}
+\index{setup@{setup}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{setup()}{setup()}}
+{\footnotesize\ttfamily \label{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d} 
+void setup (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Arduino \doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()} -\/ System initialization and Free\+RTOS task creation. 
+
+This function performs complete system initialization including hardware configuration, communication interface setup, PID controller tuning, and Free\+RTOS task creation. All initialization must complete before tasks begin execution.
+
+Initialization Sequence\+:
+\begin{DoxyEnumerate}
+\item Initialize all Share$<$\+T$>$ objects to safe default values
+\item Configure serial communication (115200 baud)
+\item Connect telemetry queues between tasks
+\item Initialize I2C bus for IMU communication
+\item Initialize BNO055 IMU sensor and load calibration
+\item Initialize OV5640 camera module
+\item Enable motor drivers (n\+SLP pin HIGH)
+\item Configure PID controller gains for all four controllers
+\item Initialize Wi\+Fi Access Point and web server
+\item Create seven Free\+RTOS tasks with appropriate priorities
+\end{DoxyEnumerate}
+
+Task Priority Scheme\+:
+\begin{DoxyItemize}
+\item Priority 5\+: \doxylink{class_encoder}{Encoder} tasks (highest -\/ critical for control feedback)
+\item Priority 4\+: Camera task (high -\/ visual servoing feedback)
+\item Priority 3\+: Controller task (medium-\/high -\/ coordination)
+\item Priority 2\+: Motor tasks (medium -\/ actuation)
+\item Priority 1\+: UI task (low -\/ telemetry and commands)
+\item Priority 0\+: IMU task (lowest -\/ supplementary data)
+\end{DoxyItemize}
+
+Hardware Configuration\+:
+\begin{DoxyItemize}
+\item I2C Bus\+: GPIO21 (SDA), GPIO22 (SCL) for IMU
+\item Wi\+Fi\+: Access Point mode "{}\+ESP32-\/\+Motor\+Control"{} / "{}motor123"{}
+\item Motor Enable\+: GPIO13 (n\+SLP\+\_\+\+PIN) set HIGH
+\item Serial\+: 115200 baud for debug output
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+GPIO1 used by pan encoder (no USB Serial transmission) 
+
+Camera/\+IMU failures logged but don\textquotesingle{}t halt system startup 
+
+All tasks start immediately after creation 
+
+\doxylink{main_8cpp_a4fc01d736fe50cf5b977f755b675f11d}{setup()} runs once on ESP32 core 1 before scheduler starts 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a772e97ad5fae7403b411a5522fed540c}\index{main.cpp@{main.cpp}!tilt\_encoder\_task\_func@{tilt\_encoder\_task\_func}}
+\index{tilt\_encoder\_task\_func@{tilt\_encoder\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_encoder\_task\_func()}{tilt\_encoder\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_a772e97ad5fae7403b411a5522fed540c} 
+void tilt\+\_\+encoder\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for tilt encoder monitoring. 
+
+High-\/frequency task for tilt axis encoder position and velocity measurement. Runs at 100Hz to minimize control loop latency and ensure accurate velocity calculation via the \doxylink{class_encoder}{Encoder}\textquotesingle{}s sliding window algorithm.
+
+Task Configuration\+:
+\begin{DoxyItemize}
+\item Update rate\+: 10ms (100Hz)
+\item Priority\+: Typically higher than motor tasks for accurate feedback
+\item Stack size\+: Configured in task creation
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to tilt \doxylink{class_encoder_task}{Encoder\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Fast update rate critical for control loop performance 
+
+Separate from pan encoder to avoid instance conflicts 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_afc9c2cf42049d569d15d14db75a3e661}\index{main.cpp@{main.cpp}!tilt\_motor\_task\_func@{tilt\_motor\_task\_func}}
+\index{tilt\_motor\_task\_func@{tilt\_motor\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_motor\_task\_func()}{tilt\_motor\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_afc9c2cf42049d569d15d14db75a3e661} 
+void tilt\+\_\+motor\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+Free\+RTOS task entry point for tilt motor control. 
+
+Dedicated task function for tilt axis motor control to avoid static instance conflicts between pan and tilt \doxylink{class_motor_task}{Motor\+Task} objects. Sets the static instance pointer before each update to ensure correct object context.
+
+Task Configuration\+:
+\begin{DoxyItemize}
+\item Update rate\+: 50ms (20Hz)
+\item Priority\+: Set during x\+Task\+Create() call
+\item Stack size\+: Configured in task creation
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & Pointer to tilt \doxylink{class_motor_task}{Motor\+Task} object (cast from void\texorpdfstring{$\ast$}{*})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Separate task functions required because \doxylink{class_motor_task}{Motor\+Task} uses static instance pattern 
+
+Instance pointer set before each update() call for correct \doxylink{class_f_s_m}{FSM} execution 
+\end{DoxyNote}
+\Hypertarget{main_8cpp_a47703f0cbab9e92ed10160ce53f4f96d}\index{main.cpp@{main.cpp}!ui\_task\_func@{ui\_task\_func}}
+\index{ui\_task\_func@{ui\_task\_func}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ui\_task\_func()}{ui\_task\_func()}}
+{\footnotesize\ttfamily \label{main_8cpp_a47703f0cbab9e92ed10160ce53f4f96d} 
+void ui\+\_\+task\+\_\+func (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-var-members}
+\Hypertarget{main_8cpp_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{main_8cpp_a52dc7a530bd2ac368f726eac25d55494}\index{main.cpp@{main.cpp}!bno055\_sensor@{bno055\_sensor}}
+\index{bno055\_sensor@{bno055\_sensor}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{bno055\_sensor}{bno055\_sensor}}
+{\footnotesize\ttfamily \label{main_8cpp_a52dc7a530bd2ac368f726eac25d55494} 
+\mbox{\hyperlink{class_i_m_u_task}{IMUTask}} imu\+Task \& bno055\+\_\+sensor = \mbox{\hyperlink{class_adafruit___b_n_o055}{Adafruit\+\_\+\+BNO055}}(1234, 0x28, \&\mbox{\hyperlink{main_8cpp_aa5098f58d7b46d0b1449973242d4fe60}{I2C}})}
+
+\Hypertarget{main_8cpp_a721f332798069cf7abda5b39364ba45a}\index{main.cpp@{main.cpp}!cam\_Mode@{cam\_Mode}}
+\index{cam\_Mode@{cam\_Mode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{cam\_Mode}{cam\_Mode}}
+{\footnotesize\ttfamily \label{main_8cpp_a721f332798069cf7abda5b39364ba45a} 
+Share$<$uint8\+\_\+t$>$ cam\+\_\+\+Mode \{"{}cam\+Mode"{}\}}
+
+\Hypertarget{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7}\index{main.cpp@{main.cpp}!camera@{camera}}
+\index{camera@{camera}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{camera}{camera}}
+{\footnotesize\ttfamily \label{main_8cpp_a75f0a8d83ec4ecf50ce67b9df42431e7} 
+\mbox{\hyperlink{class_camera_task}{Camera\+Task}} camera\+Task \& camera = \mbox{\hyperlink{class_o_v5640_camera}{OV5640\+Camera}}(760)}
+
+\Hypertarget{main_8cpp_a8a05a0fb1f3d54da915fe436864de249}\index{main.cpp@{main.cpp}!dcalibrate@{dcalibrate}}
+\index{dcalibrate@{dcalibrate}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{dcalibrate}{dcalibrate}}
+{\footnotesize\ttfamily \label{main_8cpp_a8a05a0fb1f3d54da915fe436864de249} 
+Share$<$bool$>$ dcalibrate \{"{}dcalibrate"{}\}}
+
+\Hypertarget{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8}\index{main.cpp@{main.cpp}!dpad\_pan@{dpad\_pan}}
+\index{dpad\_pan@{dpad\_pan}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{dpad\_pan}{dpad\_pan}}
+{\footnotesize\ttfamily \label{main_8cpp_a14bf215e19290b734fc9afcc52d93fc8} 
+Share$<$int8\+\_\+t$>$ dpad\+\_\+pan \{"{}dpad\+\_\+pan"{}\}}
+
+\Hypertarget{main_8cpp_a9afeb6d51496f00818021a457cc17ac6}\index{main.cpp@{main.cpp}!dpad\_tilt@{dpad\_tilt}}
+\index{dpad\_tilt@{dpad\_tilt}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{dpad\_tilt}{dpad\_tilt}}
+{\footnotesize\ttfamily \label{main_8cpp_a9afeb6d51496f00818021a457cc17ac6} 
+Share$<$int8\+\_\+t$>$ dpad\+\_\+tilt \{"{}dpad\+\_\+tilt"{}\}}
+
+\Hypertarget{main_8cpp_af1b1e21003ea927a861341c110222121}\index{main.cpp@{main.cpp}!g\_accelData@{g\_accelData}}
+\index{g\_accelData@{g\_accelData}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{g\_accelData}{g\_accelData}}
+{\footnotesize\ttfamily \label{main_8cpp_af1b1e21003ea927a861341c110222121} 
+Share$<$\mbox{\hyperlink{struct_accel_data}{Accel\+Data}}$>$ g\+\_\+accel\+Data \{"{}accel\+\_\+data"{}\}}
+
+\Hypertarget{main_8cpp_a748452dadde96ed3e8b07ad6b0679d3e}\index{main.cpp@{main.cpp}!g\_eulerAngles@{g\_eulerAngles}}
+\index{g\_eulerAngles@{g\_eulerAngles}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{g\_eulerAngles}{g\_eulerAngles}}
+{\footnotesize\ttfamily \label{main_8cpp_a748452dadde96ed3e8b07ad6b0679d3e} 
+Share$<$\mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}}$>$ g\+\_\+euler\+Angles \{"{}euler\+\_\+angles"{}\}}
+
+\Hypertarget{main_8cpp_ab7de3ec279bd1180c7916cc9165d7911}\index{main.cpp@{main.cpp}!g\_gyroData@{g\_gyroData}}
+\index{g\_gyroData@{g\_gyroData}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{g\_gyroData}{g\_gyroData}}
+{\footnotesize\ttfamily \label{main_8cpp_ab7de3ec279bd1180c7916cc9165d7911} 
+Share$<$\mbox{\hyperlink{struct_gyro_data}{Gyro\+Data}}$>$ g\+\_\+gyro\+Data \{"{}gyro\+\_\+data"{}\}}
+
+\Hypertarget{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e}\index{main.cpp@{main.cpp}!hasLed@{hasLed}}
+\index{hasLed@{hasLed}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{hasLed}{hasLed}}
+{\footnotesize\ttfamily \label{main_8cpp_a875d2c5c4866849a876579d2c92d5c6e} 
+Share$<$bool$>$ has\+Led \{"{}has\+Led"{}\}}
+
+\Hypertarget{main_8cpp_aa5098f58d7b46d0b1449973242d4fe60}\index{main.cpp@{main.cpp}!I2C@{I2C}}
+\index{I2C@{I2C}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{I2C}{I2C}}
+{\footnotesize\ttfamily \label{main_8cpp_aa5098f58d7b46d0b1449973242d4fe60} 
+Two\+Wire I2C = Two\+Wire(0)}
+
+\Hypertarget{main_8cpp_ab1874b468c8f4403be5bde3cc31d1c2d}\index{main.cpp@{main.cpp}!imu\_mode@{imu\_mode}}
+\index{imu\_mode@{imu\_mode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{imu\_mode}{imu\_mode}}
+{\footnotesize\ttfamily \label{main_8cpp_ab1874b468c8f4403be5bde3cc31d1c2d} 
+Share$<$bool$>$ imu\+\_\+mode \{"{}imu\+\_\+mode"{}\}}
+
+\Hypertarget{main_8cpp_ad269aac01e7c58c2bfc634fbef929289}\index{main.cpp@{main.cpp}!ledThreshold@{ledThreshold}}
+\index{ledThreshold@{ledThreshold}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{ledThreshold}{ledThreshold}}
+{\footnotesize\ttfamily \label{main_8cpp_ad269aac01e7c58c2bfc634fbef929289} 
+Share$<$uint16\+\_\+t$>$ led\+Threshold \{"{}led\+Threshold"{}\}}
+
+\Hypertarget{main_8cpp_a937afed701c3b444b9fbe0355529bbd7}\index{main.cpp@{main.cpp}!motortest\_mode@{motortest\_mode}}
+\index{motortest\_mode@{motortest\_mode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{motortest\_mode}{motortest\_mode}}
+{\footnotesize\ttfamily \label{main_8cpp_a937afed701c3b444b9fbe0355529bbd7} 
+Share$<$bool$>$ motortest\+\_\+mode \{"{}motortest\+\_\+mode"{}\}}
+
+\Hypertarget{main_8cpp_a5256688222b72b10ffdfe995f734004f}\index{main.cpp@{main.cpp}!pan\_Cmd@{pan\_Cmd}}
+\index{pan\_Cmd@{pan\_Cmd}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_Cmd}{pan\_Cmd}}
+{\footnotesize\ttfamily \label{main_8cpp_a5256688222b72b10ffdfe995f734004f} 
+Share$<$uint8\+\_\+t$>$ pan\+\_\+\+Cmd \{"{}panenc\+\_\+cmd"{}\}}
+
+\Hypertarget{main_8cpp_abac84b503e5384bc907d1ebe03b84639}\index{main.cpp@{main.cpp}!pan\_encPosition@{pan\_encPosition}}
+\index{pan\_encPosition@{pan\_encPosition}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_encPosition}{pan\_encPosition}}
+{\footnotesize\ttfamily \label{main_8cpp_abac84b503e5384bc907d1ebe03b84639} 
+Share$<$float$>$ pan\+\_\+enc\+Position \{"{}panenc\+\_\+pos"{}\}}
+
+\Hypertarget{main_8cpp_a37117fd09522ec77568fc16714c6bd45}\index{main.cpp@{main.cpp}!pan\_encVelocity@{pan\_encVelocity}}
+\index{pan\_encVelocity@{pan\_encVelocity}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_encVelocity}{pan\_encVelocity}}
+{\footnotesize\ttfamily \label{main_8cpp_a37117fd09522ec77568fc16714c6bd45} 
+Share$<$float$>$ pan\+\_\+enc\+Velocity \{"{}panenc\+\_\+vel"{}\}}
+
+\Hypertarget{main_8cpp_ac1a325967c4f5dce4f46a77267befb72}\index{main.cpp@{main.cpp}!pan\_encZero@{pan\_encZero}}
+\index{pan\_encZero@{pan\_encZero}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_encZero}{pan\_encZero}}
+{\footnotesize\ttfamily \label{main_8cpp_ac1a325967c4f5dce4f46a77267befb72} 
+Share$<$bool$>$ pan\+\_\+enc\+Zero \{"{}panenc\+\_\+zero"{}\}}
+
+\Hypertarget{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f}\index{main.cpp@{main.cpp}!pan\_err@{pan\_err}}
+\index{pan\_err@{pan\_err}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_err}{pan\_err}}
+{\footnotesize\ttfamily \label{main_8cpp_ae3eba6e3647d2c7fcdc8b9048469268f} 
+\mbox{\hyperlink{class_controller_task}{Controller\+Task}} controller\+Task \& pan\+\_\+err \{"{}pan\+\_\+err"{}\}}
+
+\Hypertarget{main_8cpp_af9936e6055a9cb1a04edf4a69ae076a4}\index{main.cpp@{main.cpp}!pan\_position\_pid@{pan\_position\_pid}}
+\index{pan\_position\_pid@{pan\_position\_pid}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_position\_pid}{pan\_position\_pid}}
+{\footnotesize\ttfamily \label{main_8cpp_af9936e6055a9cb1a04edf4a69ae076a4} 
+PID pan\+\_\+position\+\_\+pid}
+
+\Hypertarget{main_8cpp_a7ed3ad0733ad4ecedf22eb04235e7505}\index{main.cpp@{main.cpp}!pan\_posref@{pan\_posref}}
+\index{pan\_posref@{pan\_posref}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_posref}{pan\_posref}}
+{\footnotesize\ttfamily \label{main_8cpp_a7ed3ad0733ad4ecedf22eb04235e7505} 
+Share$<$int16\+\_\+t$>$ pan\+\_\+posref \{"{}panposref"{}\}}
+
+\Hypertarget{main_8cpp_ad114459ce51573253fd6e470f90b2aec}\index{main.cpp@{main.cpp}!pan\_velocity\_pid@{pan\_velocity\_pid}}
+\index{pan\_velocity\_pid@{pan\_velocity\_pid}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_velocity\_pid}{pan\_velocity\_pid}}
+{\footnotesize\ttfamily \label{main_8cpp_ad114459ce51573253fd6e470f90b2aec} 
+PID pan\+\_\+velocity\+\_\+pid}
+
+\Hypertarget{main_8cpp_a22f65a631b2d8634743b796fe8177a85}\index{main.cpp@{main.cpp}!pan\_vref@{pan\_vref}}
+\index{pan\_vref@{pan\_vref}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{pan\_vref}{pan\_vref}}
+{\footnotesize\ttfamily \label{main_8cpp_a22f65a631b2d8634743b796fe8177a85} 
+Share$<$int8\+\_\+t$>$ pan\+\_\+vref \{"{}panvref"{}\}}
+
+\Hypertarget{main_8cpp_a8782c85d1bc81cddd908140fa492fbe6}\index{main.cpp@{main.cpp}!panencoder@{panencoder}}
+\index{panencoder@{panencoder}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{panencoder}{panencoder}}
+{\footnotesize\ttfamily \label{main_8cpp_a8782c85d1bc81cddd908140fa492fbe6} 
+\mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} panencoder\+Task \& panencoder (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{main_8cpp_abdc6a0c3b4366410882e9b2728609e5a}{Pan\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_a4d0ee5bdfb147d04624ac2d8aefbff46}{Pan\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_a039cf14d1dd6ffcb54227fda70d740a6}{Pan\+ENCODER\+\_\+\+UNIT}}}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8cpp_a000b34f09d3812c2177cbbc34e41bddc}\index{main.cpp@{main.cpp}!panmotor@{panmotor}}
+\index{panmotor@{panmotor}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{panmotor}{panmotor}}
+{\footnotesize\ttfamily \label{main_8cpp_a000b34f09d3812c2177cbbc34e41bddc} 
+\mbox{\hyperlink{class_motor_task}{Motor\+Task}} panmotor\+Task \& panmotor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{main_8cpp_a4f5313f502282fbcfd79f30302a3c82b}{Pan\+IN1}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_ad46c6e4ac5145a2506b854c28c625aa3}{Pan\+IN2}}}]{}{, }\item[{0}]{}{, }\item[{1}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8cpp_a9a053dffceaa3d3bbddb421847244cd4}\index{main.cpp@{main.cpp}!tilt\_Cmd@{tilt\_Cmd}}
+\index{tilt\_Cmd@{tilt\_Cmd}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_Cmd}{tilt\_Cmd}}
+{\footnotesize\ttfamily \label{main_8cpp_a9a053dffceaa3d3bbddb421847244cd4} 
+Share$<$uint8\+\_\+t$>$ tilt\+\_\+\+Cmd \{"{}tiltenc\+\_\+cmd"{}\}}
+
+\Hypertarget{main_8cpp_a5d636c57d472db8f6188090ac3b20f79}\index{main.cpp@{main.cpp}!tilt\_encPosition@{tilt\_encPosition}}
+\index{tilt\_encPosition@{tilt\_encPosition}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_encPosition}{tilt\_encPosition}}
+{\footnotesize\ttfamily \label{main_8cpp_a5d636c57d472db8f6188090ac3b20f79} 
+\mbox{\hyperlink{class_u_i_task}{UITask}} ui\+Task \& tilt\+\_\+enc\+Position \{"{}tiltenc\+\_\+pos"{}\}}
+
+\Hypertarget{main_8cpp_ad6e508aaf5760993011a095c6fe4bb5c}\index{main.cpp@{main.cpp}!tilt\_encVelocity@{tilt\_encVelocity}}
+\index{tilt\_encVelocity@{tilt\_encVelocity}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_encVelocity}{tilt\_encVelocity}}
+{\footnotesize\ttfamily \label{main_8cpp_ad6e508aaf5760993011a095c6fe4bb5c} 
+Share$<$float$>$ tilt\+\_\+enc\+Velocity \{"{}tiltenc\+\_\+vel"{}\}}
+
+\Hypertarget{main_8cpp_a0c7f093b10e321a361eb12f2bbc5092c}\index{main.cpp@{main.cpp}!tilt\_encZero@{tilt\_encZero}}
+\index{tilt\_encZero@{tilt\_encZero}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_encZero}{tilt\_encZero}}
+{\footnotesize\ttfamily \label{main_8cpp_a0c7f093b10e321a361eb12f2bbc5092c} 
+Share$<$bool$>$ tilt\+\_\+enc\+Zero \{"{}tiltenc\+\_\+zero"{}\}}
+
+\Hypertarget{main_8cpp_a1f089d0053c4e4c30975796ecede8618}\index{main.cpp@{main.cpp}!tilt\_err@{tilt\_err}}
+\index{tilt\_err@{tilt\_err}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_err}{tilt\_err}}
+{\footnotesize\ttfamily \label{main_8cpp_a1f089d0053c4e4c30975796ecede8618} 
+Share$<$int16\+\_\+t$>$ tilt\+\_\+err \{"{}tilt\+\_\+err"{}\}}
+
+\Hypertarget{main_8cpp_a8b499b7c99aaca60891b650d6bd0c809}\index{main.cpp@{main.cpp}!tilt\_position\_pid@{tilt\_position\_pid}}
+\index{tilt\_position\_pid@{tilt\_position\_pid}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_position\_pid}{tilt\_position\_pid}}
+{\footnotesize\ttfamily \label{main_8cpp_a8b499b7c99aaca60891b650d6bd0c809} 
+PID tilt\+\_\+position\+\_\+pid}
+
+\Hypertarget{main_8cpp_a2c11930701703706b683072d5f5b7f34}\index{main.cpp@{main.cpp}!tilt\_posref@{tilt\_posref}}
+\index{tilt\_posref@{tilt\_posref}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_posref}{tilt\_posref}}
+{\footnotesize\ttfamily \label{main_8cpp_a2c11930701703706b683072d5f5b7f34} 
+Share$<$int16\+\_\+t$>$ tilt\+\_\+posref \{"{}tiltposref"{}\}}
+
+\Hypertarget{main_8cpp_ab5a6f98a1d4dbdc85049552816acaa4e}\index{main.cpp@{main.cpp}!tilt\_velocity\_pid@{tilt\_velocity\_pid}}
+\index{tilt\_velocity\_pid@{tilt\_velocity\_pid}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_velocity\_pid}{tilt\_velocity\_pid}}
+{\footnotesize\ttfamily \label{main_8cpp_ab5a6f98a1d4dbdc85049552816acaa4e} 
+PID tilt\+\_\+velocity\+\_\+pid}
+
+\Hypertarget{main_8cpp_a96b1d304ef59f992b9c7f26d345bd3bd}\index{main.cpp@{main.cpp}!tilt\_vref@{tilt\_vref}}
+\index{tilt\_vref@{tilt\_vref}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tilt\_vref}{tilt\_vref}}
+{\footnotesize\ttfamily \label{main_8cpp_a96b1d304ef59f992b9c7f26d345bd3bd} 
+Share$<$int8\+\_\+t$>$ tilt\+\_\+vref \{"{}tiltvref"{}\}}
+
+\Hypertarget{main_8cpp_ab54cdca66fa3cc7eb57b1edd9e77a716}\index{main.cpp@{main.cpp}!tiltencoder@{tiltencoder}}
+\index{tiltencoder@{tiltencoder}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tiltencoder}{tiltencoder}}
+{\footnotesize\ttfamily \label{main_8cpp_ab54cdca66fa3cc7eb57b1edd9e77a716} 
+\mbox{\hyperlink{class_encoder_task}{Encoder\+Task}} tiltencoder\+Task \& tiltencoder (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{main_8cpp_a807a9e87c5be79125356eef1028e785d}{Tilt\+ENCODER\+\_\+\+A\+\_\+\+GPIO}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_ada9b39849b57a988ff22ec9550a1769d}{Tilt\+ENCODER\+\_\+\+B\+\_\+\+GPIO}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_a1f1ad57f1c6023f908eb9446b759205a}{Tilt\+ENCODER\+\_\+\+UNIT}}}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8cpp_ae8dcde356db462b2a7c48185714cf52c}\index{main.cpp@{main.cpp}!tiltmotor@{tiltmotor}}
+\index{tiltmotor@{tiltmotor}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{tiltmotor}{tiltmotor}}
+{\footnotesize\ttfamily \label{main_8cpp_ae8dcde356db462b2a7c48185714cf52c} 
+\mbox{\hyperlink{class_motor_task}{Motor\+Task}} tiltmotor\+Task \& tiltmotor (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{main_8cpp_a8e5bb8b9c5447a5a1636521c1eee0247}{Tilt\+IN1}}}]{}{, }\item[{\mbox{\hyperlink{main_8cpp_ad6a84ed2a08e70da7d9adda71470ead4}{Tilt\+IN2}}}]{}{, }\item[{2}]{}{, }\item[{3}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{main_8cpp_a1c51aaca3189ef0686fe5a8dffce1a99}\index{main.cpp@{main.cpp}!UI\_mode@{UI\_mode}}
+\index{UI\_mode@{UI\_mode}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{UI\_mode}{UI\_mode}}
+{\footnotesize\ttfamily \label{main_8cpp_a1c51aaca3189ef0686fe5a8dffce1a99} 
+Share$<$uint8\+\_\+t$>$ UI\+\_\+mode \{"{}UI\+\_\+mode"{}\}}
+
