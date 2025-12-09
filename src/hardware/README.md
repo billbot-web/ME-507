@@ -7,7 +7,7 @@ These Low-level drivers provide abstraction to easily and repeatably interface w
 - **DRV883.cpp/h** - DRV8833 dual H-bridge motor driver control
 - **Encoder.cpp/h** - Quadrature encoder interface using ESP32 PCNT
 - **OV5640_camera.cpp/h** - OV5640 camera module with JPEG capture
-- **Adafruit_BNO055.cpp/h** - BNO055 9-DOF IMU sensor driver. This is an Open-source drive
+- **Adafruit_BNO055.cpp/h** - BNO055 9-DOF IMU sensor driver. This is an Open-source driver for more information see https://github.com/adafruit/Adafruit_BNO055.git
 
 ## 🔌 DRV883 Motor Driver
 
@@ -86,7 +86,7 @@ encoder.zero();  // Re-home to zero
 ### Hardware Connections
 | Encoder | Channel A | Channel B | PCNT Unit |
 |---------|-----------|-----------|-----------|
-| Pan     | GPIO34    | GPIO35    | UNIT_0    |
+| Pan     | GPIO01    | GPIO03    | UNIT_0    |
 | Tilt    | GPIO14    | GPIO19    | UNIT_1    |
 
 ### Resolution Calculation
