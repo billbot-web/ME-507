@@ -1,59 +1,47 @@
 # Hardware Drivers
 
-Low-level peripheral interfaces providing abstraction over ESP32 hardware features for motor control, sensing, and vision.
+These Low-level drivers provide abstraction to easily and repeatably interface with multiple hardware peripherals using the ESP32. These drivers include applications for motor control, sensing, and vision.
 
 ## 📂 Files
 
 - **DRV883.cpp/h** - DRV8833 dual H-bridge motor driver control
 - **Encoder.cpp/h** - Quadrature encoder interface using ESP32 PCNT
 - **OV5640_camera.cpp/h** - OV5640 camera module with JPEG capture
-- **Adafruit_BNO055.cpp/h** - BNO055 9-DOF IMU sensor driver
+- **Adafruit_BNO055.cpp/h** - BNO055 9-DOF IMU sensor driver. This is an Open-source driver for more information see https://github.com/adafruit/Adafruit_BNO055.git
 
 ## 🔌 DRV883 Motor Driver
 
 ### Overview
-Interface to DRV8833 dual H-bridge motor driver providing PWM speed control, direction control, and sleep mode management.
+Interface to the DRV8833 dual H-bridge motor driver providing PWM speed control and direction control. This driver takes in four input parameters: the first two are the two pins on the ESP32 that you will use for PWM. To control the motor speed and direction, the other two are the corresponding PWM channels for the in1 and in2 pins, respectively. When setting the motor PWM effort, the input is meant in the range of -100 to 100. The PWM Effort represents the ratio of how often the motor is on compared with simply being turned on, and the negative is meant to represent turning in either direction. We currently clamp the input effort in code to the possible range, so you can input efforts outside this range, and it will automatically saturate the motor.
 
 ### Key Features
 - **Dual PWM outputs** with configurable frequency (20kHz default)
 - **Direction control** via IN1/IN2 pins (forward, reverse, brake, coast)
-- **Sleep mode** for power saving
-- **Current limiting** via hardware (1.5A continuous, 2A peak)
+<img width="1041" height="297" alt="image" src="https://github.com/user-attachments/assets/bd24d162-a991-4c89-a29a-43fec38e8193" />
+[1]
+The Disable pin is tied high internally. While the nSleep pin is shared for both motors so it is handled outside of the motor driver.
+- **Current limiting** via hardware (1.5A continuous, 5A peak)
 
 ### API
 ```cpp
-class DRV883 {
-public:
-    DRV883(int in1, int in2, int pwm, int sleep_pin);
-    void init();                    // Initialize PWM and GPIO
-    void set_speed(int16_t speed);  // -255 to +255 (neg = reverse)
-    void brake();                   // Short both motor terminals
-    void coast();                   // Disconnect motor (free spin)
-    void sleep(bool enable);        // Enter/exit sleep mode
-};
+ DRV883(int in1, int in2, int ledcCh1, int ledcCh2,
+                uint32_t pwmFreq = 20000, uint8_t resolutionBits = 10);
+    void set_eff(int effort);
+    void stop();
+    void brake();
+
 ```
 
 ### Usage Example
 ```cpp
 DRV883 motor(GPIO32, GPIO33, GPIO25, GPIO26);
-motor.init();
 
-motor.set_speed(128);    // Half speed forward
-motor.set_speed(-200);   // Fast reverse
+motor.set_eff(90);    // Half speed forward
+motor.set_eff(-100);   // Fast reverse
 motor.brake();           // Stop immediately
-motor.coast();           // Let motor coast
-motor.sleep(true);       // Power down driver
 ```
 
-### Hardware Connections
-| Signal | GPIO | Description |
-|--------|------|-------------|
-| IN1    | 32   | Direction control bit 0 |
-| IN2    | 33   | Direction control bit 1 |
-| PWM    | 25   | Speed control (LEDC channel) |
-| SLEEP  | 26   | Enable/disable driver |
-
-## Encoder Driver
+## 📐 Encoder Driver
 
 ### Overview
 Quadrature encoder interface using ESP32 PCNT (Pulse Counter) peripheral for high-frequency, hardware-based position tracking.
@@ -64,6 +52,7 @@ Quadrature encoder interface using ESP32 PCNT (Pulse Counter) peripheral for hig
 - **Velocity estimation** via position differentiation
 - **16-bit signed counter** with overflow handling
 - **Up to 40MHz counting** frequency support
+- **High Resolution** 32 counts per revolution of the motor, multiplied by the 70:1 Gear ratio to the output shaft, so 2240 counts per revolution for the output shaft.
 
 ### API
 ```cpp
@@ -73,8 +62,7 @@ public:
     void init();                    // Configure PCNT unit
     int32_t get_position();         // Read current count
     float get_velocity();           // Estimate speed (counts/sec)
-    void reset();                   // Zero the counter
-    void set_filter(uint16_t val);  // Glitch filter threshold
+    void zero();                   // Zero the counter
 };
 ```
 
@@ -82,32 +70,30 @@ public:
 ```cpp
 Encoder encoder(GPIO34, GPIO35, PCNT_UNIT_0);
 encoder.init();
-encoder.set_filter(100);  // 100 APB cycles glitch filter
 
 int32_t pos = encoder.get_position();
 float vel = encoder.get_velocity();
-encoder.reset();  // Re-home to zero
+encoder.zero();  // Re-home to zero
 ```
 
 ### Hardware Connections
 | Encoder | Channel A | Channel B | PCNT Unit |
 |---------|-----------|-----------|-----------|
-| Pan     | GPIO34    | GPIO35    | UNIT_0    |
-| Tilt    | GPIO36    | GPIO39    | UNIT_1    |
+| Pan     | GPIO01    | GPIO03    | UNIT_0    |
+| Tilt    | GPIO14    | GPIO19    | UNIT_1    |
 
 ### Resolution Calculation
 ```
-Base Resolution: 64 CPR (counts per revolution)
-Quadrature (4×): 256 counts/rev at encoder
+Base Resolution: 32 CPR (counts per revolution)
 Gear Ratio: 70:1
-Total: 256 × 70 = 17,920 counts/motor_revolution
-Final: 4480 counts per output shaft revolution (after gearbox)
+Total: 32 × 70 = 2240 counts/motor_revolution
+Final: 2240 counts per output shaft revolution (after gearbox)
 ```
 
 ## 📷 OV5640 Camera Driver
 
 ### Overview
-Interface to OV5640 5-megapixel camera module with autofocus, providing JPEG-compressed image capture and LED blob detection.
+Interface to OV5640 5-megapixel camera module with autofocus, providing JPEG-compressed image capture and LED blob detection. This allows for position and velocity tracking of both motors in the design. We only directly measure the angular position we move, so we need to divide by the time step between data points to determine the motor velocity. This can become inaccurate at low speeds. In order to smooth the velocity output, we also implemented a 5-position and 5 time-step buffer in order to average the encoder velocity over the past five data points to reduce noise. This also allows for closed-loop control on both motors.
 
 ### Key Features
 - **High resolution**: Up to 2592×1944 (5MP)
@@ -164,11 +150,11 @@ if (cam.capture()) {
 ### Detection Algorithm
 1. Convert RGB → HSV color space
 2. Threshold by hue/saturation/value ranges
-3. Find largest contiguous blob
+3. Find the largest contiguous blob
 4. Calculate centroid (weighted average)
-5. Return pixel coordinates (0,0 = top-left)
+5. Return pixel coordinates (0,0 = center)
 
-## 🧭 Adafruit_BNO055 IMU Driver
+## Adafruit_BNO055 IMU Driver
 
 ### Overview
 Interface to BNO055 9-DOF absolute orientation sensor providing fused accelerometer, gyroscope, and magnetometer data.
@@ -221,8 +207,6 @@ if (bno.begin()) {
 |--------|------|-------------|
 | SDA    | 21   | I2C data (shared with camera) |
 | SCL    | 22   | I2C clock (shared with camera) |
-| INT    | 15   | Interrupt (optional) |
-| RESET  | 2    | Reset (optional) |
 
 ### Coordinate System
 - **X-axis**: Forward (pitch rotation)
@@ -241,83 +225,59 @@ if (bno.begin()) {
 ### Initialization Sequence
 ```cpp
 void setup() {
-    // Motor drivers
-    motor_pan.init();
-    motor_tilt.init();
+     // ----------------Pan Motor pins ----------------
+   #define PanIN1 GPIO_NUM_2
+   #define PanIN2 GPIO_NUM_5
+   #define nSLP_PIN GPIO_NUM_13
+   // ---------------- Pan Encoder pins/unit ----------------
+   #define TiltENCODER_A_GPIO GPIO_NUM_14
+   #define TiltENCODER_B_GPIO GPIO_NUM_19
+   #define TiltENCODER_UNIT   PCNT_UNIT_0
+   // ----------------Tilt Motor pins ----------------
+   #define TiltIN1 GPIO_NUM_18
+   #define TiltIN2 GPIO_NUM_23
+   // ---------------- Tilt Encoder pins/unit ----------------
+   #define PanENCODER_A_GPIO GPIO_NUM_3
+   #define PanENCODER_B_GPIO GPIO_NUM_1 //should be GPI01
+   #define PanENCODER_UNIT   PCNT_UNIT_1
+  // Set I2C pins for ESP32
+  I2C.setPins(21, 22);
+  Serial.println("=== SporTrackr IMU Data Reader ===");
+  Serial.println("Initializing IMU...");
+  
+  // Initialize and start IMU task
+  if (imuTask.initIMU()) {
+    Serial.println("IMU initialized successfully!");
+    delay(300);
     
-    // Encoders
-    encoder_pan.init();
-    encoder_tilt.init();
-    encoder_pan.set_filter(100);
-    encoder_tilt.set_filter(100);
-    
-    // Camera
-    if (!camera.init(FRAMESIZE_VGA)) {
-        Serial.println("Camera init failed!");
-    }
-    
-    // IMU
-    if (!imu.begin()) {
-        Serial.println("IMU init failed!");
-    }
-}
+    // Load saved calibration offsets automatically
+    Serial.println("Loading saved calibration offsets...");
+    imuTask.loadSavedCalibration();
+  } else {
+    Serial.println("WARNING: IMU initialization failed!");
+    Serial.println("Continuing without IMU...");
+  }
+  
+  // -------------------------------------------------------------------------
+  // Step 6: Initialize OV5640 Camera Module
+  // -------------------------------------------------------------------------
+  
+  // Camera initialization - skip if it fails (GPIO conflicts)
+  bool camera_ok = camera.begin();
+  if (!camera_ok) {
+    Serial.println("WARNING: Camera initialization failed!");
+    Serial.println("Continuing without camera...");
+  } else {
+    Serial.println("Camera initialized successfully");
+  }
 ```
 
-### Error Handling
-```cpp
-// Check for hardware faults
-if (!motor.set_speed(speed)) {
-    Serial.println("Motor driver fault!");
-    motor.sleep(true);  // Disable driver
-}
-
-// Validate encoder readings
-int32_t pos = encoder.get_position();
-if (abs(pos) > MAX_POSITION) {
-    Serial.println("Encoder out of range!");
-    motor.brake();
-}
-
-// Verify camera capture
-if (!camera.capture()) {
-    Serial.println("Frame capture failed!");
-    camera.init(FRAMESIZE_VGA);  // Re-init
-}
-```
-
-### Resource Management
-```cpp
-// Power saving
-motor.sleep(true);          // Disable motor driver
-camera.deinit();            // Release camera resources
-imu.setMode(SUSPEND_MODE);  // Low-power IMU mode
-
-// Cleanup on task exit
-motor.brake();
-motor.sleep(true);
-encoder.reset();
-```
-
-## 📊 Performance Characteristics
-
-| Driver | Init Time | Update Rate | CPU Usage | Memory |
-|--------|-----------|-------------|-----------|--------|
-| DRV883 | 10ms      | 20kHz PWM   | <1%       | 200B   |
-| Encoder| 5ms       | 40MHz max   | 0% (HW)   | 100B   |
-| Camera | 500ms     | 15 FPS      | 30%       | 4MB    |
-| IMU    | 650ms     | 100 Hz      | 5%        | 1KB    |
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Motor Driver Issues
 - **Motor not spinning**: Check PWM frequency, verify sleep pin HIGH
 - **Thermal shutdown**: Reduce current, add heatsink, check for stall
 - **Erratic behavior**: Add decoupling capacitors, check power supply
-
-### Encoder Issues
-- **No counts**: Verify A/B channels, check pull-up resistors
-- **Count errors**: Increase filter value, check signal integrity
-- **Overflow**: Implement overflow handling or use 32-bit accumulator
 
 ### Camera Issues
 - **Init failure**: Check I2C address (0x3C), verify SCCB communication
@@ -329,15 +289,15 @@ encoder.reset();
 - **Poor calibration**: Avoid magnetic interference, perform cal routine
 - **Data jumps**: Filter outliers, use sensor fusion quaternions
 
-## 📚 Related Documentation
+## Related Documentation
 
 - [Task Controllers](../tasks/README.md) - Higher-level task implementations
 - [Software Architecture](../README.md) - System overview
 - [PCB Design](../../hardware/pcb/README.md) - Hardware connections
 
-## 🔗 Datasheets
+## Datasheets
 
-- [DRV8833 Datasheet](https://www.ti.com/lit/ds/symlink/drv8833.pdf)
-- [OV5640 Datasheet](https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf)
-- [BNO055 Datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf)
-- [ESP32 PCNT Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/pcnt.html)
+- 1. [DRV8833 Datasheet](https://www.ti.com/lit/ds/symlink/drv8833.pdf)
+- 2. [OV5640 Datasheet](https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf)
+- 3. [BNO055 Datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf)
+- 4. [ESP32 PCNT Documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/pcnt.html)

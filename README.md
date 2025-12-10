@@ -4,7 +4,7 @@ An ESP32-based real-time tracking system that combines computer vision, motion c
 
 ![System Overview](docs/html/index.html)
 
-## 🎯 Project Overview
+## Project Overview
 
 SportTrackr is an embedded control system designed for automated visual tracking applications. The system uses an OV5640 camera module for target detection, dual DC motors with encoders for precise pan-tilt control, and an IMU for orientation sensing. All components are coordinated through a FreeRTOS-based task architecture with PID control loops for smooth and accurate tracking.
 
@@ -32,7 +32,7 @@ SportTrackr is an embedded control system designed for automated visual tracking
     └── pcb/           # PCB design files (KiCad)
 ```
 
-## 🔧 System Components
+## System Components
 
 ### Hardware
 - **MCU**: ESP32-WROVER (Dual-core, WiFi, 4MB PSRAM)
@@ -48,7 +48,7 @@ SportTrackr is an embedded control system designed for automated visual tracking
 - **Web Server**: ESPAsyncWebServer for WiFi interface
 - **Control**: Custom PID implementation with multiple tuning profiles
 
-## 📚 Documentation
+## Documentation
 
 Detailed documentation is available for each subsystem:
 
@@ -61,7 +61,7 @@ Detailed documentation is available for each subsystem:
 - **[Web Interface](data/README.md)** - User interface and telemetry system
 - **[API Reference](docs/html/index.html)** - Full Doxygen documentation
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - PlatformIO IDE (VS Code extension recommended)
@@ -92,7 +92,7 @@ pio device monitor
 2. Adjust PID tuning parameters in `src/main.cpp` (see comments for guidance)
 3. Calibrate camera detection thresholds in `src/tasks/CameraTask.cpp`
 
-## 🎮 Operating Modes
+## Operating Modes
 
 The system supports four distinct operating modes:
 
@@ -103,7 +103,7 @@ The system supports four distinct operating modes:
 
 Modes are switched via the web interface or programmatically through the ControllerTask.
 
-## 🔬 System Architecture
+## System Architecture
 
 The system uses a modular FreeRTOS task architecture:
 
@@ -116,7 +116,7 @@ The system uses a modular FreeRTOS task architecture:
 
 Tasks communicate via FreeRTOS queues and share data through thread-safe mechanisms.
 
-## 📊 Performance
+## Performance
 
 - **Control Loop Rate**: 100 Hz (10ms task periods)
 - **Camera Frame Rate**: ~10-15 FPS (JPEG compression)
@@ -124,13 +124,13 @@ Tasks communicate via FreeRTOS queues and share data through thread-safe mechani
 - **Position Accuracy**: ±0.5° typical
 - **Latency**: <50ms from detection to motor response
 
-## 🤝 Contributors
+## Contributors
 
 - **Johnny Rourke** - Software & Integration
 - **William Kuschman** - Electronics & PCB Design
 - **Sam Nussman** - Mechanical Design & CAD
 
-## 📄 License
+## License
 
 This project was developed as part of ME 507 (Mechatronics) at California Polytechnic State University, San Luis Obispo.
 

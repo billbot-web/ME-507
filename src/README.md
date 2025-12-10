@@ -2,7 +2,7 @@
 
 This directory contains all source code for the SportTrackr embedded control system, organized into three main subsystems: hardware drivers, FreeRTOS tasks, and FSM framework.
 
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 src/
@@ -24,8 +24,29 @@ src/
 │   └── FSM.md                 - Design documentation
 └── main.cpp           # System initialization & setup
 ```
+## Inter-Task Communication
 
-## 🏗️ Architecture Overview
+### Queue-Based Messaging and Shares, a length-one Queue
+See the provided ME 507 library for more information
+```cpp
+// Create queues in main.cpp
+QueueHandle_t motor_cmd_queue = xQueueCreate(10, sizeof(MotorCommand));
+QueueHandle_t tracking_error_queue = xQueueCreate(5, sizeof(TrackingError));
+
+// Producer (CameraTask)
+TrackingError error;
+error.x_error = led_x - FRAME_CENTER_X;
+error.y_error = led_y - FRAME_CENTER_Y;
+xQueueSend(tracking_error_queue, &error, 0);
+
+// Consumer (MotorTask)
+TrackingError error;
+if (xQueueReceive(tracking_error_queue, &error, 0) == pdTRUE) {
+    set_target_position(current_pos + error.x_error);
+}
+```
+
+## Architecture Overview
 
 ### Design Philosophy
 The system follows a **modular, task-based architecture** using FreeRTOS for concurrency and finite state machines for complex behavioral control. Each major subsystem runs as an independent task with well-defined responsibilities and communication interfaces.
@@ -37,7 +58,7 @@ The system follows a **modular, task-based architecture** using FreeRTOS for con
 - **Real-Time Responsiveness**: Fixed-period tasks with predictable timing
 - **Modularity**: Easy to add/remove features without affecting other subsystems
 
-## 🎯 System Components
+## System Components
 
 ### 1. Hardware Drivers (`hardware/`)
 Low-level peripheral interfaces providing abstraction over ESP32 hardware features.
@@ -93,7 +114,7 @@ Reusable finite state machine implementation for behavioral control.
 └─────────────┘         └──────────────┘         └─────────────┘
 ```
 
-## 💻 Development Guide
+## Development Guide
 
 ### Building the Project
 ```bash
@@ -163,7 +184,7 @@ State newState(STATE_ID, "NEW_STATE", new_state_execute);
 State* states[] = {&state0, &newState, ...};
 ```
 
-## 🐛 Debugging
+## Debugging
 
 ### Serial Debugging
 ```cpp
@@ -243,7 +264,7 @@ int sat_min = 100;
 int val_min = 100;
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 Complete Doxygen-generated API documentation is available at:
 **[docs/html/index.html](../docs/html/index.html)**
@@ -254,7 +275,7 @@ Key documentation sections:
 - File dependencies and includes
 - Global variables and defines
 
-## 🧪 Testing
+## Testing
 
 ### Unit Testing
 (Future: Add unit test framework)
@@ -271,7 +292,7 @@ Key documentation sections:
 - Check error handling and recovery
 - Measure control loop timing
 
-## 🔐 Safety Features
+## Safety Features
 
 - **Watchdog Timer**: Reset on task deadlock
 - **Motor Current Limiting**: DRV8833 thermal protection
@@ -279,7 +300,7 @@ Key documentation sections:
 - **Command Validation**: Web interface input sanitization
 - **Fault Recovery**: Automatic restart on critical errors
 
-## 📞 Support
+## Support
 
 For software architecture questions, implementation details, or bug reports:
 - Review existing [Doxygen documentation](../docs/html/index.html)
@@ -289,11 +310,12 @@ For software architecture questions, implementation details, or bug reports:
   - [Task Controllers](tasks/README.md)
   - [FSM Framework](fsm/README.md)
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 Potential improvements and extensions:
 - [ ] Kalman filter for sensor fusion
-- [ ] Multi-target tracking support
+- [ ] Design a better IR Transmitter
+- [ ] Smooth the pan and tilt error from the camera
 - [ ] Machine learning-based detection
 - [ ] Bluetooth remote control
 - [ ] SD card data logging
