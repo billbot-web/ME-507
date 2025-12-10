@@ -53,7 +53,7 @@ motor.sleep(true);       // Power down driver
 | PWM    | 25   | Speed control (LEDC channel) |
 | SLEEP  | 26   | Enable/disable driver |
 
-## 📐 Encoder Driver
+## Encoder Driver
 
 ### Overview
 Quadrature encoder interface using ESP32 PCNT (Pulse Counter) peripheral for high-frequency, hardware-based position tracking.
