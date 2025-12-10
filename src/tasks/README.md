@@ -11,10 +11,10 @@ High-level task implementations coordinating system behavior, sensor fusion, and
 - **UITask.cpp/h** - Web server, WebSocket telemetry, and command processing
 - **IMU_TASK.cpp/h** - Inertial measurement and orientation sensing
 
-## 🎯 Task Architecture
+## Task Architecture
 
 All tasks inherit from FreeRTOS task base and follow these patterns:
-- **Fixed-period execution** using `vTaskDelayUntil()`
+- **Fixed-period execution** using `vTaskDelay()`
 - **Queue-based communication** for inter-task messaging
 - **Shared data structures** with mutex protection
 - **State machine logic** for complex behaviors
@@ -29,7 +29,7 @@ Priority 2           - IMU_TASK (sensor reading)
 Priority 1 (Lowest)  - UITask (network/telemetry)
 ```
 
-## 🚗 MotorTask
+## MotorTask
 
 ### Overview
 FSM-based motor controller supporting multiple operating modes with PID control, encoder feedback, and camera-based tracking.
@@ -56,24 +56,25 @@ IDLE ─────────────→ VELOCITY_MODE ←─────
 ```
 
 ### Key Features
-- **PID Control**: Separate tuning for position and camera modes
+- **PID Control**: Separate gains for position and velocity modes
 - **Saturation Handling**: Anti-windup with integral clamping
 - **Smooth Transitions**: Velocity ramping and position interpolation
-- **Safety Limits**: Software position bounds and velocity caps
+- **Stiction Offset**: The motor's high gear ratio leads to a high static friction, especially the tilt motor, which only begins to spin at around 35 effort. To overcome this, we have an offset that is added to the effort
+- **Safety Limits**: Software position bounds, only for the tilt motor. The tilt motor can only spin in the range of -10 to 150 degrees
 
 ### API
 ```cpp
-class MotorTask : public Task {
+class MotorTask: public Task {
 public:
-    MotorTask(const char* name, DRV883* motor, Encoder* encoder,
-              QueueHandle_t cmd_queue);
-    void run(void* params) override;
-    void set_mode(MotorMode mode);
-    void set_target_velocity(int16_t vel);
-    void set_target_position(int32_t pos);
-    void set_pid_gains(float kp, float ki, float kd);
-    int32_t get_position();
-    float get_velocity();
+    MotorTask(const char* name, DRV883* motor, Shares..., PID* velociypid, PID* positionpid, bool isTiltmotor);
+  void update() noexcept { fsm_.run_curstate(); }
+  static void set_instance(MotorTask* inst) { instance_ = inst; }
+
+private:
+  static uint8_t exec_wait() noexcept;
+  static uint8_t exec_velorun() noexcept;
+  static uint8_t exec_posrun() noexcept;
+  static uint8_t exec_camera_posrun() noexcept;
 };
 ```
 
@@ -85,36 +86,9 @@ motorTask->set_pid_gains(
     0.0f,  // Ki - Integral gain (often zero for position)
     0.1f   // Kd - Derivative gain
 );
-
-// Velocity limits
-#define MAX_VELOCITY 200  // counts/sec
-#define MAX_PWM 255       // 0-255 range
-
-// Position limits
-#define MIN_POSITION -5000
-#define MAX_POSITION 5000
 ```
 
-### Usage Example
-```cpp
-// Create task
-MotorTask panMotor("PanMotor", &motor_drv, &encoder, cmd_queue);
-panMotor.begin();
-
-// Position control
-panMotor.set_mode(POSITION_MODE);
-panMotor.set_target_position(1000);
-
-// Velocity control
-panMotor.set_mode(VELOCITY_MODE);
-panMotor.set_target_velocity(50);
-
-// Camera tracking
-panMotor.set_mode(CAMERA_MODE);
-// Error signal sent via queue from CameraTask
-```
-
-## 📏 EncoderTask
+##EncoderTask
 
 ### Overview
 High-frequency task that continuously reads encoder positions, calculates velocities, and provides feedback to motor controllers.
@@ -131,43 +105,7 @@ High-frequency task that continuously reads encoder positions, calculates veloci
 - **Overflow detection**: 16-bit counter wraparound handling
 - **Zero-crossing**: Detect direction changes
 
-### API
-```cpp
-class EncoderTask : public Task {
-public:
-    EncoderTask(const char* name, Encoder* encoder);
-    void run(void* params) override;
-    int32_t get_position();      // Thread-safe position read
-    float get_velocity();         // Thread-safe velocity read
-    void reset_position();        // Zero the encoder
-};
-```
-
-### Velocity Calculation
-```cpp
-// Simple differentiation
-velocity = (position_now - position_prev) / delta_time;
-
-// Exponential smoothing (reduces noise)
-velocity_filtered = alpha * velocity_raw + (1 - alpha) * velocity_prev;
-```
-
-### Usage Example
-```cpp
-EncoderTask panEncoder("PanEncoder", &encoder_pan);
-panEncoder.begin();
-
-// Read from motor control loop
-int32_t pos = panEncoder.get_position();
-float vel = panEncoder.get_velocity();
-
-if (abs(pos) > MAX_POSITION) {
-    // Position limit exceeded!
-    motor.brake();
-}
-```
-
-## 📸 CameraTask
+## CameraTask
 
 ### Overview
 Computer vision task that captures frames, detects LED targets using HSV thresholding, and computes visual servoing error signals for tracking.
@@ -186,48 +124,8 @@ Computer vision task that captures frames, detects LED targets using HSV thresho
 - **Multi-target Support**: Track multiple LEDs (future)
 - **Lost Target Handling**: Timeout and search behavior
 - **Frame Buffering**: PSRAM-based double buffering
-
-### API
-```cpp
-class CameraTask : public Task {
-public:
-    CameraTask(const char* name, OV5640_camera* cam,
-               QueueHandle_t error_queue);
-    void run(void* params) override;
-    void set_hsv_threshold(int h_min, int h_max, int s_min, int v_min);
-    bool is_target_detected();
-    void get_target_position(int* x, int* y);
-};
-```
-
-### Error Signal Format
-```cpp
-struct TrackingError {
-    int16_t x_error;   // Pixels from center (-320 to +320)
-    int16_t y_error;   // Pixels from center (-240 to +240)
-    bool valid;        // Target detected flag
-    uint32_t timestamp;
-};
-```
-
-### HSV Tuning
-```cpp
-// Red LED example
-cameraTask.set_hsv_threshold(
-    160,  // Hue min (red = 0/180 in HSV)
-    180,  // Hue max
-    100,  // Saturation min (vibrant colors)
-    100   // Value min (brightness)
-);
-
-// Green LED
-cameraTask.set_hsv_threshold(60, 80, 100, 100);
-
-// Blue LED
-cameraTask.set_hsv_threshold(100, 120, 100, 100);
-```
-
-## 🎮 ControllerTask
+  
+## ControllerTask
 
 ### Overview
 High-level system coordinator that manages global operating modes, coordinates task interactions, and handles mode transitions.
@@ -254,48 +152,7 @@ High-level system coordinator that manages global operating modes, coordinates t
    - Zero encoder positions
    - Validate hardware
 
-### Mode Transition Logic
-```cpp
-// Mode change validation
-bool can_transition(Mode from, Mode to) {
-    if (from == CALIBRATE && !is_calibrated) {
-        return false;  // Must complete calibration
-    }
-    if (to == TRACKER && !camera.is_initialized()) {
-        return false;  // Camera required
-    }
-    return true;
-}
-```
-
-### API
-```cpp
-class ControllerTask : public Task {
-public:
-    ControllerTask(const char* name);
-    void run(void* params) override;
-    void set_mode(SystemMode mode);
-    SystemMode get_mode();
-    bool is_calibrated();
-};
-```
-
-### Usage Example
-```cpp
-ControllerTask controller("Controller");
-controller.begin();
-
-// User clicks "Tracker" button in UI
-if (controller.get_mode() != TRACKER) {
-    controller.set_mode(TRACKER);
-    
-    // Configure motors for camera mode
-    panMotor.set_mode(CAMERA_MODE);
-    tiltMotor.set_mode(CAMERA_MODE);
-}
-```
-
-## 🌐 UITask
+## UITask
 
 ### Overview
 Web server task providing WiFi connectivity, HTTP file serving, WebSocket telemetry streaming, and remote command processing.
@@ -313,69 +170,10 @@ Web server task providing WiFi connectivity, HTTP file serving, WebSocket teleme
 - **Auto-Reconnect**: WiFi watchdog with exponential backoff
 - **CORS Support**: Cross-origin resource sharing for development
 
-### API
-```cpp
-class UITask : public Task {
-public:
-    UITask(const char* name);
-    void run(void* params) override;
-    void send_telemetry(TelemetryData data);
-    void set_wifi_credentials(const char* ssid, const char* pass);
-    bool is_connected();
-};
-```
-
-### Telemetry Data Structure
-```cpp
-struct TelemetryData {
-    uint32_t timestamp;
-    int32_t pan_position;
-    int32_t tilt_position;
-    float pan_velocity;
-    float tilt_velocity;
-    float imu_roll;
-    float imu_pitch;
-    float imu_yaw;
-    int16_t tracking_error_x;
-    int16_t tracking_error_y;
-    SystemMode current_mode;
-};
-```
-
-### WebSocket Protocol
-```cpp
-// Incoming command
-void onWebSocketMessage(String message) {
-    JsonDocument doc;
-    deserializeJson(doc, message);
-    
-    String type = doc["type"];
-    if (type == "set_mode") {
-        controller.set_mode(doc["value"]);
-    } else if (type == "joystick") {
-        panMotor.set_target_velocity(doc["pan_velocity"]);
-        tiltMotor.set_target_velocity(doc["tilt_velocity"]);
-    }
-}
-
-// Outgoing telemetry
-void sendTelemetry() {
-    JsonDocument doc;
-    doc["type"] = "telemetry";
-    doc["pan_position"] = encoder_pan.get_position();
-    doc["tilt_position"] = encoder_tilt.get_position();
-    // ... add more fields
-    
-    String json;
-    serializeJson(doc, json);
-    ws.textAll(json);
-}
-```
-
-## 🧭 IMU_TASK
+## IMUTASK
 
 ### Overview
-Inertial measurement task that reads BNO055 sensor data, provides orientation information, and detects motion events.
+An inertial measurement task that reads BNO055 sensor data, provides orientation information, and detects motion events.
 
 ### Responsibilities
 - Read accelerometer, gyroscope, magnetometer data
@@ -384,91 +182,22 @@ Inertial measurement task that reads BNO055 sensor data, provides orientation in
 - Detect motion/vibration for stability assessment
 
 ### Key Features
-- **100 Hz update rate** (10ms period)
+- **5 Hz update rate**
 - **Automatic calibration**: Monitor and report cal status
 - **Temperature compensation**: Built-in BNO055 feature
 - **Coordinate transforms**: Convert between sensor and world frames
 
-### API
-```cpp
-class IMU_TASK : public Task {
-public:
-    IMU_TASK(const char* name, Adafruit_BNO055* imu);
-    void run(void* params) override;
-    void get_euler(float* roll, float* pitch, float* yaw);
-    void get_accel(float* x, float* y, float* z);
-    uint8_t get_calibration_status();
-    bool is_calibrated();
-};
-```
+##Task Timing Analysis
 
-### Usage Example
-```cpp
-IMU_TASK imuTask("IMU", &bno055);
-imuTask.begin();
-
-// Read orientation
-float roll, pitch, yaw;
-imuTask.get_euler(&roll, &pitch, &yaw);
-
-// Check if sensor is calibrated
-if (imuTask.is_calibrated()) {
-    // Use IMU data for stability compensation
-    float tilt_compensation = sin(pitch * DEG_TO_RAD);
-    motor_tilt.add_feedforward(tilt_compensation);
-}
-```
-
-## 📊 Task Timing Analysis
-
-| Task | Period | Execution Time | Deadline | Stack Size |
-|------|--------|----------------|----------|------------|
-| EncoderTask | 1ms | ~50μs | 1ms | 2KB |
-| MotorTask | 10ms | ~200μs | 10ms | 4KB |
-| CameraTask | 100ms | ~80ms | 100ms | 8KB |
-| ControllerTask | 50ms | ~100μs | 50ms | 3KB |
-| IMU_TASK | 10ms | ~500μs | 10ms | 3KB |
-| UITask | 100ms | ~5ms | 100ms | 8KB |
-
-## 🔄 Inter-Task Communication
-
-### Queue-Based Messaging
-```cpp
-// Create queues in main.cpp
-QueueHandle_t motor_cmd_queue = xQueueCreate(10, sizeof(MotorCommand));
-QueueHandle_t tracking_error_queue = xQueueCreate(5, sizeof(TrackingError));
-
-// Producer (CameraTask)
-TrackingError error;
-error.x_error = led_x - FRAME_CENTER_X;
-error.y_error = led_y - FRAME_CENTER_Y;
-xQueueSend(tracking_error_queue, &error, 0);
-
-// Consumer (MotorTask)
-TrackingError error;
-if (xQueueReceive(tracking_error_queue, &error, 0) == pdTRUE) {
-    set_target_position(current_pos + error.x_error);
-}
-```
-
-### Shared Memory with Mutex
-```cpp
-// Global shared data
-SemaphoreHandle_t encoder_mutex;
-volatile int32_t shared_encoder_position;
-
-// Writer (EncoderTask)
-xSemaphoreTake(encoder_mutex, portMAX_DELAY);
-shared_encoder_position = encoder.get_position();
-xSemaphoreGive(encoder_mutex);
-
-// Reader (MotorTask)
-xSemaphoreTake(encoder_mutex, portMAX_DELAY);
-int32_t pos = shared_encoder_position;
-xSemaphoreGive(encoder_mutex);
-```
-
-## 🐛 Debugging Tasks
+| Task           | Period | Exec Time | Stack Size |
+|----------------|--------|-----------|------------|
+| EncoderTask    | 10ms   | ~50μs     | 2KB        |
+| MotorTask      | 50ms   | ~200μs    | 2KB        |
+| CameraTask     | 100ms  | ~80ms     | 8KB        |
+| ControllerTask | 100ms  | ~100μs    | 4KB        |
+| IMUTASK        | 200ms  | ~500μs    | 4KB        |
+| UITask         | 200ms  | ~5ms      | 8KB        |
+## Debugging Tasks
 
 ### Stack Overflow Detection
 ```cpp
@@ -518,14 +247,14 @@ void run(void* params) {
 }
 ```
 
-## 📚 Related Documentation
+## Related Documentation
 
 - [Hardware Drivers](../hardware/README.md) - Low-level peripheral interfaces
 - [FSM Framework](../fsm/README.md) - State machine design pattern
 - [Software Architecture](../README.md) - Overall system design
 - [Web Interface](../../data/README.md) - UI task implementation details
 
-## 🚀 Best Practices
+## Best Practices
 
 1. **Always use `vTaskDelay()` or `vTaskDelayUntil()`** - Never use `delay()` in tasks
 2. **Check queue return values** - Handle full/empty conditions gracefully
