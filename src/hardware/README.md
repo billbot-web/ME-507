@@ -234,61 +234,51 @@ if (bno.begin()) {
 ### Initialization Sequence
 ```cpp
 void setup() {
-    // Motor drivers
-    motor_pan.init();
-    motor_tilt.init();
+     // ----------------Pan Motor pins ----------------
+   #define PanIN1 GPIO_NUM_2
+   #define PanIN2 GPIO_NUM_5
+   #define nSLP_PIN GPIO_NUM_13
+   // ---------------- Pan Encoder pins/unit ----------------
+   #define TiltENCODER_A_GPIO GPIO_NUM_14
+   #define TiltENCODER_B_GPIO GPIO_NUM_19
+   #define TiltENCODER_UNIT   PCNT_UNIT_0
+   // ----------------Tilt Motor pins ----------------
+   #define TiltIN1 GPIO_NUM_18
+   #define TiltIN2 GPIO_NUM_23
+   // ---------------- Tilt Encoder pins/unit ----------------
+   #define PanENCODER_A_GPIO GPIO_NUM_3
+   #define PanENCODER_B_GPIO GPIO_NUM_1 //should be GPI01
+   #define PanENCODER_UNIT   PCNT_UNIT_1
+  // Set I2C pins for ESP32
+  I2C.setPins(21, 22);
+  Serial.println("=== SporTrackr IMU Data Reader ===");
+  Serial.println("Initializing IMU...");
+  
+  // Initialize and start IMU task
+  if (imuTask.initIMU()) {
+    Serial.println("IMU initialized successfully!");
+    delay(300);
     
-    // Encoders
-    encoder_pan.init();
-    encoder_tilt.init();
-    encoder_pan.set_filter(100);
-    encoder_tilt.set_filter(100);
-    
-    // Camera
-    if (!camera.init(FRAMESIZE_VGA)) {
-        Serial.println("Camera init failed!");
-    }
-    
-    // IMU
-    if (!imu.begin()) {
-        Serial.println("IMU init failed!");
-    }
-}
-```
-
-### Error Handling
-```cpp
-// Check for hardware faults
-if (!motor.set_speed(speed)) {
-    Serial.println("Motor driver fault!");
-    motor.sleep(true);  // Disable driver
-}
-
-// Validate encoder readings
-int32_t pos = encoder.get_position();
-if (abs(pos) > MAX_POSITION) {
-    Serial.println("Encoder out of range!");
-    motor.brake();
-}
-
-// Verify camera capture
-if (!camera.capture()) {
-    Serial.println("Frame capture failed!");
-    camera.init(FRAMESIZE_VGA);  // Re-init
-}
-```
-
-### Resource Management
-```cpp
-// Power saving
-motor.sleep(true);          // Disable motor driver
-camera.deinit();            // Release camera resources
-imu.setMode(SUSPEND_MODE);  // Low-power IMU mode
-
-// Cleanup on task exit
-motor.brake();
-motor.sleep(true);
-encoder.reset();
+    // Load saved calibration offsets automatically
+    Serial.println("Loading saved calibration offsets...");
+    imuTask.loadSavedCalibration();
+  } else {
+    Serial.println("WARNING: IMU initialization failed!");
+    Serial.println("Continuing without IMU...");
+  }
+  
+  // -------------------------------------------------------------------------
+  // Step 6: Initialize OV5640 Camera Module
+  // -------------------------------------------------------------------------
+  
+  // Camera initialization - skip if it fails (GPIO conflicts)
+  bool camera_ok = camera.begin();
+  if (!camera_ok) {
+    Serial.println("WARNING: Camera initialization failed!");
+    Serial.println("Continuing without camera...");
+  } else {
+    Serial.println("Camera initialized successfully");
+  }
 ```
 
 ## Troubleshooting
@@ -314,7 +304,7 @@ encoder.reset();
 - [Software Architecture](../README.md) - System overview
 - [PCB Design](../../hardware/pcb/README.md) - Hardware connections
 
-## 🔗 Datasheets
+## Datasheets
 
 - 1. [DRV8833 Datasheet](https://www.ti.com/lit/ds/symlink/drv8833.pdf)
 - 2. [OV5640 Datasheet](https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf)
