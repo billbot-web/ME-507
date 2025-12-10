@@ -26,7 +26,7 @@ The Disable pin is tied high internally. While the nSleep pin is shared for both
 ```cpp
  DRV883(int in1, int in2, int ledcCh1, int ledcCh2,
                 uint32_t pwmFreq = 20000, uint8_t resolutionBits = 10);
-    void setEff(int effort);
+    void set_eff(int effort);
     void stop();
     void brake();
 
