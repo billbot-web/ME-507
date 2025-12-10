@@ -36,11 +36,9 @@ The Disable pin is tied high internally. While the nSleep pin is shared for both
 ```cpp
 DRV883 motor(GPIO32, GPIO33, GPIO25, GPIO26);
 
-motor.set_seff(128);    // Half speed forward
-motor.set_eff(-200);   // Fast reverse
+motor.set_eff(90);    // Half speed forward
+motor.set_eff(-100);   // Fast reverse
 motor.brake();           // Stop immediately
-motor.coast();           // Let motor coast
-motor.sleep(true);       // Power down driver
 ```
 
 ### Hardware Connections
@@ -157,11 +155,11 @@ if (cam.capture()) {
 ### Detection Algorithm
 1. Convert RGB → HSV color space
 2. Threshold by hue/saturation/value ranges
-3. Find largest contiguous blob
+3. Find the largest contiguous blob
 4. Calculate centroid (weighted average)
 5. Return pixel coordinates (0,0 = center)
 
-## 🧭 Adafruit_BNO055 IMU Driver
+## Adafruit_BNO055 IMU Driver
 
 ### Overview
 Interface to BNO055 9-DOF absolute orientation sensor providing fused accelerometer, gyroscope, and magnetometer data.
@@ -214,8 +212,6 @@ if (bno.begin()) {
 |--------|------|-------------|
 | SDA    | 21   | I2C data (shared with camera) |
 | SCL    | 22   | I2C clock (shared with camera) |
-| INT    | 15   | Interrupt (optional) |
-| RESET  | 2    | Reset (optional) |
 
 ### Coordinate System
 - **X-axis**: Forward (pitch rotation)
