@@ -24,6 +24,8 @@ src/
 │   └── FSM.md                 - Design documentation
 └── main.cpp           # System initialization & setup
 ```
+## Task Diagram
+![SportTrackr_TaskDiagram](https://github.com/user-attachments/assets/c74348fe-0974-4e40-8411-6c5cb31a48d5)
 ## Inter-Task Communication
 
 ### Queue-Based Messaging and Shares, a length-one Queue
