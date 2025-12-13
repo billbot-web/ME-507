@@ -12,7 +12,6 @@ High-level task implementations coordinating system behavior, sensor fusion, and
 - **IMU_TASK.cpp/h** - Inertial measurement and orientation sensing
 
 ## Task Architecture
-
 All tasks inherit from FreeRTOS task base and follow these patterns:
 - **Fixed-period execution** using `vTaskDelay()`
 - **Queue-based communication** for inter-task messaging
@@ -33,6 +32,8 @@ Priority 1 (Lowest)  - UITask (network/telemetry)
 
 ### Overview
 FSM-based motor controller supporting multiple operating modes with PID control, encoder feedback, and camera-based tracking.
+![MotorTask](https://github.com/user-attachments/assets/bf175469-aede-49b0-97c1-93013fb194d4)
+
 
 ### Operating Modes (States)
 
@@ -92,6 +93,7 @@ motorTask->set_pid_gains(
 
 ### Overview
 High-frequency task that continuously reads encoder positions, calculates velocities, and provides feedback to motor controllers.
+![EncoderTask](https://github.com/user-attachments/assets/a1128ab2-f0a7-400b-ac40-09c9af808868)
 
 ### Responsibilities
 - Read hardware PCNT counters (no CPU overhead)
@@ -109,6 +111,7 @@ High-frequency task that continuously reads encoder positions, calculates veloci
 
 ### Overview
 Computer vision task that captures frames, detects LED targets using HSV thresholding, and computes visual servoing error signals for tracking.
+![CameraTask](https://github.com/user-attachments/assets/64b3e432-3762-4f76-b10b-dca2365b4c6b)
 
 ### Processing Pipeline
 1. **Frame Capture**: Trigger OV5640 JPEG capture (~60-100ms)
@@ -129,6 +132,7 @@ Computer vision task that captures frames, detects LED targets using HSV thresho
 
 ### Overview
 High-level system coordinator that manages global operating modes, coordinates task interactions, and handles mode transitions.
+![ControllerTask](https://github.com/user-attachments/assets/c9e7ed2b-2ec4-4614-8e3a-ce54d2f2d908)
 
 ### System Modes
 
@@ -156,6 +160,7 @@ High-level system coordinator that manages global operating modes, coordinates t
 
 ### Overview
 Web server task providing WiFi connectivity, HTTP file serving, WebSocket telemetry streaming, and remote command processing.
+![UITask](https://github.com/user-attachments/assets/74903a7c-50c6-47e2-aa5f-7b3cec38931c)
 
 ### Responsibilities
 - **WiFi Management**: Connect to network, handle reconnection
@@ -174,6 +179,7 @@ Web server task providing WiFi connectivity, HTTP file serving, WebSocket teleme
 
 ### Overview
 An inertial measurement task that reads BNO055 sensor data, provides orientation information, and detects motion events.
+![IMUTask](https://github.com/user-attachments/assets/6972fc89-d5c0-4bb2-843c-6860cba8c45c)
 
 ### Responsibilities
 - Read accelerometer, gyroscope, magnetometer data
