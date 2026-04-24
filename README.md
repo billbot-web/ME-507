@@ -1,4 +1,4 @@
-# SportTrackr: Camera-Guided Pan-Tilt Tracking System
+# SportTrackr: Camera-Guided Dual-Axis Tracking System
 
 An ESP32-based real-time tracking system that combines computer vision, motion control, and web telemetry to automatically track LED targets using a camera-guided pan-tilt mechanism.
 
