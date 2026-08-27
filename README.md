@@ -126,9 +126,8 @@ Tasks communicate via FreeRTOS queues and share data through thread-safe mechani
 
 ## Contributors
 
-- **Johnny Rourke** - Software & Integration
-- **William Kuschman** - Electronics & PCB Design
-- **Sam Nussman** - Mechanical Design & CAD
+- **Johnny Rourke** - Software, Integration, Mechanical Design & CAD
+- **William Hawkins** - Software, Electronics & PCB Design
 
 ## License
 
